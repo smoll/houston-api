@@ -1,0 +1,20 @@
+{
+  "name": "houston-api",
+  "version": "0.0.1",
+  "description": "Source of truth for the Astronomer Platform",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/astronomerio/houston-api.git"
+  },
+  "author": "Astronomer",
+  "license": "Astronomer EE",
+  "bugs": {
+    "url": "https://github.com/astronomerio/houston-api/issues"
+  },
+  "homepage": "https://github.com/astronomerio/houston-api#readme"
+}
