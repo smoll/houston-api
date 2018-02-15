@@ -1,6 +1,9 @@
 {
   "name": "houston-api",
   "version": "0.0.1",
+  "bin": {
+    "houston-api": "./index.js"
+  },
   "description": "Source of truth for the Astronomer Platform",
   "main": "index.js",
   "scripts": {
