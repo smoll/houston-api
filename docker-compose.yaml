@@ -1,0 +1,7 @@
+---
+version: "2"
+
+services:
+  houston-api:
+    image: astronomerinc/ap-houston-api
+    restart: unless-stopped
