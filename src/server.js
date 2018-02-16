@@ -5,26 +5,22 @@ const { GraphQLServer } = require("graphql-yoga");
 
 const Config = require("./utils/config.js");
 
-const typeDefs = `
-  type Query {
-   # Responds "alive" if the API is available
-    healthcheck: String!
-  }
-`;
+const Application = require("./application.js");
+const OperationManager = require("./operations.js");
 
-const resolvers = {
-  Query: {
-    healthcheck: (root, args, context) => {
-      return "alive"
-    }
-  }
-};
+const operations = require("./operations/index.js");
+
+for(let operation of operations) {
+  OperationManager.registerOperation(operation, Application);
+}
 
 const config = new Config();
 const schema = makeExecutableSchema({
-  typeDefs,
-  resolvers
+  typeDefs: OperationManager.schemaBuilder.generateTypeDefs(),
+  resolvers: OperationManager.schemaBuilder.generateResolvers()
 });
+
+
 const server = new GraphQLServer({ schema });
 server.start({
   cors: {
