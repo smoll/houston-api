@@ -1,14 +1,14 @@
 "use strict";
 
 class Config {
-  constructor() {
-    this.defaults = {};
+  constructor(defaults) {
+    this.defaults = Object.assign({}, defaults);
     this.defaults[Config.PORT] = 5001;
   }
 
   get(key) {
-    if (process.hasOwnProperty(key)) {
-      return process[key];
+    if (process.env.hasOwnProperty(key)) {
+      return process.env[key];
     }
     if (this.defaults.hasOwnProperty(key)) {
       return this.defaults[key];
