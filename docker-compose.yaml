@@ -4,4 +4,7 @@ version: "2"
 services:
   houston-api:
     image: astronomerinc/ap-houston-api
+    build:
+      context: .
+      dockerfile: Dockerfile
     # restart: unless-stopped

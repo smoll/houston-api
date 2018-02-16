@@ -4,14 +4,14 @@
   "description": "Source of truth for the Astronomer Platform",
   "main": "index.js",
   "bin": {
-    "houston-api": "./src/server.js"
+    "houston-api": "index.js"
   },
   "engines": {
     "node": ">=7.6.0"
   },
   "engineStrict": true,
   "scripts": {
-    "start": "node src/server.js",
+    "start": "node --use-strict index.js",
     "test": "./node_modules/.bin/jest unit"
   },
   "repository": {
