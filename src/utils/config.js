@@ -1,5 +1,3 @@
-"use strict";
-
 class Config {
   constructor(defaults) {
     this.defaults = Object.assign({}, defaults);

@@ -1,5 +1,3 @@
-"use strict";
-
 const { BaseOperation } = require("@moilandtoil/sealab-operation");
 
 class HealthCheck extends BaseOperation {

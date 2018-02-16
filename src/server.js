@@ -1,5 +1,3 @@
-"use strict";
-
 const { makeExecutableSchema } = require("graphql-tools");
 const { GraphQLServer } = require("graphql-yoga");
 

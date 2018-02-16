@@ -1,5 +1,3 @@
-"use strict";
-
 const Config = require("../config.js");
 
 describe("When passing defaults on instantiation", () => {

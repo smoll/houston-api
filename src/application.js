@@ -1,5 +1,3 @@
-"use strict";
-
 const { Application, ServiceManager, ConnectionManager } = require("@moilandtoil/sealab-application");
 
 const logger = require("./logger.js");
