@@ -4,33 +4,28 @@ describe("When passing defaults on instantiation", () => {
 
   test("config.defaults should contain the defaults passed", () => {
     let defaults = {
-      "foo": "bar"
+      "FOO": "bar"
     };
-    let config = new Config(defaults);
-    expect(config.defaults).toHaveProperty("foo");
-    expect(config.defaults.foo).toEqual("bar");
+    Config.setDefaults(defaults);
+
+    expect(Config.defaults).toHaveProperty("FOO");
+    expect(Config.defaults.FOO).toEqual("bar");
   });
 });
 
 describe("When calling #get() for", () => {
 
-  let config = null;
   process.env["TEST"] = "config";
-  beforeEach(() => {
-    config = new Config({
-      "FOO": "bar"
-    });
-  });
 
   test("key that has an env", () => {
-    expect(config.get("TEST")).toEqual("config");
+    expect(Config.get("TEST")).toEqual("config");
   });
 
   test("key that has no env, but has default", () => {
-    expect(config.get("FOO")).toEqual("bar");
+    expect(Config.get("FOO")).toEqual("bar");
   });
 
   test("key that has no env, and no default", () => {
-    expect(config.get("derp")).toEqual(null);
+    expect(Config.get("derp")).toEqual(null);
   });
 });
