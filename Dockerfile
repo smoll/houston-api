@@ -8,7 +8,14 @@ MAINTAINER Astronomer <humans@astronomer.io>
 RUN apk add --no-cache \
 	nodejs
 
-WORKDIR /tmp/houston-api
-COPY . .
+WORKDIR /home/houston-api
+
+COPY package.json .
+COPY index.js .
+COPY src .
+
+RUN npm install
+
+EXPOSE 5001:5001
 
 ENTRYPOINT ["npm", "start"]

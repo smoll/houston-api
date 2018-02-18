@@ -3,8 +3,29 @@ version: "2"
 
 services:
   houston-api:
-    image: astronomerinc/ap-houston-api
+    build: . #Dockerfile?
+    ports:
+      - "5001:5001"
     build:
       context: .
       dockerfile: Dockerfile
     # restart: unless-stopped
+    links:
+      - postgres
+    depends_on:
+      - postgres
+    volumes:
+      - ./src:/home/houston-api/src
+    environment:
+      POSTGRES_URI: "postgres://houston:houston@postgres:5432/houston"
+    entrypoint: ["npm", "run", "dev"]
+  postgres:
+    image: postgres:9.6
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=houston
+      - POSTGRES_PASSWORD=houston
+      - POSTGRES_DB=houston
+    volumes:
+      - ./.local/postgres/data:/var/lib/postgresql/data
