@@ -1,4 +1,4 @@
-const { BaseOperation } = require("@moilandtoil/sealab-operation");
+const BaseOperation = require("../base.js");
 
 class HealthCheck extends BaseOperation {
   constructor() {

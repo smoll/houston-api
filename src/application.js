@@ -1,9 +1,7 @@
-const { Application, ServiceManager, ConnectionManager } = require("@moilandtoil/sealab-application");
+const { Application } = require("@moilandtoil/sealab-application");
 
 const logger = require("./logger.js");
 
-const serviceManager = new ServiceManager();
-const connectionManager = new ConnectionManager();
-const application = new Application(serviceManager, connectionManager, logger);
+const application = new Application({}, logger);
 
 module.exports = application;

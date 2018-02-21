@@ -3,30 +3,38 @@ const { GraphQLServer } = require("graphql-yoga");
 
 const { Postgres, PostgresMigration } = require("./database/postgres.js");
 const Config = require("./utils/config.js");
-
 const Application = require("./application.js");
-const OperationManager = require("./operations.js");
+const { OperationManager } = require("./operations.js");
+
 // Set config defaults
 Config.setDefaults({});
 
-const operations = require("./operations/index.js");
+// Register connections
+Application.registerConnection("postgres", Postgres);
+
 // Prepare migrations
 const runMigrations = async function() {
   console.log("Running migrations... ");
   await PostgresMigration();
   console.log("Done");
+};
 
+// Register extra types
+require("./types.js");
+
+// Register operations
+const operations = require("./operations/index.js");
 for(let operation of operations) {
   OperationManager.registerOperation(operation, Application);
 }
 
-const config = new Config();
+// Create the schema
 const schema = makeExecutableSchema({
   typeDefs: OperationManager.schemaBuilder.generateTypeDefs(),
   resolvers: OperationManager.schemaBuilder.generateResolvers()
 });
 
-
+// Start the server
 const server = new GraphQLServer({ schema });
 
 runMigrations().then(() => {
