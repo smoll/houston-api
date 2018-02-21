@@ -1,5 +1,3 @@
-"use strict";
-
 class Config {
   static setDefaults(defaults) {
     Config.defaults = Object.assign({}, defaults);
@@ -8,6 +6,7 @@ class Config {
     Config.defaults[Config.API_ENDPOINT_URL] = "/v1";
     Config.defaults[Config.WEBSOCKET_ENDPOINT_URL] = "/ws";
     Config.defaults[Config.PLAYGROUND_ENDPOINT_URL] = "/playground";
+    Config.defaults[Config.DEBUG_DB] = false;
   }
 
   static get(key) {
@@ -29,5 +28,6 @@ Config.API_ENDPOINT_URL = "API_ENDPOINT_URL";
 Config.WEBSOCKET_ENDPOINT_URL = "WEBSOCKET_ENDPOINT_URL";
 Config.PLAYGROUND_ENDPOINT_URL = "PLAYGROUND_ENDPOINT_URL";
 Config.POSTGRES_URI = "POSTGRES_URI";
+Config.DEBUG_DB = "DEBUG_DB";
 
 module.exports = Config;

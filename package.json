@@ -13,7 +13,9 @@
   "scripts": {
     "start": "node --use-strict index.js",
     "dev": "./node_modules/.bin/nodemon --use-strict --watch src",
-    "test": "./node_modules/.bin/jest unit"
+    "test": "POSTGRES_URI=postgres://houston:houston@localhost:6432/houston ./node_modules/.bin/jest unit",
+    "test-db": "docker-compose -p houston-api-test -f test-docker-compose.yaml up -d",
+    "test-db-down": "docker-compose -p houston-api-test -f test-docker-compose.yaml down"
   },
   "repository": {
     "type": "git",
@@ -27,19 +29,23 @@
   },
   "homepage": "https://github.com/astronomerio/houston-api#readme",
   "dependencies": {
-    "@moilandtoil/sealab-application": "0.0.2",
+    "@moilandtoil/sealab-application": "0.0.5",
     "@moilandtoil/sealab-operation": "0.0.2",
     "@moilandtoil/sealab-schema-builder": "0.0.3",
+    "bcrypt": "^1.0.3",
     "graphql": "^0.13.1",
     "graphql-tools": "^2.21.0",
     "graphql-yoga": "^1.3.2",
     "knex": "^0.14.3",
     "objection": "^1.0.0",
-    "pg": "^7.4.1",
-    "uuid": "^3.2.1"
+    "objection-password": "^0.2.0",
+    "objection-soft-delete": "^1.0.4",
+    "pg": "^7.4.1"
   },
   "devDependencies": {
+    "faker": "^4.1.0",
     "jest-cli": "^22.3.0",
+    "knex-cleaner": "^1.1.4",
     "nodemon": "^1.15.0"
   }
 }
