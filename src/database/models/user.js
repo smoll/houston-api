@@ -21,12 +21,14 @@ class User extends Password(Model) {
   static get jsonSchema () {
     return {
       type: "object",
-      required: ["username", "password"],
+      required: ["username", "provider_type", "provider_id", "full_name"],
 
       properties: {
         uuid: { type: "uuid" },
         username: { type: "string", minLength: 1, maxLength: 255 },
-        password: { type: "string", minLength: 1, maxLength: 255 },
+        provider_type: { type: "string", minLength: 1, maxLength: 255 },
+        provider_id: { type: "string", minLength: 1, maxLength: 255 },
+        full_name: { type: "string", minLength: 1, maxLength: 255 },
         super_admin: { type: "boolean" },
         status: { type: "string" },
         created_at: { type: "string" },
@@ -37,7 +39,7 @@ class User extends Password(Model) {
   }
 
   static get jsonAttributes() {
-    return ["uuid", "username", "password", "super_admin", "status", "created_at", "updated_at", "deleted_at"];
+    return ["uuid", "username", "provider_type", "provider_id", "full_name", "super_admin", "status", "created_at", "updated_at", "deleted_at"];
   }
 
   static get relationMappings() {
@@ -71,5 +73,8 @@ class User extends Password(Model) {
     return super.$beforeInsert(context);
   }
 }
+
+User.PROVIDER_LOCAL= "local";
+User.PROVIDER_LDAP = "ldap";
 
 module.exports = User;

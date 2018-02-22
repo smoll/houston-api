@@ -20,15 +20,10 @@ const knex = Knex({
   debug: Config.get(Config.DEBUG_DB) === true
 });
 
-
 Model.knex(knex);
 
 module.exports = {
-  Postgres: {
-    conn: function() {
-      return knex;
-    }
-  },
+  Postgres: knex,
   PostgresMigration: async () => {
     return await knex.migrate.latest();
   }
