@@ -40,17 +40,6 @@ class User extends Password(Model) {
     return ["uuid", "username", "password", "super_admin", "status", "created_at", "updated_at", "deleted_at"];
   }
 
-  static get namedFilters() {
-    return {
-      byEmail: (builder) => {
-        builder.orderBy('name');
-      },
-      onlyDogs: (builder) => {
-        builder.where('species', 'dog');
-      }
-    };
-  }
-
   static get relationMappings() {
     return {
       organizations: {
