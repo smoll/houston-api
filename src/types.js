@@ -1,6 +1,5 @@
 const { SchemaBuilder } = require("./operations.js");
 
-
 SchemaBuilder.addTypeDef(`
   scalar JSON
 `);

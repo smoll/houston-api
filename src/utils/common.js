@@ -10,5 +10,9 @@ module.exports = {
         return resolve(buffer.toString('hex').substr(0, length));
       });
     });
+  },
+
+  trimSlashes(value) {
+    return value.replace(/^\/|\/$/g, '');
   }
 };

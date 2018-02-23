@@ -11,7 +11,6 @@ class UserService extends BaseService {
     if (user) {
       return user;
     }
-    console.log(user);
     return null;
   }
 
