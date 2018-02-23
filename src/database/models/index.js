@@ -1,5 +1,7 @@
-module.exports = {
-  "module_deployment": require("./module_deployment.js"),
-  "organization": require("./organization.js"),
-  "user": require("./user.js"),
-};
+module.exports = [
+  require("./email.js"),
+  require("./local_credential.js"),
+  require("./module_deployment.js"),
+  require("./organization.js"),
+  require("./user.js")
+];

@@ -1,7 +1,11 @@
 const { Application } = require("@moilandtoil/sealab-application");
 
+const services = require("./services/index.js");
+const models = require("./database/models/index.js");
 const logger = require("./logger.js");
 
 const application = new Application({}, logger);
 
+application.registerServices(services);
+application.registerModels(models);
 module.exports = application;

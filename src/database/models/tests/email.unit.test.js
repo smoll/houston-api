@@ -25,7 +25,6 @@ describe("When testing user", () => {
         address: address,
         user_uuid: user.uuid
       });
-      console.log(email);
       expect(email.address).toEqual(address);
       done();
     });
@@ -51,7 +50,6 @@ describe("When testing user", () => {
       });
 
       let emailUser = await email.$relatedQuery('user');
-      console.log(emailUser);
      // expect(emailUser[0].title).toEqual(org.title);
       done();
     });

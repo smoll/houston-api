@@ -1,10 +1,11 @@
 const { makeExecutableSchema } = require("graphql-tools");
 const { GraphQLServer } = require("graphql-yoga");
+const Passport = require("passport");
 
 const { Postgres, PostgresMigration } = require("./database/postgres.js");
+const { OperationManager } = require("./operations.js");
 const Config = require("./utils/config.js");
 const Application = require("./application.js");
-const { OperationManager } = require("./operations.js");
 
 // Set config defaults
 Config.setDefaults({});
@@ -12,12 +13,6 @@ Config.setDefaults({});
 // Register connections
 Application.registerConnection("postgres", Postgres);
 
-// Prepare migrations
-const runMigrations = async function() {
-  console.log("Running migrations... ");
-  await PostgresMigration();
-  console.log("Done");
-};
 
 // Register extra types
 require("./types.js");
@@ -36,6 +31,23 @@ const schema = makeExecutableSchema({
 
 // Start the server
 const server = new GraphQLServer({ schema });
+
+// Build REST routes
+require("./routes/index.js")(server.express, Application);
+
+// set auth strategy
+const strategy = Config.get(Config.AUTH_STRATEGY);
+Passport.use(Application.service("auth").getAuthStrategy(strategy));
+server.use(Passport.initialize());
+
+
+
+// Prepare migrations
+const runMigrations = async function() {
+  console.log("Running migrations... ");
+  await PostgresMigration();
+  console.log("Done");
+};
 
 runMigrations().then(() => {
   server.start({

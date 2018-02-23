@@ -7,6 +7,8 @@ class Config {
     Config.defaults[Config.WEBSOCKET_ENDPOINT_URL] = "/ws";
     Config.defaults[Config.PLAYGROUND_ENDPOINT_URL] = "/playground";
     Config.defaults[Config.DEBUG_DB] = false;
+    Config.defaults[Config.JWT_PASSPHRASE] = "insecure_passphrase";
+    Config.defaults[Config.AUTH_STRATEGY] = "local";
   }
 
   static get(key) {
@@ -29,5 +31,7 @@ Config.WEBSOCKET_ENDPOINT_URL = "WEBSOCKET_ENDPOINT_URL";
 Config.PLAYGROUND_ENDPOINT_URL = "PLAYGROUND_ENDPOINT_URL";
 Config.POSTGRES_URI = "POSTGRES_URI";
 Config.DEBUG_DB = "DEBUG_DB";
+Config.JWT_PASSPHRASE = "JWT_PASSPHRASE";
+Config.AUTH_STRATEGY = "AUTH_STRATEGY";
 
 module.exports = Config;

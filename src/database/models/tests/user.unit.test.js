@@ -41,7 +41,6 @@ describe("When testing user", () => {
         title: Faker.lorem.words(),
         description: Faker.lorem.sentence()
       }).returning('*');
-      console.log(org);
       await user.$relatedQuery('organizations').relate(org);
 
       let userOrgs = await user.$relatedQuery('organizations');
