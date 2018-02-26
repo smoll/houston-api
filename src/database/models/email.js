@@ -39,7 +39,7 @@ class Email extends SoftDelete(Model) {
     return {
       user: {
         relation: Model.BelongsToOneRelation,
-        modelClass: `${__dirname}/User`,
+        modelClass: `${__dirname}/user.js`,
         join: {
           from: 'emails.user_uuid',
           to: 'users.uuid'

@@ -38,7 +38,7 @@ class LocalCredential extends Password(Model) {
     return {
       user: {
         relation: Model.BelongsToOneRelation,
-        modelClass: `${__dirname}/User`,
+        modelClass: `${__dirname}/user.js`,
         filter: {
           provider: "local"
         },

@@ -36,7 +36,7 @@ class Organization extends SoftDelete(Model) {
     return {
       users: {
         relation: Model.ManyToManyRelation,
-        modelClass: `${__dirname}/User`,
+        modelClass: `${__dirname}/user.js`,
         join: {
           from: 'organizations.uuid',
           through: {

@@ -41,27 +41,10 @@ class ModuleDeployment extends SoftDelete(Model) {
     return {
       creator: {
         relation: Model.BelongsToOneRelation,
-        modelClass: `${__dirname}/User`,
+        modelClass: `${__dirname}/user.js`,
         join: {
           from: 'module_deployments.creator_uuid',
           to: 'users.uuid'
-        }
-      },
-
-      movies: {
-        relation: Model.ManyToManyRelation,
-        // Solution 3:
-        //
-        // Use only a module name and define a `modelPaths` property for your model (or a superclass
-        // of your model). Search for `modelPaths` from the docs for more info.
-        modelClass: 'Movie',
-        join: {
-          from: 'Person.id',
-          through: {
-            from: 'Person_Movie.personId',
-            to: 'Person_Movie.movieId'
-          },
-          to: 'Movie.id'
         }
       }
     };

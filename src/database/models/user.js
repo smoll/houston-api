@@ -46,7 +46,7 @@ class User extends Password(Model) {
     return {
       organizations: {
         relation: Model.ManyToManyRelation,
-        modelClass: `${__dirname}/Organization`,
+        modelClass: `${__dirname}/organization.js`,
         join: {
           from: 'users.uuid',
           through: {
@@ -58,10 +58,18 @@ class User extends Password(Model) {
       },
       emails: {
         relation: Model.HasManyRelation,
-        modelClass: `${__dirname}/Email`,
+        modelClass: `${__dirname}/email.js`,
         join: {
           from: 'users.uuid',
           to: 'emails.user_uuid'
+        }
+      },
+      credential: {
+        relation: Model.HasOneRelation,
+        modelClass: `${__dirname}/local_credential.js`,
+        join: {
+          from: 'users.provider_id',
+          to: 'local_credentials.uuid'
         }
       }
     };
