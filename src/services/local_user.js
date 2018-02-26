@@ -31,16 +31,16 @@ class LocalUserService extends BaseService {
     }
 
     let credentials = await this.fetchCredentialsForUser(user);
-    if (!credentials.verifyPassword(password)) {
+    if (!await credentials.verifyPassword(password)) {
       throw new Error("User password incorrect");
     }
     return user
   }
 
   async fetchCredentialsForUser(user) {
-    let credentials = this.model("local_credentials")
+    let credentials = this.model("local_credential")
         .query()
-        .findById(user.provider_id);
+        .findById(user.providerId);
     if (credentials) {
       return credentials;
     }

@@ -15,6 +15,20 @@ class AuthService extends BaseService {
     return this.service("local_user").authenticateUser(emailOrUsername, password);
   }
 
+  async authenticateRequest(authorization) {
+    let context;
+    if (this.isServiceToken(authorization)) {
+      // TODO: Do something with service auth
+      context = new Context(authorization, Context.REQUESTER_SERVICE);
+    } else {
+      context = new Context(authorization, Context.REQUESTER_USER);
+      let decoded = await this.decodeJWT(authorization);
+      let user = await this.service("user").fetchUserByUuid(decoded.id);
+      context.setAuthUser(user);
+    }
+    return context;
+  }
+
   async generateTokenPayload(user, context = {}) {
     const tokenPayload = {
       id: user.uuid,
@@ -24,51 +38,70 @@ class AuthService extends BaseService {
     return tokenPayload;
   }
 
-  createJWT(payload, expiration_days) {
+  async createJWT(payload, expiration_days) {
+    if (!expiration_days) {
+      expiration_days = 1;
+    }
+
     expiration_days = Math.max(Math.min(expiration_days, MAX_DURATION), MIN_DURATION);
 
     let passphrase = Config.get(Config.JWT_PASSPHRASE);
-    let expiration = {
-      expiresIn: `${expiration_days} day`
+    let options = {
+      expiresIn: `${expiration_days} days`
     };
 
-    return JWT.sign(payload, passphrase, expiration);
+    return await new Promise((resolve, reject) => {
+      JWT.sign(payload, passphrase, options, (err, jwt) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(jwt);
+      });
+    });
+
   }
 
-// GenerateTokenByUID: (user_id, duration = 1) => {
-//   let TokenPayload = {
-//     success: false,
-//     message: "Token Cannot Be Created",
-//     token: null,
-//     decoded: null,
-//     duration
-//   };
-//
-//   if (duration < 1) duration = 1;
-//   if (duration > 7) duration = 7;
-//
-//   const CreateTokenPromise = new Promise(
-//       (resolve, reject) => {
-//         User.findById({_id: user_id})
-//             .then((data) => {
-//               //console.log("GenerateToken", data);
-//               const UserObj = {
-//                 id: user_id,
-//                 sU: false //SuperUser: always returning false until user roles are defined
-//               };
-//               return resolve({
-//                 ...TokenPayload,
-//                 success: true,
-//                 message: "You shall pass",
-//                 token: ForgeJWT(UserObj, duration),
-//                 decoded: UserObj
-//               });
-//             })
-//             .catch((err) => {
-//               return reject(TokenPayload);
-//             });
-//       }
-//   );
+  async decodeJWT(jwt) {
+    let passphrase = Config.get(Config.JWT_PASSPHRASE);
+    let decoded = await new Promise((resolve, reject) => {
+      JWT.verify(jwt, passphrase, (err, decoded) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(decoded);
+      });
+    });
+
+    return decoded;
+  }
+
+  isUserToken(token) {
+    // if it isn't a service token, it has to be a user token
+    return !this.isServiceToken(token);
+  }
+
+  isServiceToken(token) {
+    // TODO: Add check if token is a service token
+    return false;
+  }
+
+  // express middleware to generate context for a request
+  authorizeRequest(req, res, next) {
+    let authorization = req.headers.authorization;
+    req.context = {};
+    this.authenticateRequest(authorization).then((context) => {
+      context.origin = req.headers.origin;
+      req.context = context;
+      return next();
+    }).catch((err) => {
+      console.log(err);
+      // TODO: This *shouldn't* happen, but if it does, we need to make sure we know, add WUPHF™ or something
+      this.error(`Error determining request authorization: ${err.message}`);
+      return res.status(500).send('Unable to process request');
+    })
+  }
+
+
 //   return CreateTokenPromise;
 // },
 //     VerifyToken: (token) => {

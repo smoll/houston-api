@@ -21,7 +21,7 @@ class User extends Password(Model) {
   static get jsonSchema () {
     return {
       type: "object",
-      required: ["username", "provider_type", "provider_id", "full_name"],
+      required: ["username", "provider_type", "provider_id"],
 
       properties: {
         uuid: { type: "uuid" },

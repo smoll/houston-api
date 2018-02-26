@@ -30,7 +30,13 @@ const schema = makeExecutableSchema({
 });
 
 // Start the server
-const server = new GraphQLServer({ schema });
+const server = new GraphQLServer({
+  schema: schema,
+  context: (req) => { return req.request.context; }
+});
+
+const authService = Application.service("auth");
+server.express.use(authService.authorizeRequest.bind(authService));
 
 // Build REST routes
 require("./routes/index.js")(server.express, Application);
@@ -39,8 +45,6 @@ require("./routes/index.js")(server.express, Application);
 const strategy = Config.get(Config.AUTH_STRATEGY);
 Passport.use(Application.service("auth").getAuthStrategy(strategy));
 server.use(Passport.initialize());
-
-
 
 // Prepare migrations
 const runMigrations = async function() {
@@ -59,6 +63,10 @@ runMigrations().then(() => {
     subscriptions: Config.get(Config.WEBSOCKET_ENDPOINT_URL),
     playground: Config.get(Config.PLAYGROUND_ENDPOINT_URL),
     uploads: {},
+    rootValue: {
+      schema: schema,
+      application: Application,
+    }
   }, () => {
     console.log('Server is running on localhost:5001');
   });
