@@ -57,11 +57,20 @@ describe("Testing instance of RouteBuilder()", () => {
       expect(routes["/foo"]()).toEqual("bar");
     });
 
-    test("group correctly prefixes routes", () => {
+    test("group correctly prefix routes", () => {
       routeBuilder.group("derp", () => {
         routeBuilder.registerRoute(TestRoute);
       });
       expect(Object.keys(routes)[0]).toEqual("/derp/foo");
+    });
+
+    test("nssted groups correctly prefix routes", () => {
+      routeBuilder.group("v1", () => {
+        routeBuilder.group("derp", () => {
+          routeBuilder.registerRoute(TestRoute);
+        });
+      });
+      expect(Object.keys(routes)[0]).toEqual("/v1/derp/foo");
     });
   });
 });

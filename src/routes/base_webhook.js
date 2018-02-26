@@ -1,4 +1,4 @@
-const BaseRoute = require("../base.js");
+const BaseRoute = require("./base.js");
 
 class BaseWebhook extends BaseRoute {
   method() {
