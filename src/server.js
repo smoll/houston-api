@@ -15,7 +15,7 @@ Application.registerConnection("postgres", Postgres);
 
 
 // Register extra types
-require("./types.js");
+require("./types/index.js");
 
 // Register operations
 const operations = require("./operations/index.js");
