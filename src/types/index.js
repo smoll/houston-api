@@ -20,7 +20,10 @@ SchemaBuilder.addTypeDef(`
 
 // Full GQL Type definitions
 require("./decoded_token.js");
+require("./deployment");
 require("./email.js");
+require("./organization.js");
 require("./status_message.js");
+require("./team.js");
 require("./token.js");
 require("./user.js");

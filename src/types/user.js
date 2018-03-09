@@ -11,7 +11,6 @@ SchemaBuilder.addType('User',
   }`,
   {
     id(value) {
-      console.log(value);
       return value.uuid;
     },
     emails(value) {

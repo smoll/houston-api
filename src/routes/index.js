@@ -12,7 +12,7 @@ module.exports = (express, application) => {
     // webhook routes
     routerBuilder.group("webhooks", () => {
 
-      require("./v1/webhooks/registry_events.js")
+      routerBuilder.registerRoute(require("./v1/webhooks/registry_events.js"));
 
     });
 

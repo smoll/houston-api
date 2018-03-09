@@ -14,9 +14,9 @@ exports.up = function(knex) {
       table.string("title");
       table.string("release_name").unique();
       table.string("version");
-      table.uuid("creator_uuid").references('uuid').inTable('organizations').notNull().onDelete('SET NULL');
+      table.uuid("creator_uuid").references('uuid').inTable('users').notNull().onDelete('SET NULL');
       // set foreign key onDelete to "restrict" as a module deployment has physical resources associated with it.  Those need to be cleaned up first
-      table.uuid("organization_uuid").references('uuid').inTable('organizations').notNull().onDelete('RESTRICT').index();
+      table.uuid("organization_uuid"); //.references('uuid').inTable('organizations').notNull().onDelete('RESTRICT').index();
       table.uuid("team_uuid").index().nullable();
       table.timestamps();
       table.timestamp("deleted_at");

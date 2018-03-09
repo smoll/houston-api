@@ -3,10 +3,10 @@ const BaseOperation = require("../base.js");
 class FetchUser extends BaseOperation {
   constructor() {
     super();
-    this.name = "fetchUser";
+    this.name = "fetchUsers";
     this.typeDef = `
       # Fetches are user by username or email
-      fetchUser(search: String!) : [User]
+      fetchUsers(search: String!) : [User]
     `;
     this.entrypoint = "query";
   }

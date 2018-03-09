@@ -55,7 +55,12 @@ class Context {
     // args like "userId", "orgId", "deploymentId", "teamId", "sourceId", or "destinationId"
 
     // cache of resources as determine by the graphql entrypoint
-    this.resources = {};
+    this.resources = {
+      user: null,
+      organization: null,
+      team: null,
+      deployment: null,
+    };
   }
 
   setAuthUser(user) {
@@ -64,7 +69,6 @@ class Context {
     // TODO: This is temporary, remove once we have property hook in place to
     // set these based on gql entrypoint
     this.resources.user = user;
-
     if (this.authUser.superAdmin) {
       this.setSuperAdmin();
     } else {
@@ -97,7 +101,7 @@ class Context {
     this.permissions[group][key] = value;
   }
 
-  userId() {
+  userUuid() {
     if (this.authUser) {
       return this.authUser.uuid;
     }

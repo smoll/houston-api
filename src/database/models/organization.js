@@ -50,11 +50,12 @@ class Organization extends SoftDelete(Model) {
   }
 
   $beforeInsert(context) {
-    this.plan = "none";
+    this.plan = Organization.PLAN_NONE;
     this.enabled = true;
     return super.$beforeInsert(context);
   }
-
 }
+
+Organization.PLAN_NONE = "none";
 
 module.exports = Organization;

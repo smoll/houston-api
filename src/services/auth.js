@@ -1,4 +1,6 @@
-const { BaseService } = require("@moilandtoil/sealab-application");
+const BaseService = require("./base.js");
+
+const _ = require("lodash");
 const JWT = require("jsonwebtoken");
 
 const Config = require("../utils/config.js");
@@ -17,11 +19,19 @@ class AuthService extends BaseService {
 
   async authenticateRequest(authorization) {
     let context;
+
+    // If authorization token is a service
     if (this.isServiceToken(authorization)) {
       // TODO: Do something with service auth
       context = new Context(authorization, Context.REQUESTER_SERVICE);
-    } else {
-      context = new Context(authorization, Context.REQUESTER_USER);
+      return context;
+    }
+
+    // Must be a user
+    context = new Context(authorization, Context.REQUESTER_USER);
+
+    // only attempt to decodeJWT if there is one
+    if(authorization && authorization.length > 0) {
       let decoded = await this.decodeJWT(authorization);
       let user = await this.service("user").fetchUserByUuid(decoded.id);
       context.setAuthUser(user);
@@ -92,6 +102,7 @@ class AuthService extends BaseService {
     this.authenticateRequest(authorization).then((context) => {
       context.origin = req.headers.origin;
       req.context = context;
+
       return next();
     }).catch((err) => {
       console.log(err);

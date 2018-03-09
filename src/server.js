@@ -13,7 +13,6 @@ Config.setDefaults({});
 // Register connections
 Application.registerConnection("postgres", Postgres);
 
-
 // Register extra types
 require("./types/index.js");
 
@@ -46,14 +45,11 @@ const strategy = Config.get(Config.AUTH_STRATEGY);
 Passport.use(Application.service("auth").getAuthStrategy(strategy));
 server.use(Passport.initialize());
 
-// Prepare migrations
-const runMigrations = async function() {
+(async function() {
   console.log("Running migrations... ");
   await PostgresMigration();
   console.log("Done");
-};
-
-runMigrations().then(() => {
+})().then(() => {
   server.start({
     cors: {
       origin: true

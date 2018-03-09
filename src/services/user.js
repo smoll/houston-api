@@ -1,4 +1,5 @@
-const { BaseService } = require("@moilandtoil/sealab-application");
+const BaseService = require("./base.js");
+
 class UserService extends BaseService {
 
   async fetchUserByEmail(email) {

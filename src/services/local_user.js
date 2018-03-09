@@ -1,4 +1,4 @@
-const { BaseService } = require("@moilandtoil/sealab-application");
+const BaseService = require("./base.js");
 
 const LocalStrategy = require("passport-local");
 
