@@ -32,7 +32,7 @@ class CreateDeployment extends BaseOperation {
     } catch (err) {
       this.error(err.message);
       return {
-        success: true,
+        success: false,
         message: "Failed to create deployment",
         id: null,
         code: null
