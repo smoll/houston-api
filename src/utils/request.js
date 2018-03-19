@@ -66,4 +66,4 @@ HttpRequest.METHOD_PUT = "put";
 HttpRequest.METHOD_PATCH = "patch";
 HttpRequest.METHOD_DELETE = "delete";
 
-module.exports = new HttpRequest;
+module.exports = HttpRequest;

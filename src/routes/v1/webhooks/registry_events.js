@@ -11,7 +11,7 @@ class RegistryEvents extends BaseRoute {
   }
 
   method() {
-    return "get";
+    return "post";
   }
 
   // WEBHOOK PAYLOAD FORMAT
@@ -51,25 +51,30 @@ class RegistryEvents extends BaseRoute {
   // }
 
   async action(req, res) {
+    console.log("In action");
     let body = req.body;
+    try {
+      let promises = [];
+      for (let event of body.events) {
 
-    for(let event of body.events) {
-      console.log(`Received event ID: ${event.id}`);
+        if (!this.isValidTaggedDeployment(event)) {
+          return;
+        }
 
-      if (!this.isValidTaggedDeployment(event)) {
-        return;
+        // decompose the repository
+        let [deploymentId, componentId] = event.target.repository.split("/");
+
+        let image = `${event.request.host}/${event.target.repository}:${event.target.tag}`;
+
+        promises.push(await this.service("commander").deployComponent(deploymentId, componentId, image));
       }
-
-      // decompose the repository
-      let [deployment, component] = event.target.repository.split("/");
-
-      let image = `${event.request.host}/${event.target.repository}:${event.target.tag}`;
-
+      await Promise.all(promises);
+      return this.ack(res);
+    }catch (e) {
+      console.log(e);
+      throw e;
 
     }
-    console.log("registery events");
-
-    return this.ack(res);
   }
 
 

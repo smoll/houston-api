@@ -25,6 +25,6 @@ RUN npm install && \
 
 RUN apk del .build-deps
 
-EXPOSE 5001:5001
+EXPOSE 8870:8870
 
 ENTRYPOINT ["npm", "start"]

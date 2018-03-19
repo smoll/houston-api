@@ -8,7 +8,7 @@ services:
       dockerfile: Dockerfile
     # restart: unless-stopped
     ports:
-      - "5001:5001"
+      - "8870:8870"
     links:
       - postgres
     depends_on:
@@ -17,6 +17,10 @@ services:
       - ./src:/home/houston-api/src
     environment:
       POSTGRES_URI: "postgres://houston:houston@postgres:5432/houston"
+      PORT: 8870
+      COMMANDER_HOST: "http://docker.for.mac.localhost"
+      COMMANDER_PORT: "8880"
+
     entrypoint: ["npm", "run", "dev"]
   postgres:
     image: postgres:9.6

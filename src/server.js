@@ -1,5 +1,7 @@
 const { makeExecutableSchema } = require("graphql-tools");
 const { GraphQLServer } = require("graphql-yoga");
+const BodyParser = require("body-parser");
+
 const Passport = require("passport");
 
 const { Postgres, PostgresMigration } = require("./database/postgres.js");
@@ -38,6 +40,7 @@ const authService = Application.service("auth");
 server.express.use(authService.authorizeRequest.bind(authService));
 
 // Build REST routes
+server.express.use(BodyParser.json());
 require("./routes/index.js")(server.express, Application);
 
 // set auth strategy
@@ -54,6 +57,7 @@ server.use(Passport.initialize());
     cors: {
       origin: true
     },
+
     port: Config.get(Config.PORT),
     endpoint: Config.get(Config.API_ENDPOINT_URL),
     subscriptions: Config.get(Config.WEBSOCKET_ENDPOINT_URL),
@@ -64,7 +68,7 @@ server.use(Passport.initialize());
       application: Application,
     }
   }, () => {
-    console.log('Server is running on localhost:5001');
+    console.log(`Server is running on localhost:${Config.get(Config.PORT)}`);
   });
 }).catch((error) => {
   console.log("Migrations failed, abort starting server");

@@ -1,4 +1,3 @@
-const Config = require("../utils/config.js");
 const Request = require("../utils/request.js");
 
 class CommanderClient {
@@ -14,3 +13,5 @@ class CommanderClient {
     });
   }
 }
+
+module.exports = CommanderClient;
