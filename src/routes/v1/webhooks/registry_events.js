@@ -51,30 +51,28 @@ class RegistryEvents extends BaseRoute {
   // }
 
   async action(req, res) {
-    console.log("In action");
     let body = req.body;
-    try {
-      let promises = [];
-      for (let event of body.events) {
+    let promises = [];
 
-        if (!this.isValidTaggedDeployment(event)) {
-          return;
-        }
-
-        // decompose the repository
-        let [deploymentId, componentId] = event.target.repository.split("/");
-
-        let image = `${event.request.host}/${event.target.repository}:${event.target.tag}`;
-
-        promises.push(await this.service("commander").deployComponent(deploymentId, componentId, image));
-      }
-      await Promise.all(promises);
-      return this.ack(res);
-    }catch (e) {
-      console.log(e);
-      throw e;
-
+    if (!body.events) {
+      return this.reject(res, "No events sent");
     }
+
+    for (let event of body.events) {
+      if (!this.isValidTaggedDeployment(event)) {
+        // skip non push events or non versioned tags
+        continue;
+      }
+
+      // decompose the repository
+      let [deploymentId, componentId] = event.target.repository.split("/");
+      let image = `${event.request.host}/${event.target.repository}:${event.target.tag}`;
+
+      promises.push(this.service("commander").deployComponent(deploymentId, componentId, image));
+    }
+
+    await Promise.all(promises);
+    return this.ack(res);
   }
 
 
