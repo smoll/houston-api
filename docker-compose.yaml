@@ -1,12 +1,15 @@
 ---
 version: "2.1"
 
+volumes:
+  postgres_data:
+
 services:
   houston-api:
     build:
       context: .
       dockerfile: Dockerfile
-    # restart: unless-stopped
+    restart: unless-stopped
     ports:
       - "8870:8870"
     links:
@@ -31,7 +34,7 @@ services:
       - POSTGRES_PASSWORD=houston
       - POSTGRES_DB=houston
     volumes:
-      - ./.local/postgres/data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 30s
