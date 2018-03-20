@@ -10,7 +10,7 @@ COPY . .
 
 RUN apk add --no-cache --virtual .build-deps \
 		build-base \
-        python \
+		python \
 	&& apk add --no-cache \
 	    nodejs \
 	&& npm install \
