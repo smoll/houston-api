@@ -16,12 +16,13 @@ RUN apk add --no-cache --virtual .build-deps \
 WORKDIR /home/houston-api
 
 COPY package.json .
-COPY index.js .
-COPY ./src ./src
 
 # npm installs prebuit bcrypt package, have to compile for alpine
 RUN npm install && \
     npm rebuild bcrypt --build-from-source
+
+COPY index.js .
+COPY ./src ./src
 
 RUN apk del .build-deps
 
