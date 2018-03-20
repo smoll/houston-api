@@ -8,31 +8,33 @@ class ErrorResponse {
 }
 
 class HttpRequest {
-  constructor(host, port = null) {
+  constructor(host, port = null, json = false, headers = {}) {
     let url = host;
+
     // if no port, assume a full url was passed, otherwise create it from the host and port
     if (port !== null) {
       url = `${host}:${port}`;
     }
     this.base_url = url;
+    this.json = (json === true);
+    this.headers = headers;
   }
 
   async request(method, url, options = {}) {
     let payload = Object.assign({
       method: method,
       url: `${this.base_url}/${url}`,
+      json: this.json
     }, options);
+
+    // doing in a separate step because Object.assign isn't recursive
+    payload.headers = Object.assign(this.headers, payload.headers);
 
     try {
       let response = await Request(payload);
-      return JSON.parse(response);
+      return response;
     } catch (httpErr) {
-      try {
-        let json = JSON.parse(err.response.body);
-        return Promise.reject(new ErrorResponse(httpErr.error, json));
-      } catch (parseErr) {
-        return Promise.reject(new ErrorResponse(httpErr.error, httpErr.response));
-      }
+      return Promise.reject(new ErrorResponse(httpErr.error, httpErr.response));
     }
   }
 
@@ -41,17 +43,17 @@ class HttpRequest {
   }
 
   async post(url, data, options = {}) {
-    options.data = data;
+    options.body = data;
     return this.request(HttpRequest.METHOD_POST, url, options);
   }
 
   async put(url, data, options = {}) {
-    options.data = data;
+    options.body = data;
     return this.request(HttpRequest.METHOD_PUT, url, options);
   }
 
   async patch(url, data, options = {}) {
-    options.data = data;
+    options.body = data;
     return this.request(HttpRequest.METHOD_PATCH, url, options);
   }
 
