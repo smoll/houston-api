@@ -9,8 +9,8 @@ class BaseWebhook extends BaseRoute {
     return res.status(200).send();
   }
 
-  reject(res) {
-    return res.status(500).send();
+  reject(res, reason = "") {
+    return res.status(500).send(reason);
   }
 }
 
