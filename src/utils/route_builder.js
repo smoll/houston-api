@@ -29,7 +29,12 @@ class RouteBuilder {
   registerRoute(routeClass) {
     let routeInstance = new routeClass(this.application);
     this.express[routeInstance.method()](this.buildPrefix(routeInstance), (req, res) => {
-      return routeInstance.action(req, res);
+      return Promise.resolve().then(() => {
+        return routeInstance.action(req, res);
+      }).catch((err) => {
+        this.application.logger().error(JSON.stringify(err));
+        res.status(500).send("An error occurred while processing the webhook.");
+      });
     });
   }
 
