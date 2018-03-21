@@ -18,5 +18,4 @@ RUN apk add --no-cache --virtual .build-deps \
 	&& apk del .build-deps
 
 EXPOSE 8870
-
 ENTRYPOINT ["npm", "start"]
