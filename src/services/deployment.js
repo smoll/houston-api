@@ -1,4 +1,5 @@
 const BaseService = require("./base.js");
+const ReleaseNamerUtil = require("../utils/releases_namer.js");
 
 class DeploymentService extends BaseService {
 
@@ -25,29 +26,37 @@ class DeploymentService extends BaseService {
   }
 
   async fetchByUserUuid(userUuid) {
-    console.log("Query by userUuid");
     // TODO: Once orgs are fully implemented, Query for any deployment in any org user is apart of
     const deployments = await this.model("module_deployment")
       .query()
       .joinEager("creator")
       .whereNull("module_deployments.deleted_at");
-    console.log(deployments);
-    return deployments
+    return deployments;
   }
 
-  async createDeployment(title, creator, organization = null, team = null) {
+  async fetchByReleaseName(releaseName) {
+    // TODO: Once orgs are fully implemented, Query for any deployment in any org user is apart of
+    const deployments = await this.model("module_deployment")
+        .query()
+        .joinEager("creator")
+        .whereNull("module_deployments.deleted_at")
+        .where({
+          "release_name": releaseName,
+        });
+    return deployments;
+  }
+
+  async createDeployment(type, version, title, creator, organization = null, team = null) {
     try {
       const DeploymentModel = this.model("module_deployment");
 
-      // TODO: Plug into commander
-      const randomNumber = Math.floor(Math.random() * 99999).toString().padStart(5, "0");
-      const releaseName = `release-name-${randomNumber}`;
+      const releaseName = ReleaseNamerUtil.generate();
 
       const payload = {
-        type: DeploymentModel.MODULE_AIRFLOW,
+        type: type,
         title: title,
         release_name: releaseName,
-        version: "0.1.2",
+        version: version,
         creator_uuid: creator.uuid,
         organization_uuid: null,
         team_uuid: null
@@ -60,7 +69,6 @@ class DeploymentService extends BaseService {
       if (team) {
         payload.team_uuid = team.uuid;
       }
-
 
       return await DeploymentModel
         .query()
