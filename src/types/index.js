@@ -1,5 +1,7 @@
 const { SchemaBuilder } = require("../operations.js");
 
+const DecodedToken = require("./decoded_token.js");
+
 // TypeDefs that are not GQL types (resolvable objects)
 
 SchemaBuilder.addTypeDef(`
@@ -18,8 +20,14 @@ SchemaBuilder.addTypeDef(`
   }
 `);
 
+SchemaBuilder.addTypeDef(`
+  enum ModuleType {
+    AIRFLOW
+    CLICKSTREAM
+  }
+`);
+
 // Full GQL Type definitions
-require("./decoded_token.js");
 require("./deployment");
 require("./email.js");
 require("./organization.js");
@@ -27,3 +35,7 @@ require("./status_message.js");
 require("./team.js");
 require("./token.js");
 require("./user.js");
+
+module.exports = [
+  DecodedToken,
+];

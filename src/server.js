@@ -2,27 +2,27 @@ const { makeExecutableSchema } = require("graphql-tools");
 const { GraphQLServer } = require("graphql-yoga");
 const BodyParser = require("body-parser");
 
-const Passport = require("passport");
-
-const { Postgres, PostgresMigration } = require("./database/postgres.js");
-const { OperationManager } = require("./operations.js");
 const Config = require("./utils/config.js");
-const Application = require("./application.js");
-
 // Set config defaults
 Config.setDefaults({});
 
+const Passport = require("passport");
+
+const { Postgres, Airflow, PostgresMigration } = require("./database/postgres.js");
+const { OperationManager, TypeManager } = require("./operations.js");
+
+const Application = require("./application.js");
+
 // Register connections
 Application.registerConnection("postgres", Postgres);
+Application.registerConnection("airflow", Airflow);
 
-// Register extra types
-require("./types/index.js");
-
-// Register operations
+const types = require("./types/index.js");
 const operations = require("./operations/index.js");
-for(let operation of operations) {
-  OperationManager.registerOperation(operation, Application);
-}
+
+// Register types & operations
+TypeManager.registerTypes(types, Application);
+OperationManager.registerOperations(operations, Application);
 
 // Create the schema
 const schema = makeExecutableSchema({
@@ -69,8 +69,6 @@ server.use(Passport.initialize());
       schema: schema,
       application: Application,
     }
-  }, () => {
-    console.log(`Server is running on localhost:${Config.get(Config.PORT)}`);
   });
 }).catch((error) => {
   console.log("Migrations failed, abort starting server");
