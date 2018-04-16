@@ -13,6 +13,7 @@ RUN apk add --no-cache --virtual .build-deps \
 		python \
 	&& apk add --no-cache \
 		nodejs \
+		git \
 	&& npm install \
 	&& npm rebuild bcrypt --build-from-source \
 	&& apk del .build-deps
