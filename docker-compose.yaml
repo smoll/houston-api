@@ -13,30 +13,50 @@ services:
     ports:
       - "8870:8870"
     links:
-      - postgres
+      - postgres-houston
+      - postgres-airflow
     depends_on:
-      - postgres
+      - postgres-houston
+      - postgres-airflow
     volumes:
       - ./src:/home/houston-api/src
     environment:
-      POSTGRES_URI: "postgres://houston:houston@postgres:5432/houston"
+      HOUSTON_POSTGRES_URI: "postgres://houston:houston@postgres-houston:5430/houston"
+      AIRFLOW_POSTGRES_URI: "postgres://airflow:airflow@postgres-airflow:5431/airflow"
       PORT: 8870
-      COMMANDER_HOST: "http://docker.for.mac.localhost"
-      COMMANDER_PORT: "8880"
+      COMMANDER_HOST: "docker.for.mac.localhost"
+      COMMANDER_PORT: "50051"
 
     entrypoint: ["npm", "run", "dev"]
-  postgres:
+  postgres-houston:
     image: postgres:9.6
     ports:
-      - "5432:5432"
+      - "5430:5430"
     environment:
       - POSTGRES_USER=houston
       - POSTGRES_PASSWORD=houston
       - POSTGRES_DB=houston
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./.local/postgres/houston:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 30s
       timeout: 30s
       retries: 3
+    command: -p 5430
+  postgres-airflow:
+    image: postgres:9.6
+    ports:
+      - "5431:5431"
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+    volumes:
+      - ./.local/postgres/airflow:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    command: -p 5431
