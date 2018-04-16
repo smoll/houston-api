@@ -1,11 +1,11 @@
-const { Model } = require("objection");
+const BaseModel = require("./base.js");
 
 const Password = require('objection-password')({
   allowEmptyPassword: true,
   rounds: 10
 });
 
-class LocalCredential extends Password(Model) {
+class LocalCredential extends Password(BaseModel) {
 
   static get tableName() {
     return "local_credentials";
@@ -13,6 +13,10 @@ class LocalCredential extends Password(Model) {
 
   static get idColumn() {
     return "uuid";
+  }
+
+  static get uuidFields() {
+    return ['uuid'];
   }
 
   static get jsonSchema () {
@@ -37,7 +41,7 @@ class LocalCredential extends Password(Model) {
   static get relationMappings() {
     return {
       user: {
-        relation: Model.BelongsToOneRelation,
+        relation: BaseModel.BelongsToOneRelation,
         modelClass: `${__dirname}/user.js`,
         filter: {
           provider: "local"

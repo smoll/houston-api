@@ -1,11 +1,11 @@
-const { Model } = require("objection");
+const BaseModel = require("./base.js");
 const CommonUtil = require("../../utils/common.js");
 
 const SoftDelete = require('objection-soft-delete')({
   columnName: "deleted_at"
 });
 
-class Email extends SoftDelete(Model) {
+class Email extends SoftDelete(BaseModel) {
 
   static get tableName() {
     return "emails";
@@ -38,7 +38,7 @@ class Email extends SoftDelete(Model) {
   static get relationMappings() {
     return {
       user: {
-        relation: Model.BelongsToOneRelation,
+        relation: BaseModel.BelongsToOneRelation,
         modelClass: `${__dirname}/user.js`,
         join: {
           from: 'emails.user_uuid',

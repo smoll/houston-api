@@ -17,8 +17,6 @@ exports.up = function(knex) {
       table.timestamps();
       table.timestamp("deleted_at");
     }).then(() => {
-      return MigrationHelper.generateUuid(knex, TABLE_NAME);
-    }).then(() => {
       return MigrationHelper.timestampTrigger(knex, TABLE_NAME);
     });
   });

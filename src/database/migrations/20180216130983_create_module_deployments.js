@@ -24,8 +24,6 @@ exports.up = function(knex) {
       // don't allow the same organization to have multiple deployments with the same title
       table.unique(["organization_uuid", "title"]);
     }).then(() => {
-      return MigrationHelper.generateUuid(knex, TABLE_NAME);
-    }).then(() => {
       return MigrationHelper.timestampTrigger(knex, TABLE_NAME);
     });
   })

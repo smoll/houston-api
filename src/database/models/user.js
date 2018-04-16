@@ -1,4 +1,4 @@
-const { Model } = require("objection");
+const BaseModel = require("./base.js");
 
 // const SoftDelete = require('objection-soft-delete')({
 //   columnName: "deleted_at"
@@ -8,7 +8,7 @@ const Password = require('objection-password')({
   rounds: 10
 });
 
-class User extends Password(Model) {
+class User extends Password(BaseModel) {
 
   static get tableName() {
     return "users";
@@ -16,6 +16,10 @@ class User extends Password(Model) {
 
   static get idColumn() {
     return "uuid";
+  }
+
+  static get uuidFields() {
+    return ['uuid'];
   }
 
   static get jsonSchema () {
@@ -45,7 +49,7 @@ class User extends Password(Model) {
   static get relationMappings() {
     return {
       organizations: {
-        relation: Model.ManyToManyRelation,
+        relation: BaseModel.ManyToManyRelation,
         modelClass: `${__dirname}/organization.js`,
         join: {
           from: 'users.uuid',
@@ -57,7 +61,7 @@ class User extends Password(Model) {
         }
       },
       emails: {
-        relation: Model.HasManyRelation,
+        relation: BaseModel.HasManyRelation,
         modelClass: `${__dirname}/email.js`,
         join: {
           from: 'users.uuid',
@@ -65,7 +69,7 @@ class User extends Password(Model) {
         }
       },
       credential: {
-        relation: Model.HasOneRelation,
+        relation: BaseModel.HasOneRelation,
         modelClass: `${__dirname}/local_credential.js`,
         join: {
           from: 'users.provider_id',

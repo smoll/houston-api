@@ -1,9 +1,9 @@
-const { Model } = require("objection");
+const BaseModel = require("./base.js");
 const SoftDelete = require('objection-soft-delete')({
   columnName: "deleted_at"
 });
 
-class ModuleDeployment extends SoftDelete(Model) {
+class ModuleDeployment extends SoftDelete(BaseModel) {
 
   static get tableName() {
     return "module_deployments";
@@ -11,6 +11,10 @@ class ModuleDeployment extends SoftDelete(Model) {
 
   static get idColumn() {
     return "uuid";
+  }
+
+  static get uuidFields() {
+    return ['uuid'];
   }
 
   static get jsonSchema () {
@@ -38,7 +42,7 @@ class ModuleDeployment extends SoftDelete(Model) {
   static get relationMappings() {
     return {
       creator: {
-        relation: Model.BelongsToOneRelation,
+        relation: BaseModel.BelongsToOneRelation,
         modelClass: `${__dirname}/user.js`,
         join: {
           from: 'module_deployments.creator_uuid',
