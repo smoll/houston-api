@@ -23,10 +23,11 @@ services:
     environment:
       HOUSTON_POSTGRES_URI: "postgres://houston:houston@postgres-houston:5430/houston"
       AIRFLOW_POSTGRES_URI: "postgres://airflow:airflow@postgres-airflow:5431/airflow"
+      AIRFLOW_REDIS_URI: "redis://:password@localhost:6379/0"
       PORT: 8870
       COMMANDER_HOST: "docker.for.mac.localhost"
       COMMANDER_PORT: "50051"
-
+      HELM_GLOBAL_CONFIG: "{\"baseDomain\":\"localhost\",\"acme\":true,\"rbacEnabled\":true,\"tlsSecret\":\"\"}"
     entrypoint: ["npm", "run", "dev"]
   postgres-houston:
     image: postgres:9.6
