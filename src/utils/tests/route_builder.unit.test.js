@@ -54,7 +54,7 @@ describe("Testing instance of RouteBuilder()", () => {
 
     test("registered routes are executable", () => {
       routeBuilder.registerRoute(TestRoute);
-      expect(routes["/foo"]()).toEqual("bar");
+      expect(routes["/foo"]()).resolves.toEqual("bar");
     });
 
     test("group correctly prefix routes", () => {
