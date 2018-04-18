@@ -16,24 +16,6 @@ class UpdateUser extends BaseOperation {
     try {
       let user = context.resources.user;
       let updated = await this.service("user").updateUser(user, args.payload);
-      //let userService = this.service("user");
-      // let user = await userService.createUser(args.email, args.password);
-      // //     .then((result) => {
-      // //   console.log("Result");
-      // //   console.log(result);
-      // //   user = result;
-      // // }).catch((err) => {
-      // //   console.log("error");
-      // //   console.log(err);
-      // // });
-      //
-      //
-      // console.log("Created user");
-      // let tokenPayload = await this.service("auth").generateTokenPayload(user);
-      // let token = await this.service("auth").createJWT(tokenPayload, args.duration);
-      // console.log(user);
-      // console.log(tokenPayload);
-      // console.log(token);
 
       return {
         success: true,
