@@ -68,10 +68,10 @@ class CommanderClient {
       raw_config: JSON.stringify(options.config),
       secrets: options.secrets
     };
-    console.log(payload);
 
     return new Promise((resolve, reject) => {
       console.log("Actually executing now");
+      console.log(payload);
       this.client.createDeployment(payload, function (err, response) {
         console.log("Create deployment call completed");
         console.log(err);
