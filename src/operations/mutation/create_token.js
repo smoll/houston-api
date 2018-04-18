@@ -6,7 +6,7 @@ class CreateToken extends BaseOperation {
     this.name = "createToken";
     this.typeDef = `
       # Verify a User's credentials and issues a token if valid. Adding an orgId validates a User's credentials and access to that Organization, failing if a User does not have access to that Organization.
-      createToken(username: String!, password: String!, orgId: String, permission: String, duration: Int): Token
+      createToken(identity: String!, password: String!, orgId: String, permission: String, duration: Int): Token
     `;
     this.entrypoint = "mutation";
   }
@@ -14,7 +14,7 @@ class CreateToken extends BaseOperation {
   async resolver(root, args, context) {
     try {
       // return this.service("auth").createUser(args.email, args.email, args.password);
-      let user = await this.service("auth").authenticateUser(args.username, args.password);
+      let user = await this.service("auth").authenticateUser(args.identity, args.password);
       let tokenPayload = await this.service("auth").generateTokenPayload(user);
       let token = await this.service("auth").createJWT(tokenPayload, args.duration);
 
