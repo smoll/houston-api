@@ -1,3 +1,5 @@
+// TODO: Move defaults to .env files
+
 class Config {
   static setDefaults(defaults) {
     Config.defaults = Object.assign({}, defaults);
@@ -9,6 +11,9 @@ class Config {
     Config.defaults[Config.DEBUG_DB] = false;
     Config.defaults[Config.JWT_PASSPHRASE] = "insecure_passphrase";
     Config.defaults[Config.AUTH_STRATEGY] = "local";
+    Config.defaults[Config.HELM_GLOBAL_CONFIG] = {};
+    //Config.defaults[Config.HELM_ASTRO_REPO] = "https://helm.astronomer.io";
+    Config.defaults[Config.HELM_ASTRO_REPO] = "http://docker.for.mac.localhost:11000/repo";
   }
 
   static get(key) {
@@ -29,9 +34,13 @@ Config.PORT = "PORT";
 Config.API_ENDPOINT_URL = "API_ENDPOINT_URL";
 Config.WEBSOCKET_ENDPOINT_URL = "WEBSOCKET_ENDPOINT_URL";
 Config.PLAYGROUND_ENDPOINT_URL = "PLAYGROUND_ENDPOINT_URL";
-Config.POSTGRES_URI = "POSTGRES_URI";
+Config.HOUSTON_POSTGRES_URI = "HOUSTON_POSTGRES_URI";
+Config.AIRFLOW_POSTGRES_URI = "AIRFLOW_POSTGRES_URI";
+Config.AIRFLOW_REDIS_URI = "AIRFLOW_REDIS_URI";
 Config.DEBUG_DB = "DEBUG_DB";
 Config.JWT_PASSPHRASE = "JWT_PASSPHRASE";
+Config.HELM_GLOBAL_CONFIG = "HELM_GLOBAL_CONFIG";
+Config.HELM_ASTRO_REPO = "HELM_ASTRO_REPO";
 Config.AUTH_STRATEGY = "AUTH_STRATEGY";
 Config.COMMANDER_HOST = "COMMANDER_HOST";
 Config.COMMANDER_PORT = "COMMANDER_PORT";
