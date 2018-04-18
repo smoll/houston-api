@@ -59,51 +59,52 @@ class CommanderService extends BaseService {
     // Close user db connection
     await userDB.destroy();
 
-    console.log(config);
+    config["data"]["airflowMetadataSecret"] = `${deployment.releaseName}-airflow-metadata`;
+    config["data"]["airflowResultBackendSecret"] = `${deployment.releaseName}-airflow-result-backend`;
+    config["data"]["grafanaBackendSecret"] = `${deployment.releaseName}-grafana-backend`;
+    config["data"]["airflowBrokerSecret"] = `${deployment.releaseName}-airflow-broker`;
+
     const secrets = [
       {
-        name: config["airflow"]["data"]["airflowMetadataSecret"],
+        name: config["data"]["airflowMetadataSecret"],
         key: "connection",
         value: airflowUri
       },
       {
-        name: config["airflow"]["data"]["airflowResultBackendSecret"],
+        name: config["data"]["airflowResultBackendSecret"],
         key: "connection",
         value: PostgresUtil.uriReplace(celeryUri, {
           protocol: "db+postgresql"
         })
       },
       {
-        name: config["airflow"]["data"]["grafanaBackendSecret"],
+        name: config["data"]["grafanaBackendSecret"],
         key: "connection",
         value: PostgresUtil.uriReplace(grafanaUri, {
           protocol: "postgres"
         })
       },
       {
-        name: config["airflow"]["data"]["airflowBrokerSecret"],
+        name: config["data"]["airflowBrokerSecret"],
         key: "connection",
-        value: Config.AIRFLOW_REDIS_URI
+        value: Config.get(Config.AIRFLOW_REDIS_URI)
       }
     ];
 
     const deployConfigs = {
       "env": [
         {
-          key: "AIRFLOW__CELERY__DEFAULT_QUEUE",
+          name: "AIRFLOW__CELERY__DEFAULT_QUEUE",
           value: `${deployId}_queue`
         }
       ]
     };
 
-    console.log(JSON.stringify({
-      "secrets": secrets,
-      "config": _.merge(config, {"airflow": deployConfigs })
-    }));
-
     return {
       "secrets": secrets,
-      "config": _.merge(config, {"airflow": deployConfigs })
+      "config": _.merge(config, deployConfigs, {
+        "global": JSON.parse(Config.get(Config.HELM_GLOBAL_CONFIG)),
+      })
     }
   }
 
@@ -116,19 +117,15 @@ class CommanderService extends BaseService {
       // create user
       await PostgresUtil.createUser(this.conn("airflow"), user, password);
 
-      console.log("Lets create the schema");
       // create schema
       await PostgresUtil.createSchema(userDB, schema, user);
 
-      console.log("lets set privs on the schema");
       // grant user access to schema
       await PostgresUtil.resetAccessGrants(userDB, database, schema, user);
 
-      console.log("Set default schema");
       // set schema to be users default
       await PostgresUtil.setUserDefaultSchema(userDB, user, schema);
 
-      console.log("Return new uri");
       return Promise.resolve(PostgresUtil.uriReplace(Config.get(Config.AIRFLOW_POSTGRES_URI), {
         database: database,
         username: user,
