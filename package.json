@@ -53,6 +53,7 @@
     "objection": "^1.0.0",
     "objection-password": "^0.2.0",
     "objection-soft-delete": "^1.0.4",
+    "pass": "^0.2.0",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "pg": "^7.4.1",

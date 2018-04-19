@@ -1,5 +1,5 @@
 const BaseOperation = require("../base.js");
-
+const BasicAuthUtil = require("../../utils/basic_auth.js");
 class CreateToken extends BaseOperation {
   constructor() {
     super();
@@ -13,8 +13,12 @@ class CreateToken extends BaseOperation {
 
   async resolver(root, args, context) {
     try {
-      // return this.service("auth").createUser(args.email, args.email, args.password);
-      let user = await this.service("auth").authenticateUser(args.identity, args.password);
+
+      /* Temporary until we replace basic auth */
+      let user  = await BasicAuthUtil.ValidateCreds(args.identity, args.password);
+      /* Uncomment when basic auth above is removed */
+      //let user = await this.service("auth").authenticateUser(args.identity, args.password);
+
       let tokenPayload = await this.service("auth").generateTokenPayload(user);
       let token = await this.service("auth").createJWT(tokenPayload, args.duration);
 
