@@ -1,3 +1,4 @@
+const _ = require("lodash");
 const BaseModel = require("./base.js");
 const SoftDelete = require('objection-soft-delete')({
   columnName: "deleted_at"
@@ -30,13 +31,14 @@ class ModuleDeployment extends SoftDelete(BaseModel) {
         version: { type: "string" },
         creator_uuid: { type: "string" },
         organization_uuid: { type: ["string", "null"] }, // TODO: Once organizations are supported, ensure field is not nullable (add migration)
-        team_uuid: { type: ["string", "null"] }
+        team_uuid: { type: ["string", "null"] },
+        config: { type: "object" }
       }
     };
   }
 
   static get jsonAttributes() {
-    return ["uuid", "type", "title", "release_name", "version", "creator_uuid", "team_uuid", "created_at", "updated_at", "deleted_at"];
+    return ["uuid", "type", "title", "release_name", "version", "creator_uuid", "team_uuid", "config", "created_at", "updated_at", "deleted_at"];
   }
 
   static get relationMappings() {
@@ -50,6 +52,10 @@ class ModuleDeployment extends SoftDelete(BaseModel) {
         }
       }
     };
+  }
+
+  getConfigCopy() {
+    return Object.assign({}, _.cloneDeep(this.config));
   }
 }
 
