@@ -19,7 +19,7 @@ services:
       - postgres-houston
       - postgres-airflow
     volumes:
-      - ./src:/home/houston-api/src
+      - ./src:/srv/houston-api/src
     environment:
       HOUSTON_POSTGRES_URI: "postgres://houston:houston@postgres-houston:5430/houston"
       AIRFLOW_POSTGRES_URI: "postgres://airflow:airflow@postgres-airflow:5431/airflow"
