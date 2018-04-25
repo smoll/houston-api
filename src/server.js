@@ -51,9 +51,9 @@ Passport.use(Application.service("auth").getAuthStrategy(strategy));
 server.use(Passport.initialize());
 
 (async function() {
-  console.log("Running migrations... ");
+  Application.logger().info("Running migrations... ");
   await PostgresMigration();
-  console.log("Done");
+  Application.logger().info("Done");
 })().then(() => {
   server.start({
     cors: {
@@ -71,6 +71,6 @@ server.use(Passport.initialize());
     }
   });
 }).catch((error) => {
-  console.log("Migrations failed, abort starting server");
-  console.log(error);
+  Application.logger().error("Migrations failed, abort starting server");
+  Application.logger().error(error);
 });
