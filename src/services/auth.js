@@ -32,9 +32,23 @@ class AuthService extends BaseService {
 
     // only attempt to decodeJWT if there is one
     if(authorization && authorization.length > 0) {
-      let decoded = await this.decodeJWT(authorization);
-      let user = await this.service("user").fetchUserByUuid(decoded.id);
-      context.setAuthUser(user);
+      try {
+        let decoded = await this.decodeJWT(authorization);
+        let user = await this.service("user").fetchUserByUuid(decoded.id);
+        context.setAuthUser(user);
+      } catch (err) {
+
+        // add context... to context, specifying why a token was invalid
+        switch(err.message) {
+          case "invalid signature":
+            context.token.valid = false;
+            break;
+          case "jwt expired":
+            context.token.expired = true;
+            break;
+        }
+        this.error(err.message);
+      }
     }
     return context;
   }
@@ -68,12 +82,11 @@ class AuthService extends BaseService {
         return resolve(jwt);
       });
     });
-
   }
 
   async decodeJWT(jwt) {
     let passphrase = Config.get(Config.JWT_PASSPHRASE);
-    let decoded = await new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       JWT.verify(jwt, passphrase, (err, decoded) => {
         if (err) {
           return reject(err);
@@ -81,8 +94,6 @@ class AuthService extends BaseService {
         return resolve(decoded);
       });
     });
-
-    return decoded;
   }
 
   isUserToken(token) {
@@ -105,7 +116,6 @@ class AuthService extends BaseService {
 
       return next();
     }).catch((err) => {
-      console.log(err);
       // TODO: This *shouldn't* happen, but if it does, we need to make sure we know, add WUPHF™ or something
       this.error(`Error determining request authorization: ${err.message}`);
       return res.status(500).send('Unable to process request');

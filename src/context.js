@@ -6,6 +6,10 @@ class Context {
   constructor(authorization = null, requester = Context.REQUESTER_USER) {
     this.requester = requester;
     this.authorization = authorization;
+    this.token = {
+      valud: true,
+      expired: false,
+    };
 
     this.permissions = {
       user: {
