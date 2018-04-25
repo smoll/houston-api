@@ -13,9 +13,23 @@ class CreateToken extends BaseOperation {
 
   async resolver(root, args, context) {
     try {
-
+      // BASIC AUTH START
       /* Temporary until we replace basic auth */
-      let user  = await BasicAuthUtil.ValidateCreds(args.identity, args.password);
+      let username  = await BasicAuthUtil.ValidateCreds(args.identity, args.password);
+      let user = await this.service("user").fetchUserByUsername(username);
+      if (!user) {
+        let UserModel = this.application.model("user");
+        user = await UserModel
+          .query()
+          .insertGraph({
+            username: username,
+            superAdmin: true,
+            provider_type: UserModel.PROVIDER_BASIC,
+            provider_id: username,
+          }).returning("*");
+      }
+      // BASIC AUTH END
+
       /* Uncomment when basic auth above is removed */
       //let user = await this.service("auth").authenticateUser(args.identity, args.password);
 

@@ -24,10 +24,7 @@ module.exports = {
         if (!match) {
           return reject("Incorrect password");
         }
-        return resolve({
-          uuid: null,
-          superAdmin: true
-        });
+        return resolve(username)
       });
     });
   }

@@ -24,7 +24,7 @@ class CreateDeployment extends BaseOperation {
       // // TODO: Remove in place of context.resource.org
       // const org = await this.service("organization").fetchFirst();
 
-      const deployment = await this.service("deployment").createDeployment(
+      let deployment = await this.service("deployment").createDeployment(
         args.type,
         args.version,
         args.title,
@@ -33,18 +33,11 @@ class CreateDeployment extends BaseOperation {
         context.resources.team,
       );
 
-      let config = args.config;
-      if (!config) {
-        // TODO: maybe always merge the input args with the helm config (but maybe not)
-        config = await this.service("commander").fetchHelmConfig(args.type, args.version);
-      }
-      let request = await this.service("commander").createModuleRequest(deployment, config);
-
-      const result = await this.service("commander").createDeployment(deployment, request);
+      const result = await this.service("commander").createDeployment(deployment, args.config);
 
       return {
-        success: true,
-        message: "Deployment created",
+        success: result.result.success,
+        message: result.result.message,
         id: deployment.uuid,
         code: null
       }

@@ -12,9 +12,7 @@ module.exports = {
     let name = haikunator.haikunate({
       tokenLength: length
     });
-    console.log(name);
     name = name.replace(/_/g, "-");
-    console.log(name);
     return name;
   }
 };

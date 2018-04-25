@@ -14,10 +14,32 @@ class CommanderService extends BaseService {
     this.helmMetadata = new HelmMetadata(Config.get(Config.HELM_ASTRO_REPO));
   }
 
-  async createDeployment(deployment, options) {
-    return this.commander.createDeployment(deployment, options)
+  // grpc wrappers
+  async ping() {
+    let start = new Date().getTime();
+    let response = await this.commander.ping();
+    return response.received - start;
   }
 
+  async createDeployment(deployment, config) {
+    if (!config) {
+      // TODO: maybe always merge the input args with the helm config (but maybe not)
+      config = await this.fetchHelmConfig(deployment.type, deployment.version);
+    }
+
+    let request = await this.createModuleRequest(deployment, config);
+    return this.commander.createDeployment(deployment, request).then((response) => {
+      return this.service("deployment").updateDeployment(deployment, { config: request.config }).then(() => {
+        return response;
+      });
+    });
+  }
+
+  async updateDeployment(deployment) {
+    return this.commander.updateDeployment(deployment);
+  }
+
+  // helper functions
   async createModuleRequest(deployment, config) {
     switch (deployment.type) {
       case "airflow":
@@ -59,6 +81,7 @@ class CommanderService extends BaseService {
     // Close user db connection
     await userDB.destroy();
 
+    // overwrite the secret names to add the deployment release name
     config["data"]["airflowMetadataSecret"] = `${deployment.releaseName}-airflow-metadata`;
     config["data"]["airflowResultBackendSecret"] = `${deployment.releaseName}-airflow-result-backend`;
     config["data"]["grafanaBackendSecret"] = `${deployment.releaseName}-grafana-backend`;
@@ -102,9 +125,7 @@ class CommanderService extends BaseService {
 
     return {
       "secrets": secrets,
-      "config": _.merge(config, deployConfigs, {
-        "global": JSON.parse(Config.get(Config.HELM_GLOBAL_CONFIG)),
-      })
+      "config": _.merge(config, deployConfigs)
     }
   }
 

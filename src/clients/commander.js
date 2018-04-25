@@ -1,42 +1,10 @@
 const Config = require("../utils/config.js");
-// const GRPC = require("grpc-caller");
-// const PROTO_PATH = require("commander");
-// class CommanderClient {
-//   constructor(hostname, port) {
-//     // const commanderProto = GRPC.load(PROTO_PATH + "-proto/commander.proto", "proto").commander;
-//     // const commanderProto = GRPC.load({
-//     //   root: PROTO_PATH + "-proto",
-//     //   file: "commander.proto"
-//     // }, "proto");
-//     //
-//     const host = `${hostname}:${port}`;
-//     console.log(host);
-//     // this.client = new commanderProto.commander.Commander(`${hostname}:${port}`, GRPC.credentials.createInsecure());
-//     var server = new grpc.Server();
-//     server.addService(hello_proto.Greeter.service, {sayHello: sayHello});
-//     server.bind('0.0.0.0:50051', grpc.ServerCredentials.createInsecure());
-//     server.start();
-//
-//
-//     this.client = GRPC(`${hostname}:${port}`, {
-//       root: PROTO_PATH,
-//       file: "commander.proto"
-//     }, "Commander");
-//   }
 
 const GRPC = require("grpc");
 const PROTO_PATH = require("commander");
 class CommanderClient {
   constructor(hostname, port) {
-    // const commanderProto = GRPC.load(PROTO_PATH + "-proto/commander.proto", "proto").commander;
-    // const commanderProto = GRPC.load({
-    //   root: PROTO_PATH + "-proto",
-    //   file: "commander.proto"
-    // }, "proto");
-    //
     const host = `${hostname}:${port}`;
-    console.log(`Connecting to host ${host}`);
-    // this.client = new commanderProto.commander.Commander(`${hostname}:${port}`, GRPC.credentials.createInsecure());
 
     const proto = GRPC.load({
       root: PROTO_PATH,
@@ -50,6 +18,18 @@ class CommanderClient {
     return this.client.getChannel();
   }
 
+  ping() {
+    return new Promise((resolve, reject) => {
+      this.client.ping({}, function(err, response) {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(response);
+      });
+    });
+
+  }
+
   fetchDeployment(options = {}) {
     this.client.fetchDeployment({}, function(err, response) {
       console.log(err);
@@ -58,6 +38,9 @@ class CommanderClient {
   }
 
   createDeployment(deployment, options = {}) {
+    // add static global config to options.config
+    options.config["global"] = JSON.parse(Config.get(Config.HELM_GLOBAL_CONFIG));
+
     const payload = {
       release_name: deployment.releaseName,
       chart: {
@@ -70,12 +53,7 @@ class CommanderClient {
     };
 
     return new Promise((resolve, reject) => {
-      console.log("Actually executing now");
-      console.log(payload);
       this.client.createDeployment(payload, function (err, response) {
-        console.log("Create deployment call completed");
-        console.log(err);
-        console.log(response);
         if (err) {
           return reject(err);
         }
@@ -84,8 +62,28 @@ class CommanderClient {
     });
   }
 
-  updateDeployment(deployment, payload) {
+  updateDeployment(deployment) {
+    // add static global config
+    let config = deployment.getConfigCopy();
+    config["global"] = JSON.parse(Config.get(Config.HELM_GLOBAL_CONFIG));
 
+    const payload = {
+      release_name: deployment.releaseName,
+      chart: {
+        name: deployment.type,
+        version: deployment.version,
+      },
+      raw_config: JSON.stringify(config),
+    };
+
+    return new Promise((resolve, reject) => {
+      this.client.updateDeployment(payload, function (err, response) {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(response);
+      });
+    });
   }
 
   upgradeDeployment(deployment, version) {

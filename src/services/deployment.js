@@ -40,7 +40,7 @@ class DeploymentService extends BaseService {
         .query()
         .joinEager("creator")
         .whereNull("module_deployments.deleted_at")
-        .where({
+        .findOne({
           "release_name": releaseName,
         });
     return deployments;
@@ -87,6 +87,9 @@ class DeploymentService extends BaseService {
     let changes = {};
 
     // TODO: Do this check in a more extendable way
+    if (payload["config"] !== undefined && payload.config !== deployment.config) {
+      changes.config = payload.config;
+    }
     if (payload["title"] !== undefined && payload.title !== deployment.title) {
       changes.title = payload.title;
     }
@@ -94,12 +97,32 @@ class DeploymentService extends BaseService {
       changes.team_uuid = payload.team.uuid;
     }
 
-    if(Object.keys(changes).length === 0) {
-      return false;
+    // TODO: Currently mutually exclusive to payload.config (will overwrite)
+    if (payload["images"] !== undefined) {
+      let config = deployment.getConfigCopy();
+      let latest = this.computeImageChanges(config.images, payload['images']);
+      if (latest) {
+        config.images = latest;
+        changes.config = config;
+      }
     }
 
-    await deployment.$query().patch(changes).returning("*");
+    if(Object.keys(changes).length > 0) {
+      deployment = await deployment.$query().patch(changes).returning("*");
+    }
+
     return deployment;
+  }
+
+  async updateDeploymentImage(deployment, image) {
+    switch(deployment.type) {
+      case this.model("module_deployment").MODULE_AIRFLOW:
+        let config = deployment.getConfigCopy();
+        config.images.airflow = image;
+        return await this.updateDeployment(deployment, {
+          config: config
+        });
+    }
   }
 
   async deleteDeployment(deployment, hard = false) {
@@ -110,6 +133,32 @@ class DeploymentService extends BaseService {
         deleted_at: new Date().toISOString()
       }).returning("*");
     }
+  }
+
+  computeImageChanges(current, latest) {
+    latest = Object.assign({}, latest);
+
+    let changed = false;
+    for(let key in latest) {
+      if (!latest.hasOwnProperty(key)) {
+        continue;
+      }
+
+      // if current images doesn't have the image, skip
+      if (!current.hasOwnProperty(key)) {
+        continue;
+      }
+
+      if (latest[key] !== current[key]) {
+        changed = true;
+        current[key] = latest[key];
+      }
+    }
+
+    if (changed) {
+      return current;
+    }
+    return false;
   }
 }
 

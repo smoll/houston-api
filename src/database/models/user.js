@@ -81,12 +81,15 @@ class User extends Password(BaseModel) {
 
   $beforeInsert(context) {
     this.status = "pending";
-    this.superAdmin = false;
+    if (this.superAdmin !== true) {
+      this.superAdmin = false;
+    }
     return super.$beforeInsert(context);
   }
 }
 
-User.PROVIDER_LOCAL= "local";
-User.PROVIDER_LDAP = "ldap";
+User.PROVIDER_LOCAL = "local";
+User.PROVIDER_BASIC = "basic";
+User.PROVIDER_LDAP  = "ldap";
 
 module.exports = User;
