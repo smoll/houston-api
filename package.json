@@ -39,7 +39,6 @@
     "aws-lambda": "^0.1.2",
     "bcrypt": "^1.0.3",
     "commander": "github:astronomerio/commander#helm",
-    "cors": "^2.8.4",
     "generate-password": "^1.4.0",
     "graphql": "^0.13.2",
     "graphql-tools": "^2.21.0",
