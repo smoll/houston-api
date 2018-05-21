@@ -1,7 +1,6 @@
 const { makeExecutableSchema } = require("graphql-tools");
 const { GraphQLServer } = require("graphql-yoga");
 const BodyParser = require("body-parser");
-
 const Config = require("./utils/config.js");
 // Set config defaults
 Config.setDefaults({});
@@ -56,10 +55,14 @@ server.use(Passport.initialize());
   Application.logger().info("Done");
 })().then(() => {
   server.start({
+    // cors config options https://github.com/expressjs/cors#configuration-options
+    // NOTE: 'organization' header included to match previous auth method. Remove if note needed anymore (bundled into token)
     cors: {
-      origin: true
+      origin: ["http://localhost:5000", /\.astronomer\.io$/],
+      methods: "GET,PUT,POST,DELETE,OPTIONS",
+      allowedHeaders: "Content-Type, Authorization, Content-Length, X-Requested-With, organization",
+      credentials: true,
     },
-
     port: Config.get(Config.PORT),
     endpoint: Config.get(Config.API_ENDPOINT_URL),
     subscriptions: Config.get(Config.WEBSOCKET_ENDPOINT_URL),

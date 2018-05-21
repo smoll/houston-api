@@ -7,7 +7,7 @@ class Context {
     this.requester = requester;
     this.authorization = authorization;
     this.token = {
-      valud: true,
+      valid: true,
       expired: false,
     };
 
