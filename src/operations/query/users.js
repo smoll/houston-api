@@ -1,6 +1,6 @@
 const BaseOperation = require("../base.js");
 
-class FetchUser extends BaseOperation {
+class Users extends BaseOperation {
   constructor() {
     super();
     this.name = "users";
@@ -24,4 +24,4 @@ class FetchUser extends BaseOperation {
   }
 }
 
-module.exports = FetchUser;
+module.exports = Users;

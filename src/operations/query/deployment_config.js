@@ -1,5 +1,5 @@
 const BaseOperation = require("../base.js");
-class FetchDeploymentConfig extends BaseOperation {
+class DeploymentConfig extends BaseOperation {
   constructor() {
     super();
     this.name = "deploymentConfig";
@@ -20,4 +20,4 @@ class FetchDeploymentConfig extends BaseOperation {
   }
 }
 
-module.exports = FetchDeploymentConfig;
+module.exports = DeploymentConfig;
