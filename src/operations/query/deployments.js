@@ -1,15 +1,12 @@
 const BaseOperation = require("../base.js");
 
-
-class FetchDeployment extends BaseOperation {
+class Deployments extends BaseOperation {
   constructor() {
     super();
-    this.name = "fetchDeployments";
+    this.name = "deployments";
     this.typeDef = `
-      # This operation is deprecated
-      # "deployments" call should be used instead
-      # Will be deleted after July 1, 2018
-      fetchDeployments(deploymentUuid: ID, orgUuid: ID): [Deployment]
+      # Fetches one or more deployments based on input. If a deploymentUuid is return, it will return at most one deployment
+      deployments(deploymentUuid: ID, orgUuid: ID): [Deployment]
     `;
     this.entrypoint = "query";
   }
@@ -32,4 +29,4 @@ class FetchDeployment extends BaseOperation {
   }
 }
 
-module.exports = FetchDeployment;
+module.exports = Deployments;
