@@ -1,11 +1,11 @@
 const BaseOperation = require("../base.js");
-class FetchDeploymentConfig extends BaseOperation {
+class DeploymentConfig extends BaseOperation {
   constructor() {
     super();
-    this.name = "fetchDeploymentConfig";
+    this.name = "deploymentConfig";
     this.typeDef = `
       # Fetches config needed to create a module deployment
-      fetchDeploymentConfig(type: String!, version: String): JSON
+      deploymentConfig(type: String!, version: String): JSON
     `;
     this.entrypoint = "query";
   }
@@ -20,4 +20,4 @@ class FetchDeploymentConfig extends BaseOperation {
   }
 }
 
-module.exports = FetchDeploymentConfig;
+module.exports = DeploymentConfig;

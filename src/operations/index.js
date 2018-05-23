@@ -2,7 +2,9 @@ module.exports = [
 
   // queries
   require("./query/fetch_deployments.js"),
-  require("./query/fetch_deployment_config.js"),
+  require("./query/deployments.js"),
+  require("./query/users.js"),
+  require("./query/deployment_config.js"),
 
   // mutations
   require("./mutation/create_token.js"),

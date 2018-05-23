@@ -56,11 +56,10 @@ server.use(Passport.initialize());
 })().then(() => {
   server.start({
     // cors config options https://github.com/expressjs/cors#configuration-options
-    // NOTE: 'organization' header included to match previous auth method. Remove if note needed anymore (bundled into token)
     cors: {
       origin: ["http://localhost:5000", /\.astronomer\.io$/],
       methods: "GET,PUT,POST,DELETE,OPTIONS",
-      allowedHeaders: "Content-Type, Authorization, Content-Length, X-Requested-With, organization",
+      allowedHeaders: "Content-Type, Authorization, Content-Length, X-Requested-With",
       credentials: true,
     },
     port: Config.get(Config.PORT),
