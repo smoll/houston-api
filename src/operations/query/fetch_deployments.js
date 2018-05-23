@@ -3,10 +3,10 @@ const BaseOperation = require("../base.js");
 class FetchDeployment extends BaseOperation {
   constructor() {
     super();
-    this.name = "fetchDeployments";
+    this.name = "deployments";
     this.typeDef = `
       # Fetches one or more deployments based on input. If a deploymentUuid is return, it will return at most one deployment
-      fetchDeployments(deploymentUuid: ID, orgUuid: ID): [Deployment]
+      deployments(deploymentUuid: ID, orgUuid: ID): [Deployment]
     `;
     this.entrypoint = "query";
   }
