@@ -9,16 +9,13 @@ exports.up = function(knex) {
     }
 
     return knex.schema.createTable(TABLE_NAME, function (table) {
-      table.increments('id').primary().unsigned();
+      table.increments("id").primary().unsigned();
       table.string("address").unique();
-      table.uuid("user_uuid").references('uuid').inTable('users').notNull().onDelete('CASCADE').index();
+      table.uuid("user_uuid").references("uuid").inTable("users").notNullable().onDelete("CASCADE").index();
       table.string("token").unique();
-      table.boolean("main");
+      table.boolean("main"); // primary, but "primary" is reserved
       table.boolean("verified");
       table.timestamps();
-      table.timestamp("deleted_at");
-    }).then(() => {
-      return MigrationHelper.timestampTrigger(knex, TABLE_NAME);
     });
   })
 };

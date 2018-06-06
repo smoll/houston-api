@@ -13,6 +13,7 @@
   "scripts": {
     "start": "node --use-strict index.js",
     "dev": "./node_modules/.bin/nodemon --use-strict --watch src",
+    "create-migration": "./node_modules/.bin/knex migrate:make",
     "test": "sh test.sh",
     "test-db": "docker-compose -p houston-api-test -f test-docker-compose.yaml up -d",
     "test-db-down": "docker-compose -p houston-api-test -f test-docker-compose.yaml down"

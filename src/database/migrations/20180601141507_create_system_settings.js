@@ -1,4 +1,6 @@
-const TABLE_NAME = "organization_users";
+const MigrationHelper = require("../migration_helpers.js");
+
+const TABLE_NAME = "system_settings";
 
 exports.up = function(knex) {
   return knex.schema.hasTable(TABLE_NAME).then((exists) => {
@@ -7,8 +9,10 @@ exports.up = function(knex) {
     }
 
     return knex.schema.createTable(TABLE_NAME, function (table) {
-      table.uuid("organization_uuid").references('uuid').inTable('organizations').notNull().onDelete('CASCADE');
-      table.uuid("user_uuid").references('uuid').inTable('users').notNull().onDelete('CASCADE');
+      table.string("key").primary();
+      table.string("value");
+      table.string("category").index();
+      table.timestamps();
     });
   });
 };
