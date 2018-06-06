@@ -11,6 +11,8 @@ SchemaBuilder.addType('Deployment',
     creator: User
     organization: Organization
     team: Team
+    createdAt: Date
+    updatedAt: Date
   }`,
   {
     uuid(value) {
@@ -36,6 +38,12 @@ SchemaBuilder.addType('Deployment',
     },
     team(value) {
       return value;
+    },
+    createdAt(value) {
+      return value.createdAt;
+    },
+    updatedAt(value) {
+      return value.createdAt;
     },
   }
 );
