@@ -6,7 +6,7 @@ class Deployments extends BaseOperation {
     this.name = "deployments";
     this.typeDef = `
       # Fetches one or more deployments based on input. If a deploymentUuid is return, it will return at most one deployment
-      deployments(deploymentUuid: ID, orgUuid: ID): [Deployment]
+      deployments(deploymentUuid: ID, orgUuid: ID, releaseName: String): [Deployment]
     `;
     this.entrypoint = "query";
   }
@@ -17,6 +17,8 @@ class Deployments extends BaseOperation {
         return [this.service("deployment").fetchByUuid(args.deploymentUuid)];
       } else if (args.orgUuid) {
         return this.service("deployment").fetchByOrgUuid(args.orgUuid);
+      } else if (args.releaseName) {
+        return this.service("deployment").fetchByReleaseName(args.releaseName);
       } else {
         return this.service("deployment").fetchByUserUuid(context.userUuid());
       }
