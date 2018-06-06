@@ -8,6 +8,10 @@ class BaseModel extends Model {
     return [];
   }
 
+  static get autoDate() {
+    return true;
+  }
+
   generateUuid() {
     return Uuid();
   }
@@ -21,6 +25,18 @@ class BaseModel extends Model {
 
     for(let field of this.constructor.uuidFields) {
       this[field] = this.generateUuid();
+    }
+
+    if (this.constructor.autoDate) {
+      this.createdAt = new Date().toISOString();
+    }
+  }
+
+  $beforeUpdate() {
+    super.$beforeUpdate(context);
+
+    if (this.constructor.autoDate) {
+      this.updatedAt = new Date().toISOString();
     }
   }
 }
