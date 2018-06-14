@@ -13,7 +13,6 @@ exports.up = function(knex) {
       table.string("email").index();
       table.string("token").unique();
       table.uuid("team_uuid").nullable().references("uuid").inTable("teams").onDelete("CASCADE").index();
-      table.uuid("creator_uuid").references("uuid").inTable("users").notNullable().onDelete("CASCADE");
       table.string("assignments"); // what access this token grants the user accepting it
       table.timestamps();
     });

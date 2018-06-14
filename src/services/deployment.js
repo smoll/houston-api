@@ -57,7 +57,6 @@ class DeploymentService extends BaseService {
         title: title,
         release_name: releaseName,
         version: version,
-        creator_uuid: creator.uuid,
         organization_uuid: null,
         team_uuid: null
       };
@@ -125,14 +124,8 @@ class DeploymentService extends BaseService {
     }
   }
 
-  async deleteDeployment(deployment, hard = false) {
-    if (hard) {
-      return await deployment.$query().delete();
-    } else {
-      return await deployment.$query().patch({
-        deleted_at: new Date().toISOString()
-      }).returning("*");
-    }
+  async deleteDeployment(deployment) {
+    return await deployment.$query().delete();
   }
 
   computeImageChanges(current, latest) {

@@ -1,14 +1,9 @@
 const BaseModel = require("./base.js");
 
-const Password = require('objection-password')({
-  allowEmptyPassword: true,
-  rounds: 10
-});
-
-class LocalCredential extends Password(BaseModel) {
+class OAuthCredential extends BaseModel {
 
   static get tableName() {
-    return "local_credentials";
+    return "oauth_credentials";
   }
 
   static get idColumn() {
@@ -18,11 +13,15 @@ class LocalCredential extends Password(BaseModel) {
   static get jsonSchema () {
     return {
       type: "object",
-      required: ["password"],
+      required: ["oauth_provider", "access_token", "expires_at"],
 
       properties: {
         uuid: { type: "uuid" },
-        password: { type: "string", minLength: 1, maxLength: 255 },
+        oauth_provider: { type: "oauth_provider" },
+        oauth_user_id: { type: "oauth_user_id" },
+        refresh_token: { type: "refresh_token" },
+        access_token: { type: "string" },
+        expires_at: { type: "string" },
         created_at: { type: "string" },
         updated_at: { type: "string" },
       }
@@ -30,7 +29,7 @@ class LocalCredential extends Password(BaseModel) {
   }
 
   static get jsonAttributes() {
-    return ["uuid", "password", "created_at", "updated_at"];
+    return ["uuid", "oauth_provider", "refresh_token", "access_token", "expires_at", "created_at", "updated_at"];
   }
 
   static get relationMappings() {
@@ -39,13 +38,13 @@ class LocalCredential extends Password(BaseModel) {
         relation: BaseModel.BelongsToOneRelation,
         modelClass: `${__dirname}/user.js`,
         filter: {
-          provider: "local"
+          provider: "oauth"
         },
         beforeInsert(model) {
-          model.provider = 'local';
+          model.provider = 'oauth';
         },
         join: {
-          from: 'local_credentials.uuid',
+          from: 'oauth_credentials.uuid',
           to: 'users.provider_id'
         }
       }
@@ -53,4 +52,4 @@ class LocalCredential extends Password(BaseModel) {
   }
 }
 
-module.exports = LocalCredential;
+module.exports = OAuthCredential;

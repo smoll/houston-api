@@ -13,6 +13,7 @@ exports.up = function(knex) {
       table.string("label");
       table.string("description");
       table.uuid("team_uuid").nullable().references("uuid").inTable("teams").onDelete("CASCADE").index();
+      table.boolean("active");
       table.timestamps();
 
       table.unique(["label", "team_uuid"]);

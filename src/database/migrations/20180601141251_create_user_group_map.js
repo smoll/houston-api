@@ -11,7 +11,6 @@ exports.up = function(knex) {
     return knex.schema.createTable(TABLE_NAME, function (table) {
       table.uuid("user_uuid").references("uuid").inTable("users").notNullable().onDelete("CASCADE");
       table.uuid("group_uuid").references("uuid").inTable("groups").notNullable().onDelete("CASCADE");
-      table.uuid("creator_uuid").references("uuid").inTable("users").notNullable().onDelete("CASCADE");
       table.timestamps();
 
       table.primary(["user_uuid", "group_uuid"]);

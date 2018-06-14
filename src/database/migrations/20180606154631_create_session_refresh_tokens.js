@@ -1,6 +1,6 @@
 const MigrationHelper = require("../migration_helpers.js");
 
-const TABLE_NAME = "group_properties";
+const TABLE_NAME = "session_refresh_tokens";
 
 exports.up = function(knex) {
   return knex.schema.hasTable(TABLE_NAME).then((exists) => {

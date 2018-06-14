@@ -1,18 +1,14 @@
 const BaseModel = require("./base.js");
 const CommonUtil = require("../../utils/common.js");
 
-const SoftDelete = require('objection-soft-delete')({
-  columnName: "deleted_at"
-});
-
-class Email extends SoftDelete(BaseModel) {
+class Email extends BaseModel {
 
   static get tableName() {
     return "emails";
   }
 
   static get idColumn() {
-    return "id";
+    return "uuid";
   }
 
   static get jsonSchema () {
@@ -21,7 +17,7 @@ class Email extends SoftDelete(BaseModel) {
       required: ["address", "user_uuid"],
 
       properties: {
-        id: { type: "int" },
+        uuid: { type: "uuid" },
         address: { type: "string", minLength: 1, maxLength: 255 },
         user_uuid: { type: "uuid" },
         token: { type: "string" },
@@ -32,7 +28,7 @@ class Email extends SoftDelete(BaseModel) {
   }
 
   static get jsonAttributes() {
-    return ["id", "address", "user_uuid", "token", "main", "verified"];
+    return ["uuid", "address", "user_uuid", "token", "main", "verified"];
   }
 
   static get relationMappings() {

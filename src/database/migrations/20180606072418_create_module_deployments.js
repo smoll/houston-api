@@ -12,7 +12,6 @@ exports.up = function(knex) {
       table.uuid("uuid").primary();
       table.string("type");
       table.string("title");
-      table.uuid("creator_uuid").references("uuid").inTable("users").nullable().onDelete("SET NULL");
       table.uuid("team_uuid").references("uuid").inTable("teams").nullable().onDelete("SET NULL").index();
       table.string("release_name").unique();
       table.string("version");

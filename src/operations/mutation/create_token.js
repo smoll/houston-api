@@ -23,7 +23,6 @@ class CreateToken extends BaseOperation {
           .query()
           .insertGraph({
             username: username,
-            superAdmin: true,
             provider_type: UserModel.PROVIDER_BASIC,
             provider_id: username,
           }).returning("*");

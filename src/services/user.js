@@ -51,7 +51,6 @@ class UserService extends BaseService {
         .query()
         .insertGraph({
           username: email,
-          superAdmin: false,
           provider_id: credential.uuid,
           provider_type: this.model("user").PROVIDER_LOCAL,
           emails: [{
@@ -85,14 +84,8 @@ class UserService extends BaseService {
     return user;
   }
 
-  async deleteUser(user, hard = false) {
-    if (hard) {
-      return await user.$query().delete();
-    } else {
-      return await user.$query().patch({
-        deleted_at: new Date().toISOString()
-      }).returning("*");
-    }
+  async deleteUser(user) {
+    return await user.$query().delete();
   }
 }
 

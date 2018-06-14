@@ -56,7 +56,6 @@ class AuthService extends BaseService {
   async generateTokenPayload(user, context = {}) {
     const tokenPayload = {
       id: user.uuid,
-      sU: user.superAdmin || false
     };
 
     return tokenPayload;

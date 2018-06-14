@@ -18,7 +18,6 @@ describe("When testing user", () => {
 
       let user = await User.query().insertAndFetch({
         username: Faker.internet.userName(),
-        password: 'password'
       });
 
       let email = await Email.query().insertAndFetch({
@@ -42,7 +41,6 @@ describe("When testing user", () => {
 
       let user = await User.query().insertAndFetch({
         username: Faker.internet.userName(),
-        password: 'password'
       });
       let email = await Email.query().insertAndFetch({
         address: address,

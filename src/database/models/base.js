@@ -5,7 +5,7 @@ const Uuid = require('uuid/v4');
 class BaseModel extends Model {
 
   static get uuidFields() {
-    return [];
+    return ["uuid"];
   }
 
   static get autoDate() {
