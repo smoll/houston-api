@@ -17,9 +17,9 @@ class OAuthCredential extends BaseModel {
 
       properties: {
         uuid: { type: "uuid" },
-        oauth_provider: { type: "oauth_provider" },
-        oauth_user_id: { type: "oauth_user_id" },
-        refresh_token: { type: "refresh_token" },
+        oauth_provider: { type: "string" },
+        oauth_user_id: { type: "string" },
+        refresh_token: { type: "string" },
         access_token: { type: "string" },
         expires_at: { type: "string" },
         created_at: { type: "string" },
