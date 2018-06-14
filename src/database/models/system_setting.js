@@ -23,6 +23,7 @@ class SystemSetting extends BaseModel {
         key: { type: "string" },
         value: { type: "string" },
         category: { type: "string" },
+        is_encrypted: { type: "string" },
         created_at: { type: "string" },
         updated_at: { type: "string" },
       }

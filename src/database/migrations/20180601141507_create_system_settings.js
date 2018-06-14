@@ -12,6 +12,7 @@ exports.up = function(knex) {
       table.string("key").primary();
       table.string("value");
       table.string("category").index();
+      table.boolean("is_encrypted");
       table.timestamps();
     });
   });
