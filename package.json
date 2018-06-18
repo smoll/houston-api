@@ -47,7 +47,7 @@
     "grpc": "^1.9.1",
     "grpc-caller": "^0.4.0",
     "haikunator": "^2.0.0",
-    "jsonwebtoken": "^8.1.1",
+    "jsonwebtoken": "^8.3.0",
     "knex": "^0.14.3",
     "lodash": "^4.17.5",
     "node-cache": "^4.2.0",

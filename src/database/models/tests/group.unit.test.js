@@ -61,7 +61,7 @@ describe("When testing group", () => {
         role_uuid: role.uuid,
       });
 
-      let relationTest = await group.$relatedQuery('role');
+      let relationTest = await group.$relatedQuery('roles');
       expect(relationTest[0].label).toEqual(role.label);
       done();
     });

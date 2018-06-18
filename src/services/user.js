@@ -6,7 +6,6 @@ class UserService extends BaseService {
     let user = await this.model("user")
         .query()
         .joinEager("emails")
-        .whereNull("users.deleted_at")
         .findOne("emails.address", email);
 
     if (user) {
@@ -19,7 +18,6 @@ class UserService extends BaseService {
     let user = await this.model("user")
         .query()
         .joinEager("emails")
-        .whereNull("users.deleted_at")
         .findOne("username", username);
     if (user) {
       return user;
@@ -31,7 +29,6 @@ class UserService extends BaseService {
     let user = await this.model("user")
         .query()
         .joinEager("emails")
-        .whereNull("users.deleted_at")
         .findById(uuid);
     if (user) {
       return user;
@@ -39,8 +36,13 @@ class UserService extends BaseService {
     return null;
   }
 
-  async createUser(email, password) {
+  async createUser(email, password, username) {
     try {
+      if (!username) {
+        username = email;
+      }
+
+      // TODO: Move this step outside of createUser, ideally to a service with a base credential in util
       let credential = await this.model("local_credential")
           .query()
           .insert({
@@ -50,8 +52,8 @@ class UserService extends BaseService {
       return await this.model("user")
         .query()
         .insertGraph({
-          username: email,
-          provider_id: credential.uuid,
+          username: username,
+          provider_uuid: credential.uuid,
           provider_type: this.model("user").PROVIDER_LOCAL,
           emails: [{
             address: email,

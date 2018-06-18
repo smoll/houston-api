@@ -14,16 +14,15 @@ class ModuleDeployment extends BaseModel {
   static get jsonSchema () {
     return {
       type: "object",
-      required: ["type", "title", "release_name", "version", "organization_uuid"],
+      required: ["type", "label", "release_name", "version", "team_uuid"],
 
       properties: {
         uuid: { type: "uuid" },
         type: { type: "string"},
-        title: { type: "string", minLength: 1, maxLength: 255 },
+        label: { type: "string", minLength: 1, maxLength: 255 },
         release_name: { type: "string", minLength: 1, maxLength: 128 },
         version: { type: "string" },
-        organization_uuid: { type: ["string", "null"] }, // TODO: Once organizations are supported, ensure field is not nullable (add migration)
-        team_uuid: { type: ["string", "null"] },
+        team_uuid: { type: ["string"] },
         config: { type: "object" },
         created_at: { type: "string" },
         updated_at: { type: "string" },
@@ -32,7 +31,7 @@ class ModuleDeployment extends BaseModel {
   }
 
   static get jsonAttributes() {
-    return ["uuid", "type", "title", "release_name", "version", "team_uuid", "config", "created_at", "updated_at"];
+    return ["uuid", "type", "label", "release_name", "version", "team_uuid", "config", "created_at", "updated_at"];
   }
 
   static get relationMappings() {

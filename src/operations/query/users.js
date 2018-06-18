@@ -5,8 +5,8 @@ class Users extends BaseOperation {
     super();
     this.name = "users";
     this.typeDef = `
-      # Fetches are user by username or email
-      users(search: String!) : [User]
+      # Fetches a user by username, email
+      users(userUuid: Uuid, identity: String) : [User]
     `;
     this.entrypoint = "query";
   }
@@ -14,12 +14,10 @@ class Users extends BaseOperation {
   async resolver(root, args, context) {
     try {
       let user = context.resources.user;
-
       return [user];
     } catch (err) {
       this.error(err.message);
-      // TODO: Should throw error
-      return [];
+      throw err;
     }
   }
 }

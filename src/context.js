@@ -16,7 +16,7 @@ class Context {
         view_self: false,
         edit_self: false,
         edit_other: false,
-        create_org: false,
+        create_team: false,
       },
       // org: {
       //   // owner will be all true
@@ -60,7 +60,6 @@ class Context {
     // cache of resources as determine by the graphql entrypoint
     this.resources = {
       user: null,
-      organization: null,
       team: null,
       deployment: null,
     };

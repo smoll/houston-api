@@ -36,7 +36,7 @@ class ServiceAccount extends BaseModel {
 
   static get relationMappings() {
     return {
-      role: {
+      roles: {
         relation: BaseModel.ManyToManyRelation,
         modelClass: `${__dirname}/role.js`,
         join: {

@@ -6,7 +6,7 @@ class UpdateUser extends BaseOperation {
     this.name = "updateUser";
     this.typeDef = `
       # Update an existing user
-      updateUser(userId: String!, payload: JSON!) : StatusMessage
+      updateUser(userId: String!, payload: JSON!) : User
     `;
     this.entrypoint = "mutation";
     this.quards = ["authenticated"];
@@ -17,20 +17,10 @@ class UpdateUser extends BaseOperation {
       let user = context.resources.user;
       let updated = await this.service("user").updateUser(user, args.payload);
 
-      return {
-        success: true,
-        message: updated !== false ? "User updated" : "No changes, user unchanged",
-        code: null,
-        id: user.uuid
-      }
+      return updated;
     } catch (err) {
       this.error(err.message);
-      return {
-        success: false,
-        message: "Error updating user",
-        code: null,
-        id: user.uuid
-      }
+      throw err;
     }
   }
 }

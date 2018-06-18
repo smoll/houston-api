@@ -6,7 +6,7 @@ class CreateDeployment extends BaseOperation {
     this.name = "createDeployment";
     this.typeDef = `
       # Creates a new deployment
-      createDeployment(type: String!, title: String!, organizationUuid: ID, teamUuid: ID, version: String) : StatusMessage
+      createDeployment(type: String!, label: String!, teamUuid: Uuid, version: String) : Deployment
     `;
     this.entrypoint = "mutation";
   }
@@ -21,34 +21,30 @@ class CreateDeployment extends BaseOperation {
           throw new Error(`Unable to determine latest version for type "${args.type}"`);
         }
       }
-      // // TODO: Remove in place of context.resource.org
-      // const org = await this.service("organization").fetchFirst();
+
+      if (!args.teamUuid) {
+        throw new Error("Team uuid is required to create a deployment");
+      }
+
+      // TODO: Remove in place of context.resource.team
+      let team = await this.service("team").fetchTeamByUuid(args.teamUuid);
 
       let deployment = await this.service("deployment").createDeployment(
+        team,
         args.type,
         args.version,
-        args.title,
+        args.label,
         context.resources.user,
-        context.resources.organization,
+        context.resources.team,
         context.resources.team,
       );
+      return deployment;
+      await this.service("commander").createDeployment(deployment, args.config);
 
-      const result = await this.service("commander").createDeployment(deployment, args.config);
-
-      return {
-        success: result.result.success,
-        message: result.result.message,
-        id: deployment.uuid,
-        code: null
-      }
+      return deployment;
     } catch (err) {
       this.error(err.message);
-      return {
-        success: false,
-        message: "Failed to create deployment",
-        id: null,
-        code: null
-      }
+      throw err;
     }
   }
 

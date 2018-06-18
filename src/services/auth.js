@@ -34,7 +34,7 @@ class AuthService extends BaseService {
     if(authorization && authorization.length > 0) {
       try {
         let decoded = await this.decodeJWT(authorization);
-        let user = await this.service("user").fetchUserByUuid(decoded.id);
+        let user = await this.service("user").fetchUserByUuid(decoded.uuid);
         context.setAuthUser(user);
       } catch (err) {
 
@@ -55,7 +55,7 @@ class AuthService extends BaseService {
 
   async generateTokenPayload(user, context = {}) {
     const tokenPayload = {
-      id: user.uuid,
+      uuid: user.uuid,
     };
 
     return tokenPayload;
@@ -70,7 +70,8 @@ class AuthService extends BaseService {
 
     let passphrase = Config.get(Config.JWT_PASSPHRASE);
     let options = {
-      expiresIn: `${expiration_days} days`
+      expiresIn: `${expiration_days} days`,
+      mutatePayload: true, // mutation the payload passed so we don't have to decode after to return with API call
     };
 
     return await new Promise((resolve, reject) => {
@@ -155,7 +156,7 @@ class AuthService extends BaseService {
 //               TokenPayload.message = "Not A Valid Token";
 //               return resolve(TokenPayload);
 //             } else {
-//               UserHelper.fetchUserById(decoded.id)
+//               UserHelper.fetchUserById(decoded.uuid)
 //                   .then((user)=>{
 //                     TokenPayload.user = user;
 //                     TokenPayload.success = true;

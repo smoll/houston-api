@@ -11,15 +11,15 @@ exports.up = function(knex) {
     return knex.schema.createTable(TABLE_NAME, function (table) {
       table.uuid("uuid").primary();
       table.string("type");
-      table.string("title");
-      table.uuid("team_uuid").references("uuid").inTable("teams").nullable().onDelete("SET NULL").index();
+      table.string("label");
+      table.uuid("team_uuid").references("uuid").inTable("teams").notNullable().onDelete("RESTRICT").index();
       table.string("release_name").unique();
       table.string("version");
       table.text("config");
       table.timestamps();
 
-      // don"t allow the same team to have multiple deployments with the same title
-      table.unique(["team_uuid", "title"], "unique_team_uuid_title");
+      // don"t allow the same team to have multiple deployments with the same label
+      table.unique(["team_uuid", "label"], "unique_team_uuid_label");
     });
   })
 };

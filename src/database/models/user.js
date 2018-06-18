@@ -46,10 +46,23 @@ class User extends BaseModel {
         relation: BaseModel.HasOneRelation,
         modelClass: `${__dirname}/local_credential.js`,
         join: {
-          from: 'users.provider_id',
+          from: 'users.provider_uuid',
           to: 'local_credentials.uuid'
         }
-      }
+      },
+      teams: {
+        relation: BaseModel.ManyToManyRelation,
+        modelClass: `${__dirname}/team.js`,
+        join: {
+          from: 'users.uuid',
+          to: 'teams.uuid',
+          through: {
+            model: `${__dirname}/user_team_map.js`,
+            from: `user_team_map.user_uuid`,
+            to: `user_team_map.team_uuid`
+          },
+        }
+      },
     };
   }
 
@@ -60,7 +73,6 @@ class User extends BaseModel {
 }
 
 User.PROVIDER_LOCAL = "local";
-User.PROVIDER_BASIC = "basic";
 User.PROVIDER_LDAP  = "ldap";
 
 module.exports = User;

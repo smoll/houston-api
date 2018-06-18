@@ -36,4 +36,7 @@ class Role extends BaseModel {
   }
 }
 
+Role.ENTITY_GROUP = "group";
+Role.ENTITY_SERVICE_ACCOUNT = "service_account";
+
 module.exports = Role;

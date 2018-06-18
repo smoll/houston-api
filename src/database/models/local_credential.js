@@ -46,7 +46,7 @@ class LocalCredential extends Password(BaseModel) {
         },
         join: {
           from: 'local_credentials.uuid',
-          to: 'users.provider_id'
+          to: 'users.provider_uuid'
         }
       }
     };

@@ -32,7 +32,7 @@ class BaseModel extends Model {
     }
   }
 
-  $beforeUpdate() {
+  $beforeUpdate(context) {
     super.$beforeUpdate(context);
 
     if (this.constructor.autoDate) {

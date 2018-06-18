@@ -34,7 +34,20 @@ class Group extends BaseModel {
 
   static get relationMappings() {
     return {
-      role: {
+      roles: {
+        relation: BaseModel.ManyToManyRelation,
+        modelClass: `${__dirname}/role.js`,
+        join: {
+          from: 'groups.uuid',
+          to: 'roles.uuid',
+          through: {
+            model: `${__dirname}/group_role_map.js`,
+            from: `group_role_map.group_uuid`,
+            to: `group_role_map.role_uuid`
+          },
+        }
+      },
+      users: {
         relation: BaseModel.ManyToManyRelation,
         modelClass: `${__dirname}/role.js`,
         join: {

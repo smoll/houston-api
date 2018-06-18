@@ -48,7 +48,7 @@ describe("When testing user", () => {
       });
 
       let emailUser = await email.$relatedQuery('user');
-     // expect(emailUser[0].title).toEqual(org.title);
+     // expect(emailUser[0].label).toEqual(org.label);
       done();
     });
   });

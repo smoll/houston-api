@@ -48,7 +48,7 @@ describe("When testing permission", () => {
         permission_uuid: perm.uuid,
       });
 
-      let relationTest = await perm.$relatedQuery('role');
+      let relationTest = await perm.$relatedQuery('roles');
       expect(relationTest[0].label).toEqual(role.label);
       done();
     });

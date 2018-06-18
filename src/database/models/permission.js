@@ -16,7 +16,7 @@ class Permission extends BaseModel {
       required: ["label", "scope", "category"],
 
       properties: {
-        uuid: { type: "uuid" },
+        id: { type: "string" },
         label: { type: "string", minLength: 1, maxLength: 255 },
         scope: { type: "string", minLength: 1, maxLength: 16 },
         category: { type: "string", minLength: 1, maxLength: 64 },
@@ -27,21 +27,21 @@ class Permission extends BaseModel {
   }
 
   static get jsonAttributes() {
-    return ["uuid", "label", "scope", "category"];
+    return ["id", "label", "scope", "category"];
   }
 
   static get relationMappings() {
     return {
-      role: {
+      roles: {
         relation: BaseModel.ManyToManyRelation,
         modelClass: `${__dirname}/role.js`,
         join: {
-          from: 'permissions.uuid',
+          from: 'permissions.id',
           to: 'roles.uuid',
           through: {
             model: `${__dirname}/role_permission_map.js`,
-            from: `role_permission_map.permission_uuid`,
-            to: `role_permission_map.role_uuid`
+            from: 'role_permission_map.permission_id',
+            to: 'role_permission_map.role_uuid'
           },
         }
       }

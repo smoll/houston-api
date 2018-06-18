@@ -26,9 +26,6 @@ services:
       COMMANDER_HOST: "docker.for.mac.localhost"
       COMMANDER_PORT: "50051"
       HELM_GLOBAL_CONFIG: "{\"baseDomain\":\"localhost\",\"acme\":true,\"rbacEnabled\":true,\"tlsSecret\":\"\"}"
-      BASIC_AUTHS: |
-        admin:$$apr1$$9rplDjuq$$MIjG4yYMg2rB/jAejsOmC1
-        user:$$apr1$$emlW4ik.$$Y3V0B6nr/qpI68dGP7HrH1
     entrypoint: ["npm", "run", "dev"]
   postgres-houston:
     image: postgres:9.6

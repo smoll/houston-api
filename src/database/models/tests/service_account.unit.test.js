@@ -60,7 +60,7 @@ describe("When testing service_account", () => {
         role_uuid: role.uuid,
       });
 
-      let relationTest = await service.$relatedQuery('role');
+      let relationTest = await service.$relatedQuery('roles');
       expect(relationTest[0].label).toEqual(role.label);
       done();
     });

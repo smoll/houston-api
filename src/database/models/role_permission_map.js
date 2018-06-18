@@ -7,7 +7,7 @@ class RolePermission extends BaseModel {
   }
 
   static get idColumn() {
-    return ["role_uuid", "permission_uuid"];
+    return ["role_uuid", "permission_id"];
   }
 
   static get uuidFields() {
@@ -17,11 +17,11 @@ class RolePermission extends BaseModel {
   static get jsonSchema () {
     return {
       type: "object",
-      required: ["role_uuid", "permission_uuid"],
+      required: ["role_uuid", "permission_id"],
 
       properties: {
         role_uuid: { type: "uuid" },
-        permission_uuid: { type: "uuid" },
+        permission_id: { type: "string" },
         created_at: { type: "string" },
         updated_at: { type: "string" },
       }
@@ -46,8 +46,8 @@ class RolePermission extends BaseModel {
         relation: BaseModel.BelongsToOneRelation,
         modelClass: `${__dirname}/permission.js`,
         join: {
-          from: 'role_permission_map.permission_uuid',
-          to: 'permissions.uuid',
+          from: 'role_permission_map.permission_id',
+          to: 'permissions.id',
         }
       }
     };

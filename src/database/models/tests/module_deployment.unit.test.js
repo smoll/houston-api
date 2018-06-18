@@ -19,10 +19,10 @@ describe("test module_deployment", () => {
   test("config update", async () => {
     const payload = {
       type: ModuleDeploymentModel.MODULE_AIRFLOW,
-      title: Faker.random.words(),
+      label: Faker.random.words(),
       release_name: Faker.random.word(),
       version: "0.0.0",
-      organization_uuid: null,
+      team_uuid: null,
       team_uuid: null,
       config: {
         foo: "bar"

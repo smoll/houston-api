@@ -1,6 +1,12 @@
 const { SchemaBuilder } = require("../operations.js");
 
-const DecodedToken = require("./decoded_token.js");
+const AuthUser = require("./auth_user.js");
+const Deployment = require("./deployment.js");
+const Email = require("./email.js");
+const Team = require("./team.js");
+const Token = require("./token.js");
+const TokenPayload = require("./token_payload.js");
+const User = require("./user.js");
 
 // TypeDefs that are not GQL types (resolvable objects)
 
@@ -10,6 +16,10 @@ SchemaBuilder.addTypeDef(`
 
 SchemaBuilder.addTypeDef(`
   scalar Date
+`);
+
+SchemaBuilder.addTypeDef(`
+  scalar Uuid
 `);
 
 SchemaBuilder.addTypeDef(`
@@ -27,15 +37,12 @@ SchemaBuilder.addTypeDef(`
   }
 `);
 
-// Full GQL Type definitions
-require("./deployment");
-require("./email.js");
-require("./organization.js");
-require("./status_message.js");
-require("./team.js");
-require("./token.js");
-require("./user.js");
-
 module.exports = [
-  DecodedToken,
+  AuthUser,
+  Deployment,
+  Email,
+  Team,
+  Token,
+  TokenPayload,
+  User
 ];

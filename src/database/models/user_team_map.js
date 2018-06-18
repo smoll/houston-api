@@ -49,7 +49,7 @@ class UserTeam extends BaseModel {
           from: 'user_team_map.team_uuid',
           to: 'teams.uuid',
         }
-      }
+      },
     };
   }
 }

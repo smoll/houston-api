@@ -45,7 +45,7 @@ class OAuthCredential extends BaseModel {
         },
         join: {
           from: 'oauth_credentials.uuid',
-          to: 'users.provider_id'
+          to: 'users.provider_uuid'
         }
       }
     };

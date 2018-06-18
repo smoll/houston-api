@@ -4,5 +4,6 @@ module.exports = [
   require("./common.js"),
   require("./deployment.js"),
   require("./local_user.js"),
+  require("./team.js"),
   require("./user.js")
 ];

@@ -72,6 +72,7 @@ class HelmMetadata {
       }
       return latest;
     } catch (err) {
+      console.log(err);
       return Promise.reject(err);
     }
   }

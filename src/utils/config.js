@@ -13,7 +13,7 @@ class Config {
     Config.defaults[Config.AUTH_STRATEGY] = "local";
     Config.defaults[Config.HELM_GLOBAL_CONFIG] = {};
     //Config.defaults[Config.HELM_ASTRO_REPO] = "https://helm.astronomer.io";
-    Config.defaults[Config.HELM_ASTRO_REPO] = "http://docker.for.mac.localhost:11000/repo";
+    Config.defaults[Config.HELM_ASTRO_REPO] = "http://helm.astronomer.io/";
   }
 
   static get(key) {
@@ -44,6 +44,5 @@ Config.HELM_ASTRO_REPO = "HELM_ASTRO_REPO";
 Config.AUTH_STRATEGY = "AUTH_STRATEGY";
 Config.COMMANDER_HOST = "COMMANDER_HOST";
 Config.COMMANDER_PORT = "COMMANDER_PORT";
-Config.BASIC_AUTHS = "BASIC_AUTHS";
 
 module.exports = Config;

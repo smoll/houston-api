@@ -6,7 +6,7 @@ class DeleteDeployment extends BaseOperation {
     this.name = "deleteDeployment";
     this.typeDef = `
       # Deletes an existing deployment
-      deleteDeployment(deploymentUuid: ID) : StatusMessage
+      deleteDeployment(deploymentUuid: ID) : Deployment
     `;
     this.entrypoint = "mutation";
   }
@@ -16,30 +16,17 @@ class DeleteDeployment extends BaseOperation {
       const deployment = await this.service("deployment").fetchByUuid(args.deploymentUuid);
 
       if (!deployment) {
-        return {
-          success: true,
-          message: "Deployment not found",
-          id: args.deploymentUuid,
-          code: null
-        }
+        throw new Error("Deployment not found");
       }
 
       await this.service("deployment").deleteDeployment(deployment);
 
       return {
-        success: true,
-        message: "Deployment deleted",
-        id: args.deploymentUuid,
-        code: null
+        uuid: deployment.uuid
       }
     } catch (err) {
       this.error(err.message);
-      return {
-        success: true,
-        message: "Failed to delete deployment",
-        id: args.deploymentUuid,
-        code: null
-      }
+      throw err;
     }
   }
 }

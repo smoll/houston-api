@@ -1,13 +1,12 @@
 const BaseType = require("./base.js");
 
-class DecodedToken extends BaseType {
+class TokenPayload extends BaseType {
   constructor(application) {
     super(application);
-    this.typeName = "DecodedToken";
+    this.typeName = "TokenPayload";
     this.typeDef = `
-    type DecodedToken {
-      id: ID
-      sU: Boolean
+    type TokenPayload {
+      uuid: Uuid
       iat: Int
       exp: Int
     }`;
@@ -15,11 +14,8 @@ class DecodedToken extends BaseType {
 
   resolver() {
     return {
-      id(value) {
-        return value.id || null;
-      },
-      sU(value) {
-        return value.sU || false;
+      uuid(value) {
+        return value.uuid || null;
       },
       iat(value) {
         return value.iat || null;
@@ -31,4 +27,4 @@ class DecodedToken extends BaseType {
   }
 }
 
-module.exports = DecodedToken;
+module.exports = TokenPayload;

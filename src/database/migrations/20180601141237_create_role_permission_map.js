@@ -10,10 +10,10 @@ exports.up = function(knex) {
 
     return knex.schema.createTable(TABLE_NAME, function (table) {
       table.uuid("role_uuid").references("uuid").inTable("roles").notNullable().onDelete("CASCADE");
-      table.uuid("permission_uuid").references("uuid").inTable("permissions").notNullable().onDelete("CASCADE");
+      table.string("permission_id").references("id").inTable("permissions").notNullable().onDelete("CASCADE");
       table.timestamps();
 
-      table.primary(["role_uuid", "permission_uuid"]);
+      table.primary(["role_uuid", "permission_id"]);
     });
   });
 };
