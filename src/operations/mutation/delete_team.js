@@ -6,7 +6,7 @@ class DeleteTeam extends BaseOperation {
     this.name = "deleteTeam";
     this.typeDef = `
       # Deletes an existing team
-      deleteTeam(teamUuid: ID) : Team
+      deleteTeam(teamUuid: Uuid) : Team
     `;
     this.entrypoint = "mutation";
   }
