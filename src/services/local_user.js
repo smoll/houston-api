@@ -40,7 +40,7 @@ class LocalUserService extends BaseService {
   async fetchCredentialsForUser(user) {
     let credentials = this.model("local_credential")
         .query()
-        .findById(user.providerId);
+        .findById(user.providerUuid);
     if (credentials) {
       return credentials;
     }
