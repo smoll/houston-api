@@ -6,7 +6,7 @@ class DeleteDeployment extends BaseOperation {
     this.name = "deleteDeployment";
     this.typeDef = `
       # Deletes an existing deployment
-      deleteDeployment(deploymentUuid: ID) : Deployment
+      deleteDeployment(deploymentUuid: Uuid) : Deployment
     `;
     this.entrypoint = "mutation";
   }

@@ -6,7 +6,7 @@ class UpdateDeployment extends BaseOperation {
     this.name = "updateDeployment";
     this.typeDef = `
       # Creates a new deployment
-      updateDeployment(deploymentUuid: ID, label: String, teamUuid: ID, images: JSON, sync: Boolean) : Deployment
+      updateDeployment(deploymentUuid: Uuid, label: String, teamUuid: Uuid, images: JSON, sync: Boolean) : Deployment
     `;
     this.entrypoint = "mutation";
   }

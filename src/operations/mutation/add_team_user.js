@@ -6,7 +6,7 @@ class CreateTeam extends BaseOperation {
     this.name = "addTeamUser";
     this.typeDef = `
       # Create a team and add authenticated user as owner
-      addTeamUser(label: String!, description: String!) :
+      addTeamUser(label: String!, description: String) :
     `;
     this.entrypoint = "mutation";
   }
