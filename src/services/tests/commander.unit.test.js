@@ -105,20 +105,8 @@ describe("When testing user service", () => {
 
 
   describe("check that #deleteUser", () => {
-
-    test("works for soft delete", async (done) => {
+    test("works", async (done) => {
       await userService.deleteUser(user);
-
-      let fetchUser = await userService.fetchUserByUuid(user.uuid);
-      expect(fetchUser).toBeNull();
-
-      let userRecord = await UserModel.query().findById(user.uuid);
-      expect(userRecord.deleted_at).not.toBeNull();
-      done();
-    });
-
-    test("works for hard delete", async (done) => {
-      await userService.deleteUser(user, true);
 
       let userRecord = await UserModel.query().findById(user.uuid);
       expect(userRecord).toBeUndefined();

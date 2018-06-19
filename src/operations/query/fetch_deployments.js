@@ -9,7 +9,7 @@ class FetchDeployment extends BaseOperation {
       # This operation is deprecated
       # "deployments" call should be used instead
       # Will be deleted after July 1, 2018
-      fetchDeployments(deploymentUuid: ID, orgUuid: ID): [Deployment]
+      fetchDeployments(deploymentUuid: Uuid, teamUuid: Uuid): [Deployment]
     `;
     this.entrypoint = "query";
   }
@@ -18,8 +18,8 @@ class FetchDeployment extends BaseOperation {
     try {
       if (args.deploymentUuid) {
         return [this.service("deployment").fetchByUuid(args.deploymentUuid)];
-      } else if (args.orgUuid) {
-        return this.service("deployment").fetchByOrgUuid(args.orgUuid);
+      } else if (args.teamUuid) {
+        return this.service("deployment").fetchByTeamUuid(args.teamUuid);
       } else {
         return this.service("deployment").fetchByUserUuid(context.userUuid());
       }

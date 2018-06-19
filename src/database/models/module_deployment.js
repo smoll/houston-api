@@ -1,10 +1,7 @@
 const _ = require("lodash");
 const BaseModel = require("./base.js");
-const SoftDelete = require('objection-soft-delete')({
-  columnName: "deleted_at"
-});
 
-class ModuleDeployment extends SoftDelete(BaseModel) {
+class ModuleDeployment extends BaseModel {
 
   static get tableName() {
     return "module_deployments";
@@ -14,41 +11,37 @@ class ModuleDeployment extends SoftDelete(BaseModel) {
     return "uuid";
   }
 
-  static get uuidFields() {
-    return ['uuid'];
-  }
-
   static get jsonSchema () {
     return {
       type: "object",
-      required: ["type", "title", "release_name", "version", "creator_uuid", "organization_uuid"],
+      required: ["type", "label", "release_name", "version", "team_uuid"],
 
       properties: {
         uuid: { type: "uuid" },
         type: { type: "string"},
-        title: { type: "string", minLength: 1, maxLength: 255 },
+        label: { type: "string", minLength: 1, maxLength: 255 },
         release_name: { type: "string", minLength: 1, maxLength: 128 },
         version: { type: "string" },
-        creator_uuid: { type: "string" },
-        organization_uuid: { type: ["string", "null"] }, // TODO: Once organizations are supported, ensure field is not nullable (add migration)
-        team_uuid: { type: ["string", "null"] },
-        config: { type: "object" }
+        team_uuid: { type: ["string"] },
+        config: { type: "object" },
+        created_at: { type: "string" },
+        updated_at: { type: "string" },
       }
     };
   }
 
   static get jsonAttributes() {
-    return ["uuid", "type", "title", "release_name", "version", "creator_uuid", "team_uuid", "config", "created_at", "updated_at", "deleted_at"];
+    return ["uuid", "type", "label", "release_name", "version", "team_uuid", "config", "created_at", "updated_at"];
   }
 
   static get relationMappings() {
     return {
-      creator: {
+      team: {
         relation: BaseModel.BelongsToOneRelation,
-        modelClass: `${__dirname}/user.js`,
+        modelClass: `${__dirname}/team.js`,
         join: {
-          from: 'module_deployments.creator_uuid',
-          to: 'users.uuid'
+          from: 'module_deployments.team_uuid',
+          to: 'teams.uuid'
         }
       }
     };

@@ -12,9 +12,6 @@ exports.up = function(knex) {
       table.uuid("uuid").primary();
       table.string("password").unique();
       table.timestamps();
-      table.timestamp("deleted_at");
-    }).then(() => {
-      return MigrationHelper.timestampTrigger(knex, TABLE_NAME);
     });
   });
 };

@@ -16,7 +16,7 @@ class Context {
         view_self: false,
         edit_self: false,
         edit_other: false,
-        create_org: false,
+        create_team: false,
       },
       // org: {
       //   // owner will be all true
@@ -50,7 +50,6 @@ class Context {
     };
 
     // This should never be used for user level endpoint permissions.
-    this.isSuperAdmin = false;
     this.authUser = null;
     // this.org = null;
     this.origin = null;
@@ -61,7 +60,6 @@ class Context {
     // cache of resources as determine by the graphql entrypoint
     this.resources = {
       user: null,
-      organization: null,
       team: null,
       deployment: null,
     };
@@ -73,13 +71,8 @@ class Context {
     // TODO: This is temporary, remove once we have property hook in place to
     // set these based on gql entrypoint
     this.resources.user = user;
-    if (this.authUser.superAdmin) {
-      this.setSuperAdmin();
-    } else {
-      this.permissions.user.view_self = true;
-      this.permissions.user.edit_self = true;
-      // this.permissions.user.create_org = true;
-    }
+    this.permissions.user.view_self = true;
+    this.permissions.user.edit_self = true;
   }
 
   setSuperAdmin() {

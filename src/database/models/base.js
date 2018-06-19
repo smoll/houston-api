@@ -5,7 +5,11 @@ const Uuid = require('uuid/v4');
 class BaseModel extends Model {
 
   static get uuidFields() {
-    return [];
+    return ["uuid"];
+  }
+
+  static get autoDate() {
+    return true;
   }
 
   generateUuid() {
@@ -21,6 +25,18 @@ class BaseModel extends Model {
 
     for(let field of this.constructor.uuidFields) {
       this[field] = this.generateUuid();
+    }
+
+    if (this.constructor.autoDate) {
+      this.createdAt = new Date().toISOString();
+    }
+  }
+
+  $beforeUpdate(context) {
+    super.$beforeUpdate(context);
+
+    if (this.constructor.autoDate) {
+      this.updatedAt = new Date().toISOString();
     }
   }
 }

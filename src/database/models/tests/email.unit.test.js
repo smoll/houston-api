@@ -18,7 +18,6 @@ describe("When testing user", () => {
 
       let user = await User.query().insertAndFetch({
         username: Faker.internet.userName(),
-        password: 'password'
       });
 
       let email = await Email.query().insertAndFetch({
@@ -42,7 +41,6 @@ describe("When testing user", () => {
 
       let user = await User.query().insertAndFetch({
         username: Faker.internet.userName(),
-        password: 'password'
       });
       let email = await Email.query().insertAndFetch({
         address: address,
@@ -50,7 +48,7 @@ describe("When testing user", () => {
       });
 
       let emailUser = await email.$relatedQuery('user');
-     // expect(emailUser[0].title).toEqual(org.title);
+     // expect(emailUser[0].label).toEqual(org.label);
       done();
     });
   });

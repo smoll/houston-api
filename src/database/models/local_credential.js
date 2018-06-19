@@ -15,10 +15,6 @@ class LocalCredential extends Password(BaseModel) {
     return "uuid";
   }
 
-  static get uuidFields() {
-    return ['uuid'];
-  }
-
   static get jsonSchema () {
     return {
       type: "object",
@@ -29,13 +25,12 @@ class LocalCredential extends Password(BaseModel) {
         password: { type: "string", minLength: 1, maxLength: 255 },
         created_at: { type: "string" },
         updated_at: { type: "string" },
-        deleted_at: { type: "string" },
       }
     };
   }
 
   static get jsonAttributes() {
-    return ["uuid", "password", "created_at", "updated_at", "deleted_at"];
+    return ["uuid", "password", "created_at", "updated_at"];
   }
 
   static get relationMappings() {
@@ -51,7 +46,7 @@ class LocalCredential extends Password(BaseModel) {
         },
         join: {
           from: 'local_credentials.uuid',
-          to: 'users.provider_id'
+          to: 'users.provider_uuid'
         }
       }
     };
