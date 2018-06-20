@@ -5,8 +5,8 @@ class Teams extends BaseOperation {
     super();
     this.name = "teams";
     this.typeDef = `
-      # Fetch team by userUuid, teamUuid, or 
-      teams(userUuid: String, teamUuid: String) : [Team]
+      # Fetch team by userUuid, teamUuid, or
+      teams(userUuid: Uuid, teamUuid: Uuid) : [Team]
     `;
     this.entrypoint = "query";
   }
