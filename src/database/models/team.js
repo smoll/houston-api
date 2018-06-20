@@ -13,7 +13,7 @@ class Team extends BaseModel {
   static get jsonSchema () {
     return {
       type: "object",
-      required: ["label", "description"],
+      required: ["label"],
 
       properties: {
         uuid: { type: "uuid" },

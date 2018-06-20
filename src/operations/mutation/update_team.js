@@ -6,7 +6,7 @@ class UpdateTeam extends BaseOperation {
     this.name = "updateTeam";
     this.typeDef = `
       # Update an existing team
-      updateTeam(teamUuid: String!, payload: JSON!) : Team
+      updateTeam(teamUuid: Uuid!, payload: JSON!) : Team
     `;
     this.entrypoint = "mutation";
     this.quards = ["authenticated"];

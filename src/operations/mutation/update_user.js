@@ -6,7 +6,7 @@ class UpdateUser extends BaseOperation {
     this.name = "updateUser";
     this.typeDef = `
       # Update an existing user
-      updateUser(userId: String!, payload: JSON!) : User
+      updateUser(userId: Uuid!, payload: JSON!) : User
     `;
     this.entrypoint = "mutation";
     this.quards = ["authenticated"];
