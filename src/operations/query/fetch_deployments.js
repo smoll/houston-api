@@ -1,7 +1,7 @@
-const BaseOperation = require("../base.js");
+const DeploymentOperation = require("./deployments.js");
 
 
-class FetchDeployment extends BaseOperation {
+class FetchDeployment extends DeploymentOperation {
   constructor() {
     super();
     this.name = "fetchDeployments";
@@ -12,23 +12,6 @@ class FetchDeployment extends BaseOperation {
       fetchDeployments(deploymentUuid: Uuid, teamUuid: Uuid): [Deployment]
     `;
     this.entrypoint = "query";
-  }
-
-  async resolver(root, args, context) {
-    try {
-      if (args.deploymentUuid) {
-        return [this.service("deployment").fetchByUuid(args.deploymentUuid)];
-      } else if (args.teamUuid) {
-        return this.service("deployment").fetchByTeamUuid(args.teamUuid);
-      } else {
-        return this.service("deployment").fetchByUserUuid(context.userUuid());
-      }
-
-    } catch (err) {
-      this.error(err.message);
-      // TODO: Should throw error
-      return [];
-    }
   }
 }
 

@@ -10,8 +10,8 @@ class Team extends BaseType {
       label: String
       description: String
       active: Boolean
-      created_at: String
-      updated_at: String
+      createdAt: String
+      updatedAt: String
     }`;
   }
 
@@ -32,10 +32,10 @@ class Team extends BaseType {
       // users(value) {
       //   return value.users || [];
       // },
-      created_at(value) {
+      createdAt(value) {
         return value.createdAt || null;
       },
-      updated_at(value) {
+      updatedAt(value) {
         return value.updatedAt || null;
       },
     };

@@ -11,8 +11,8 @@ class User extends BaseType {
       profile: JSON
       username: String
       status: String
-      created_at: String
-      updated_at: String
+      createdAt: String
+      updatedAt: String
     }`;
   }
 
@@ -33,10 +33,10 @@ class User extends BaseType {
       status(value) {
         return value.status || "unknown";
       },
-      created_at(value) {
+      createdAt(value) {
         return value.createdAt || null;
       },
-      updated_at(value) {
+      updatedAt(value) {
         return value.updatedAt || null;
       }
     };

@@ -8,7 +8,7 @@ class Config {
     Config.defaults[Config.API_ENDPOINT_URL] = "/v1";
     Config.defaults[Config.WEBSOCKET_ENDPOINT_URL] = "/ws";
     Config.defaults[Config.PLAYGROUND_ENDPOINT_URL] = "/playground";
-    Config.defaults[Config.DEBUG_DB] = false;
+    Config.defaults[Config.DEBUG_DB] = "false";
     Config.defaults[Config.JWT_PASSPHRASE] = "insecure_passphrase";
     Config.defaults[Config.AUTH_STRATEGY] = "local";
     Config.defaults[Config.HELM_GLOBAL_CONFIG] = {};

@@ -9,11 +9,11 @@ class Deployment extends BaseType {
       uuid: Uuid
       type: String
       label: String
-      release_name: String
+      releaseName: String
       version: String
       team: Team
-      created_at: String
-      updated_at: String
+      createdAt: String
+      updatedAt: String
     }`;
   }
 
@@ -37,10 +37,10 @@ class Deployment extends BaseType {
       team(value) {
         return value || {};
       },
-      created_at(value) {
+      createdAt(value) {
         return value.createdAt || null;
       },
-      updated_at(value) {
+      updatedAt(value) {
         return value.updatedAt || null;
       },
     };
