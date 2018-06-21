@@ -15,9 +15,9 @@ class Teams extends BaseOperation {
     try {
       let teams;
       if (args.teamUuid) {
-        teams = this.service("team").fetchTeamByUuid(args.teamUuid, {
+        teams = [this.service("team").fetchTeamByUuid(args.teamUuid, {
           relations: ["users"],
-        });
+        })];
       } else {
         if (!args.userUuid) {
           args.userUuid = context.authUser.uuid;
