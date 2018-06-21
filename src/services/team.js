@@ -9,7 +9,7 @@ class TeamService extends BaseService {
       .eager(options.relations)
       .findById(uuid);
     if (team) {
-      return team;
+      return [team];
     }
     return null;
   }
