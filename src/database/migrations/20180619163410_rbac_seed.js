@@ -3,53 +3,53 @@ const MigrationHelper = require("../migration_helpers.js");
 const TABLE_NAME = "permissions";
 
 const scopedPermissions = {
-  "user": {
-    "user": {
-      "view": "User user_view",
-      "view_other": "User user_view_other",
-      "update": "User user_update",
-      "delete": "User user_delete",
-      "service_account": "Manager own user service accounts",
+  "user": { // Permissions given to a User with an association of the object in which they are interacting with
+    "user": { // An individual entity that has login credentials to access the system
+      "view": "Requestor can review their own User information",
+      "view_other": "Requestor can review information about other Users",
+      "update": "Requestor can update their own information",
+      "delete": "Requestor can delete themselves or another User",
+      "service_account": "Requestor can manage Service Accounts specifically associated with them",
     },
 
-    "group": {
-      "create": "User group_create",
-      "list": "User group_list",
-      "view": "User group_view",
-      "update": "User group_update",
-      "delete": "User group_delete",
+    "group": { // Linking Users and Roles (permissions) to access all associated deployments
+      "create": "Requestor can create Groups",
+      "list": "Requestor can see a list of Groups within the platform",
+      "view": "Requestor can see the information for a specific Group",
+      "update": "Requestor can update the information for a specific Group",
+      "delete": "Requestor can delete a specific Group",
     },
 
-    "group_user": {
-      "add": "User group_user_add",
-      "remove": "User group_user_remove",
-      "list": "User group_user_list",
-      "manage_permissions": "User group_user_manage_permissions",
+    "group_user": { // Individual Users linked to a Group
+      "add": "Requestor can add another User to a specific Group",
+      "remove": "Requestor can remove themselves or another User from a specific Group",
+      "list": "Requestor can view all Users associated with a specific Group",
+      "manage_permissions": "Requestor can add or remove Roles that are associated with a specific Group",
     },
 
-    "role": {
-      "create": "User role_create",
-      "list": "User role_list",
-      "view": "User role_view",
-      "update": "User role_update",
-      "delete": "User role_delete",
+    "role": { // Grouping of specific permission for the system
+      "create": "Requestor can create a new Role",
+      "list": "Requestor can view created Roles",
+      "view": "Requestor can review information about a specific role",
+      "update": "Requestor can update permissions within a specific role",
+      "delete": "Requestor can remove this Role",
     },
 
-    "team": {
-      "create": "User team_create",
-      "list": "User team_list",
-      "view": "User team_view",
-      "update": "User team_update",
-      "delete": "User team_delete",
+    "team": { // Grouping of Groups
+      "create": "Requestor can create a new Team",
+      "list": "Requestor can view created Teams",
+      "view": "Requestor can review information about a specific Team",
+      "update": "Requestor can update details about a specific Team",
+      "delete": "Requestor can Remove this Team",
     },
 
-    "team_user": {
-      "add": "User team_user_add",
-      "remove": "User team_user_remove",
-      "list": "User team_user_list",
+    "team_user": { // Individual Users linked to a Team
+      "add": "Requestor can add another User to a specific Team",
+      "remove": "Requestor can remove themselves or another User from a specific Team",
+      "list": "Requestor can view Users associated with a Team",
     },
 
-    "team_service_account": {
+    "team_service_account": { // Individual Service Accounts linked to a Team
       "create": "Create service accounts for a team or deployment",
       "list": "List services accounts for team or deployments",
       "view": "View service accounts for team or deployment",
@@ -57,18 +57,18 @@ const scopedPermissions = {
       "delete": "Delete service accounts for team or deployment",
     },
 
-    "deployment": {
-      "create": "User deployment_create",
-      "list": "User deployment_list",
-      "view": "User deployment_view",
-      "update": "User deployment_update",
-      "delete": "User deployment_delete",
-      "resources": "Update deployment resource allocation",
-      "images": "Update deployment docker images",
-      "external": "User deployment_dashboard",
+    "deployment": { // A single instance within the system
+      "create": "Requestor can create a new Deployment",
+      "list": "Requestor can view created Deployments",
+      "view": "Requestor can review information about a specific Deployment",
+      "update": "Requestor can update details about a specific Deployment",
+      "delete": "Requestor can remove a specific Deployment from the system",
+      "resources": "Requestor can update details around computing resources allocated by the system for a specific Deployment",
+      "images": "Requestor can update details around the Docker Image used by a specific Deployment",
+      "external": "Requestor has access to view the integrated dashboard associated with a specific Deployment",
     },
 
-    "deployment_service_account": {
+    "deployment_service_account": { // Individual Service Accounts linked to a Deployment
       "create": "Create service accounts for a team or deployment",
       "list": "List services accounts for team or deployments",
       "view": "View service accounts for team or deployment",
@@ -77,54 +77,54 @@ const scopedPermissions = {
     }
   },
 
-  "global": {
-    "user": {
-      "create": "Global user_create",
-      "list": "Global user_list",
-      "view": "Global user_view",
-      "update": "Global user_update",
-      "delete": "Global user_delete",
+  "global": { // Permissions given to a User without an association of the object in which they are interacting with. Those with system-wide access will be granted permissions within this context.
+    "user": { // An individual entity that has login credentials to access the system
+      "create": "Requestor can create a new User",
+      "list": "Requestor can list all Users within the system",
+      "view": "Requestor can review information about other Users",
+      "update": "Requestor can update information about a specific User",
+      "delete": "Requestor can delete themselves or another specific User",
     },
 
-    "group": {
-      "create": "Global group_create",
-      "list": "Global group_list",
-      "view": "Global group_view",
-      "update": "Global group_update",
-      "delete": "Global group_delete",
+    "group": { // Linking Users, and defining their Roles (permissions), to access all associated deployments
+      "create": "Requestor can create a new Group",
+      "list": "Requestor can list all Groups within the system",
+      "view": "Requestor can review information about a specific Group within the system",
+      "update": "Requestor can update information about a specific Group within the system",
+      "delete": "Requestor can delete a specific Group within the system",
     },
 
-    "group_user": {
-      "add": "Global group_user_add",
-      "remove": "Global group_user_remove",
-      "list": "Global group_user_list",
-      "manage_permissions": "Global group_user_manage_permissions",
+    "group_user": { // Individual Users linked to a Group
+      "add": "Requestor can add an User to a specific Group",
+      "remove": "Requestor can remove an User to a specific Group",
+      "list": "Requestor can view all Users within a specific Group",
+      "manage_permissions": "Requestor can add or remove Roles that are associated with a specific Group",
     },
 
-    "role": {
-      "create": "Global role_create",
-      "list": "Global role_list",
-      "view": "Global role_view",
-      "update": "Global role_update",
-      "delete": "Global role_delete",
+    "role": { // Grouping of specific permission for the system
+      "create": "Requestor can create a new Role",
+      "list": "Requestor can view created Roles",
+      "view": "Requestor can review information about a specific role",
+      "update": "Requestor can update permissions within a specific role",
+      "delete": "Requestor can remove this Role",
     },
 
-    "team": {
-      "create": "Global team_create",
-      "list": "Global team_list",
-      "view": "Global team_view",
-      "update": "Global team_update",
-      "delete": "Global team_delete",
+    "team": { // Grouping of Groups
+      "create": "Requestor can create a new Team",
+      "list": "Requestor can view created Teams",
+      "view": "Requestor can review information about a specific Team",
+      "update": "Requestor can update details about a specific Team",
+      "delete": "Requestor can Remove this Team",
     },
 
-    "team_user": {
-      "add": "Global team_user_add",
-      "remove": "Global team_user_remove",
+    "team_user": { // Individual Users linked to a Team
+      "add": "Requestor can add another User to a specific Team",
+      "remove": "Requestor can remove themselves or another User from a specific Team",
+      "list": "Requestor can view Users associated with a Team",
       "invites": "Globally handle user invitations, including viewing the token",
-      "list": "Global team_user_list",
     },
 
-    "deployment": {
+    "deployment": { // A single instance within the system
       "create": "Create a deployment on the behalf of any team",
       "list": "List the deployments of a given team or all teams",
       "view": "View details about any deployment in the system",
@@ -135,15 +135,15 @@ const scopedPermissions = {
       "external": "View external resources related to any deployment",
     },
 
-    "service_account": {
-      "create": "Global service_account_create",
-      "list": "Global service_account_list",
-      "view": "Global service_account_view",
-      "update": "Global service_account_update",
-      "delete": "Global service_account_delete",
+    "service_account": { // Individual Service Accounts that have access at a system level
+      "create": "Requestor can create a Service Account with system-wide access",
+      "list": "Requestor can view all Service Accounts with system-wide access",
+      "view": "Requestor can review information about a specific Service Account with system-wide access",
+      "update": "Requestor can update the details of a Service Accounts with system-wide access",
+      "delete": "Requestor can remove a Service Accounts with system-wide access",
     },
 
-    "system_setting": {
+    "system_setting": { // Ability to control specific system-wide configuration details
       "list": "Ability to list system settings",
       "view": "Ability to view raw value of system settings",
       "update": "Ability to update the value of system settings",
