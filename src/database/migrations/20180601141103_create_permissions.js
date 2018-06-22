@@ -10,15 +10,10 @@ exports.up = function(knex) {
 
     return knex.schema.createTable(TABLE_NAME, function (table) {
       table.string("id").primary();
-      table.string("label").unique();
-      table.string("scope").notNullable().index(); // global, team, user
+      table.string("scope").notNullable().index(); // global, user
+      table.string("label");
       table.string("category");
       table.timestamps();
-    }).then(() => {
-      // table created, lets seed it
-      // knex(TABLE_NAME).insert({
-      //
-      // })
     });
   });
 };

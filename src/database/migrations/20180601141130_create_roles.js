@@ -11,6 +11,7 @@ exports.up = function(knex) {
     return knex.schema.createTable(TABLE_NAME, function (table) {
       table.uuid("uuid").primary();
       table.string("label");
+      table.string("scope").index();
       table.string("category").index();
       table.string("entity_type").nullable();
       table.uuid("entity_uuid").nullable();
