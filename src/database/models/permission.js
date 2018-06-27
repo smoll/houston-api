@@ -7,7 +7,7 @@ class Permission extends BaseModel {
   }
 
   static get idColumn() {
-    return "uuid";
+    return "id";
   }
 
   static get jsonSchema () {

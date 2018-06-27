@@ -45,12 +45,12 @@ class Team extends BaseModel {
         modelClass: `${__dirname}/user.js`,
         join: {
           from: 'teams.uuid',
-          to: 'users.uuid',
           through: {
             model: `${__dirname}/user_team_map.js`,
             from: `user_team_map.team_uuid`,
             to: `user_team_map.user_uuid`
           },
+          to: 'users.uuid',
         }
       },
     };

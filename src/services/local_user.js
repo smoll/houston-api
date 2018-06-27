@@ -21,13 +21,13 @@ class LocalUserService extends BaseService {
   }
 
   async authenticateUser(emailOrUsername, password) {
-    let user = await this.service("user").fetchUserByUsername(emailOrUsername);
+    let user = await this.service("user").fetchUserByUsername(emailOrUsername, false);
     if (!user) {
-      user = await this.service("user").fetchUserByEmail(emailOrUsername);
+      user = await this.service("user").fetchUserByEmail(emailOrUsername, false);
     }
 
     if (!user) {
-      throw new Error("User not found");
+      this.notFound("user", emailOrUsername);
     }
 
     let credentials = await this.fetchCredentialsForUser(user);

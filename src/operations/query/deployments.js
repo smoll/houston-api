@@ -16,11 +16,11 @@ class Deployments extends BaseOperation {
       if (args.deploymentUuid) {
         return [this.service("deployment").fetchByUuid(args.deploymentUuid)];
       } else if (args.teamUuid) {
-        return this.service("deployment").fetchByTeamUuid(args.teamUuid);
+        return this.service("deployment").fetchByTeamUuid(args.teamUuid, false);
       } else if (args.releaseName) {
         return [this.service("deployment").fetchByReleaseName(args.releaseName)];
       } else {
-        return this.service("deployment").fetchByUserUuid(context.userUuid());
+        throw new Error("Deployments can only be listed by deploymentUuid, releaseName, or teamUuid");
       }
 
     } catch (err) {

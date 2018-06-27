@@ -35,4 +35,10 @@ class SystemSetting extends BaseModel {
   }
 }
 
+SystemSetting.KEY_USERS_GROUP_UUID = "users_group_uuid";
+SystemSetting.KEY_ADMIN_GROUP_UUID = "admin_group_uuid";
+SystemSetting.KEY_DEFAULT_TEAM_GROUPS = "default_team_groups";
+
+SystemSetting.CATEGORY_INTERNAL = "internal";
+
 module.exports = SystemSetting;

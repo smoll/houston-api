@@ -10,6 +10,10 @@ class User extends BaseModel {
     return "uuid";
   }
 
+  static get defaultEager () {
+    return 'emails'
+  }
+
   static get jsonSchema () {
     return {
       type: "object",
@@ -60,6 +64,19 @@ class User extends BaseModel {
             model: `${__dirname}/user_team_map.js`,
             from: `user_team_map.user_uuid`,
             to: `user_team_map.team_uuid`
+          },
+        }
+      },
+      groups: {
+        relation: BaseModel.ManyToManyRelation,
+        modelClass: `${__dirname}/group.js`,
+        join: {
+          from: 'users.uuid',
+          to: 'groups.uuid',
+          through: {
+            model: `${__dirname}/user_group_map.js`,
+            from: `user_group_map.user_uuid`,
+            to: `user_group_map.group_uuid`
           },
         }
       },

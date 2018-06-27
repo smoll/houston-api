@@ -1,17 +1,18 @@
 const BaseType = require("./base.js");
 
-class Team extends BaseType {
+class Group extends BaseType {
   constructor(application) {
     super(application);
-    this.typeName = "Team";
+    this.typeName = "Group";
     this.typeDef = `
-    type Team {
+    type Group {
       uuid: Uuid
       label: String
       description: String
+      team: Team
+      custom: Boolean
       active: Boolean
       users: [User]
-      groups: [Group]
       createdAt: String
       updatedAt: String
     }`;
@@ -28,15 +29,17 @@ class Team extends BaseType {
       description(value) {
         return value.description || null;
       },
+      team(value) {
+        return value.team || null;
+      },
+      custom(value) {
+        return value.custom === true
+      },
       active(value) {
         return value.active === true
       },
       users(value) {
-        console.log("This is getting called");
         return value.users || [];
-      },
-      groups(value) {
-        return value.groups || [];
       },
       createdAt(value) {
         return value.createdAt || null;
@@ -48,4 +51,4 @@ class Team extends BaseType {
   }
 }
 
-module.exports = Team;
+module.exports = Group;

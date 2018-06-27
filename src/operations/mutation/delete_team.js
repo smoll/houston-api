@@ -15,10 +15,6 @@ class DeleteTeam extends BaseOperation {
     try {
       const team = await this.service("team").fetchTeamByUuid(args.teamUuid);
 
-      if (!team) {
-        throw new Error("Team not found");
-      }
-
       await this.service("team").deleteTeam(team);
 
       return {

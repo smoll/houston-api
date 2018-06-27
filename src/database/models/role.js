@@ -19,7 +19,7 @@ class Role extends BaseModel {
         uuid: { type: "uuid" },
         label: { type: "string", minLength: 1, maxLength: 255 },
         category: { type: "string", minLength: 1, maxLength: 64 },
-        entity_type: { type: "string", minLength: 1, maxLength: 32 },
+        entity_type: { type: "string", maxLength: 32 },
         entity_uuid: { type: "uuid" },
         created_at: { type: "string" },
         updated_at: { type: "string" },
@@ -32,7 +32,29 @@ class Role extends BaseModel {
   }
 
   static get relationMappings() {
-
+    return {
+      permissions: {
+        relation: BaseModel.ManyToManyRelation,
+        modelClass: `${__dirname}/permission.js`,
+        join: {
+          from: 'roles.uuid',
+          to: 'permissions.id',
+          through: {
+            model: `${__dirname}/role_permission_map.js`,
+            from: `role_permission_map.role_uuid`,
+            to: `role_permission_map.permission_id`
+          },
+        }
+      },
+      permission_ids: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: `${__dirname}/role_permission_map.js`,
+        join: {
+          from: 'roles.uuid',
+          to: 'role_permission_map.role_uuid',
+        }
+      }
+    };
   }
 }
 

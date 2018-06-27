@@ -3,6 +3,7 @@ const { SchemaBuilder } = require("../operations.js");
 const AuthUser = require("./auth_user.js");
 const Deployment = require("./deployment.js");
 const Email = require("./email.js");
+const Group = require("./group.js");
 const Team = require("./team.js");
 const Token = require("./token.js");
 const TokenPayload = require("./token_payload.js");
@@ -41,6 +42,7 @@ module.exports = [
   AuthUser,
   Deployment,
   Email,
+  Group,
   Team,
   Token,
   TokenPayload,

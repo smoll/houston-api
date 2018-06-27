@@ -6,23 +6,24 @@ class TeamService extends BaseService {
   async fetchTeamByUuid(uuid, options = {}) {
     const team = await this.model("team")
       .query()
-      .eager(options.relations)
+      .eager("users.emails", "groups")
       .findById(uuid);
     if (team) {
       return team;
     }
+    if (throwError) {
+      this.notFound("team", uuid);
+    }
     return null;
   }
 
-  async fetchTeamsByUserUuid(uuid, options = {}) {
-    console.log("FetchTeamsByUserUuid");
+  async fetchTeamsByUserUuid(uuid) {
     const teams = await this.model("team")
       .query()
-      .eager(options.relations)
-      .joinEager("users")
-      .where("users.uuid", uuid);
+      .joinRelation("users")
+      .eager("users.emails", "groups")
+      .where("users_join.user_uuid", uuid);
 
-    console.log(teams);
     if (teams) {
       return teams;
     }
@@ -30,25 +31,25 @@ class TeamService extends BaseService {
   }
 
   async createTeam(user, payload, options = {}) {
-    console.log(arguments);
     // TODO: Add label and description validation
-    return await this.model("team").query(options.transaction || undefined).insertGraph([{
+    return await this.model("team").query(options.transaction || undefined).insertGraph({
       label: payload.label,
       description: payload.description,
       users: [
         {
           uuid: user.uuid,
+          created_at: new Date().toISOString()
         },
       ]
-    }], {
+    }, {
       relate: "users"
     }).returning("*");
+
+
   }
 
   async updateTeam(team, payload) {
     let changes = {};
-
-    console.log(arguments);
 
     // TODO: Do this check in a more extendable way
     if (payload["label"] !== undefined && payload.label !== team.label) {
@@ -64,6 +65,19 @@ class TeamService extends BaseService {
 
     await team.$query().patch(changes).returning("*");
     return team;
+  }
+
+  async addUser(team, user) {
+    return this.model("user_team").query()
+      .insertGraph({
+        user_uuid: user.uuid,
+        team_uuid: team.uuid,
+      });
+  }
+
+  async removeUser(team, user) {
+    return this.model("user_team").query()
+      .deleteById([user.uuid, team.uuid]);
   }
 
   async deleteTeam(team) {

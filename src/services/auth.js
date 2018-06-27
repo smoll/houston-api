@@ -34,8 +34,10 @@ class AuthService extends BaseService {
     if(authorization && authorization.length > 0) {
       try {
         let decoded = await this.decodeJWT(authorization);
-        let user = await this.service("user").fetchUserByUuid(decoded.uuid);
-        context.setAuthUser(user);
+        let user = await this.service("user").fetchUserByUuid(decoded.uuid, false);
+        if (user) {
+          context.setAuthUser(user);
+        }
       } catch (err) {
 
         // add context... to context, specifying why a token was invalid

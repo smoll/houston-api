@@ -17,6 +17,7 @@ module.exports = [
   require("./team.js"),
   require("./team_property.js"),
   require("./user.js"),
+  require("./user_group_map.js"),
   require("./user_property.js"),
   require("./user_team_map.js"),
 ];

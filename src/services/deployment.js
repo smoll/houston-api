@@ -3,39 +3,50 @@ const ReleaseNamerUtil = require("../utils/releases_namer.js");
 
 class DeploymentService extends BaseService {
 
-  async fetchByUuid(deploymentUuid) {
+  async fetchByUuid(deploymentUuid, throwError = true) {
     let deployment = await this.model("module_deployment")
       .query()
       .findOne("module_deployments.uuid", deploymentUuid);
+
     if (deployment) {
       return deployment;
+    }
+    if (throwError) {
+      this.notFound("deployment", deploymentUuid);
     }
     return null;
   }
 
-  async fetchByTeamUuid(teamUuid) {
-    return await this.model("module_deployment")
+  async fetchByTeamUuid(teamUuid, throwError = true) {
+    const deployments = this.model("module_deployment")
       .query()
       .where({
         "team_uuid": teamUuid,
       });
+
+    if (deployments && deployments.length > 0) {
+      return deployments;
+    }
+    if (throwError) {
+      this.notFound("deployment", teamUuid);
+    }
+    return [];
   }
 
-  async fetchByUserUuid(userUuid) {
+  async fetchByReleaseName(releaseName, throwError = true) {
     // TODO: Once teams are fully implemented, Query for any deployment in any org user is apart of
-    const deployments = await this.model("module_deployment")
-      .query()
-    return deployments;
-  }
-
-  async fetchByReleaseName(releaseName) {
-    // TODO: Once teams are fully implemented, Query for any deployment in any org user is apart of
-    const deployments = await this.model("module_deployment")
+    const deployment = await this.model("module_deployment")
         .query()
         .findOne({
           "release_name": releaseName,
         });
-    return deployments;
+    if (deployment) {
+      return deployment;
+    }
+    if (throwError) {
+      this.notFound("deployment", releaseName);
+    }
+    return null;
   }
 
   async createDeployment(team, type, version, label) {

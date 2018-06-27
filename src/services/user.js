@@ -2,7 +2,7 @@ const BaseService = require("./base.js");
 
 class UserService extends BaseService {
 
-  async fetchUserByEmail(email) {
+  async fetchUserByEmail(email, throwError = true) {
     let user = await this.model("user")
         .query()
         .joinEager("emails")
@@ -11,28 +11,55 @@ class UserService extends BaseService {
     if (user) {
       return user;
     }
+    if (throwError) {
+      this.notFound("user", email);
+    }
     return null;
   }
 
-  async fetchUserByUsername(username) {
+  async fetchUserByUsername(username, throwError = true) {
     let user = await this.model("user")
         .query()
         .joinEager("emails")
         .findOne("username", username);
+
     if (user) {
       return user;
     }
+    if (throwError) {
+      this.notFound("user", username);
+    }
+
     return null;
   }
 
-  async fetchUserByUuid(uuid) {
+  async fetchUserByUuid(uuid, throwError = true) {
     let user = await this.model("user")
         .query()
         .joinEager("emails")
         .findById(uuid);
+
     if (user) {
       return user;
     }
+    if (throwError) {
+      this.notFound("user", uuid);
+    }
+
+    return null;
+  }
+
+  async fetchUsersByTeamUuid(teamUuid) {
+    let users = await this.model("user")
+      .query()
+      .joinEager("emails")
+      .leftJoin("user_team_map", "users.uuid", "user_team_map.user_uuid")
+      .where("user_team_map.team_uuid", teamUuid);
+
+    if (users && users.length > 0) {
+      return users;
+    }
+
     return null;
   }
 

@@ -21,6 +21,7 @@ class Group extends BaseModel {
         label: { type: "string", minLength: 1, maxLength: 255 },
         description: { type: "string", minLength: 1, maxLength: 255 },
         team_uuid: { type: "uuid" },
+        custom: { type: "boolean" },
         active: { type: "boolean" },
         created_at: { type: "string" },
         updated_at: { type: "string" },
@@ -49,14 +50,14 @@ class Group extends BaseModel {
       },
       users: {
         relation: BaseModel.ManyToManyRelation,
-        modelClass: `${__dirname}/role.js`,
+        modelClass: `${__dirname}/user.js`,
         join: {
           from: 'groups.uuid',
-          to: 'roles.uuid',
+          to: 'users.uuid',
           through: {
-            model: `${__dirname}/group_role_map.js`,
-            from: `group_role_map.group_uuid`,
-            to: `group_role_map.role_uuid`
+            model: `${__dirname}/user_group_map.js`,
+            from: `user_group_map.group_uuid`,
+            to: `user_group_map.user_uuid`
           },
         }
       },
@@ -72,6 +73,7 @@ class Group extends BaseModel {
   }
 
   $beforeInsert(context) {
+    this.custom = false;
     this.active = true;
     return super.$beforeInsert(context);
   }

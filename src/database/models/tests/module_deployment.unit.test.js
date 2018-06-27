@@ -41,7 +41,6 @@ describe("test module_deployment", () => {
 
     let check = await ModuleDeploymentModel
       .query()
-      .joinEager("creator")
       .findOne("module_deployments.uuid", deployment.uuid);
 
     expect(check.config.foo).toEqual("derp");

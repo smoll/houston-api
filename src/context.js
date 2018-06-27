@@ -13,40 +13,124 @@ class Context {
 
     this.permissions = {
       user: {
-        view_self: false,
-        edit_self: false,
-        edit_other: false,
-        create_team: false,
-      },
-      // org: {
-      //   // owner will be all true
-      //   // admin will be all true
-      //   view_self: false,
-      //   edit_self: false,
-      //   delete_self: false,
-      //
-      //   view_sources: false,
-      //   create_sources: false,
-      //   edit_sources: false,
-      //   delete_sources: false,
-      //
-      //   view_destinations: false,
-      //   create_destinations: false,
-      //   edit_destinations: false,
-      //   delete_destinations: false,
-      //
-      //   manage_users: false,
-      //
-      //   view_connections: false,
-      //   create_connections: false,
-      //   edit_connections: false,
-      //   delete_connections: false,
-      //
-      //   airflow_status: false,
-      //   airflow_info: false,
-      //   airflow_deploy: false,
-      //   airflow_admin: false,
-      // }
+
+        ////// USER LEVEL (Specific to objects associated with a user)
+
+        // user
+        user_user_view: false,
+        user_user_view_other: false,
+        user_user_update: false,
+        user_user_delete: false,
+
+        // groups
+        user_group_create: false,
+        user_group_list: false,
+        user_group_view: false,
+        user_group_update: false,
+        user_group_delete: false,
+
+        // group users
+        user_group_user_add: false,
+        user_group_user_remove: false,
+        user_group_user_list: false,
+        user_group_user_manage_permissions: false,
+
+        // roles
+        user_role_create: false,
+        user_role_list: false,
+        user_role_view: false,
+        user_role_update: false,
+        user_role_delete: false,
+
+        // teams
+        user_team_create: false,
+        user_team_list: false,
+        user_team_view: false,
+        user_team_update: false,
+        user_team_delete: false,
+
+        // team users
+        user_team_user_add: false,
+        user_team_user_remove: false,
+        user_team_user_list: false,
+
+        user_deployment_create: false,
+        user_deployment_list: false,
+        user_deployment_view: false,
+        user_deployment_update: false,
+        user_deployment_delete: false,
+        user_deployment_deploy: false,
+        user_deployment_external: false,
+
+        // service accounts
+        user_service_account_create: false,
+        user_service_account_list: false,
+        user_service_account_view: false,
+        user_service_account_update: false,
+        user_service_account_delete: false,
+
+        ////// GLOBAL LEVEL (All objects in the system)
+
+        // users
+        global_user_create: false,
+        global_user_list: false,
+        global_user_view: false,
+        global_user_update: false,
+        global_user_delete: false,
+
+        // groups
+        global_group_create: false,
+        global_group_list: false,
+        global_group_view: false,
+        global_group_update: false,
+        global_group_delete: false,
+
+        // group users
+        global_group_user_add: false,
+        global_group_user_remove: false,
+        global_group_user_list: false,
+        global_group_user_manage_permissions: false,
+
+        // roles
+        global_role_create: false,
+        global_role_list: false,
+        global_role_view: false,
+        global_role_update: false,
+        global_role_delete: false,
+
+        // teams
+        global_team_create: false,
+        global_team_list: false,
+        global_team_view: false,
+        global_team_update: false,
+        global_team_delete: false,
+
+        // team users
+        global_team_user_add: false,
+        global_team_user_remove: false,
+        global_team_user_invites: false,
+        global_team_user_list: false,
+
+        // deployments
+        global_deployment_create: false,
+        global_deployment_list: false,
+        global_deployment_view: false,
+        global_deployment_update: false,
+        global_deployment_delete: false,
+        global_deployment_deploy: false,
+        global_deployment_external: false,
+
+        // service accounts
+        global_service_create: false,
+        global_service_list: false,
+        global_service_view: false,
+        global_service_update: false,
+        global_service_delete: false,
+
+        global_system_setting_list: false,
+        global_system_setting_view: false,
+        global_system_setting_update: false,
+      }
     };
 
     // This should never be used for user level endpoint permissions.
@@ -105,6 +189,15 @@ class Context {
     return null;
   }
 
+  hasPermissions(permissions) {
+    if (!_.isArray(permissions)) {
+      permissions = [permissions];
+    }
+
+
+
+  }
+
   // orgId() {
   //   if (this.org) {
   //     return this.org.uui;
@@ -126,5 +219,6 @@ class Context {
 
 Context.REQUESTER_USER = "user";
 Context.REQUESTER_SERVICE = "service";
+Context.REQUESTER_SYSTEM = "system";
 
 module.exports = Context;
