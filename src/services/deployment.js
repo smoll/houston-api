@@ -18,7 +18,7 @@ class DeploymentService extends BaseService {
   }
 
   async fetchByTeamUuid(teamUuid, throwError = true) {
-    const deployments = this.model("module_deployment")
+    const deployments = await this.model("module_deployment")
       .query()
       .where({
         "team_uuid": teamUuid,
