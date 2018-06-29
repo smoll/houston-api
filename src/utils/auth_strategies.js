@@ -46,7 +46,7 @@ class AuthStrategies {
     this.oauthUtil[AuthStrategies.GOOGLE] = new GoogleOAuth(
       Config.get(Config.GOOGLE_CLIENT_ID),
       Config.get(Config.GOOGLE_CLIENT_SECRET),
-      Config.get(Config.OAUTH_REDIRECT_URL)
+      Config.get(Config.GOOGLE_OAUTH_REDIRECT_URL)
     );
     return true;
   }
