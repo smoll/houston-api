@@ -32,7 +32,6 @@ class Team extends BaseType {
         return value.active === true
       },
       users(value) {
-        console.log("This is getting called");
         return value.users || [];
       },
       groups(value) {

@@ -13,11 +13,11 @@ class Token extends BaseType {
 
   resolver() {
     return {
-      token(value) {
-        return value.token || null;
+      value(value) {
+        return value.value || null;
       },
-      decoded(value) {
-        return value.decoded || false;
+      payload(value) {
+        return value.payload || false;
       },
     };
   }

@@ -28,7 +28,7 @@ class Deployment extends BaseType {
       label(value) {
         return value.label || null;
       },
-      release_name(value) {
+      releaseName(value) {
         return value.releaseName || null;
       },
       version(value) {
