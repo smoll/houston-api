@@ -16,6 +16,8 @@ exports.up = function(knex) {
       table.string("access_token");
       table.timestamp("expires_at");
       table.timestamps();
+
+      table.unique(["oauth_provider", "oauth_user_id"]);
     });
   });
 };

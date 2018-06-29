@@ -5,6 +5,7 @@ module.exports = [
   require("./deployment.js"),
   require("./group.js"),
   require("./local_user.js"),
+  require("./oauth_user.js"),
   require("./rbac.js"),
   require("./system_setting.js"),
   require("./team.js"),

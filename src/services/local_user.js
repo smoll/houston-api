@@ -1,24 +1,7 @@
 const BaseService = require("./base.js");
 
-const LocalStrategy = require("passport-local");
 
 class LocalUserService extends BaseService {
-
-  getAuthStrategy() {
-    return new LocalStrategy({
-      session: false,
-    }, async (username, password, done) => {
-      try {
-        let user = await this.authenticateUser(username, password);
-        if (user === false) {
-          return done(null, false);
-        }
-        return done(null, user);
-      } catch (err) {
-        return done(err);
-      }
-    });
-  }
 
   async authenticateUser(emailOrUsername, password) {
     let user = await this.service("user").fetchUserByUsername(emailOrUsername, false);
@@ -35,6 +18,22 @@ class LocalUserService extends BaseService {
       throw new Error("User password incorrect");
     }
     return user
+  }
+
+  async createUser(email, password, username, fullName) {
+    let credential = await this.model("local_credential")
+      .query()
+      .insert({
+        password: password
+      }).returning("*");
+
+    const userData = {
+      email: email,
+      username: username,
+      fullName: fullName,
+    };
+
+    return this.service("user").createUser(userData, credential);
   }
 
   async fetchCredentialsForUser(user) {

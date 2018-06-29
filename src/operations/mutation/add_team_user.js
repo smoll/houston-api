@@ -23,7 +23,6 @@ class CreateTeam extends BaseOperation {
         };
         return this.service("team").createTeam(context.authUser, payload, options);
       });
-      console.log(team);
 
       return team[0];
     } catch(err) {

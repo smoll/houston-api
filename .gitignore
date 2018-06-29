@@ -63,3 +63,6 @@ typings/
 
 # docker-compose data
 .local/
+
+# docker-compose override (keep secret stuff here)
+docker-compose.override.yml

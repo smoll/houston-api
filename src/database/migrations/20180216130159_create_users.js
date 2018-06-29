@@ -12,7 +12,7 @@ exports.up = function(knex) {
       table.uuid("uuid").primary();
       table.string("username").unique();
       table.string("provider_type");
-      table.string("provider_uuid");
+      table.uuid("provider_uuid");
       table.string("full_name");
       table.string("status");
       table.timestamps();

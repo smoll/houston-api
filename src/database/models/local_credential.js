@@ -7,6 +7,11 @@ const Password = require('objection-password')({
 
 class LocalCredential extends Password(BaseModel) {
 
+  // used to get the provider_type for the users table
+  providerType() {
+    return LocalCredential.PROVIDER_TYPE;
+  }
+
   static get tableName() {
     return "local_credentials";
   }
@@ -52,5 +57,7 @@ class LocalCredential extends Password(BaseModel) {
     };
   }
 }
+
+LocalCredential.PROVIDER_TYPE = "local";
 
 module.exports = LocalCredential;

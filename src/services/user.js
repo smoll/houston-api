@@ -63,31 +63,37 @@ class UserService extends BaseService {
     return null;
   }
 
-  async createUser(email, password, username) {
+  async createUser(userData, credential) {
     try {
-      if (!username) {
-        username = email;
-      }
+      const email = userData.email;
+      const username = userData.username || email;
+      const fullName = userData.fullName || "";
+      const properties = [];
 
-      // TODO: Move this step outside of createUser, ideally to a service with a base credential in util
-      let credential = await this.model("local_credential")
-          .query()
-          .insert({
-            password: password
-          }).returning("*");
+      // Needs relation added to model
+      // if (userData.hasOwnProperty("pictureUrl")) {
+      //   properties.push({
+      //     key: this.model("user_property").KEY_PICTURE_URL,
+      //     value: userData.pictureUrl,
+      //     category: this.model("user_property").CATEGORY_PROFILE
+      //   });
+      // }
 
       return await this.model("user")
         .query()
         .insertGraph({
           username: username,
           provider_uuid: credential.uuid,
-          provider_type: this.model("user").PROVIDER_LOCAL,
+          provider_type: credential.providerType(),
+          full_name: fullName,
           emails: [{
             address: email,
             main: true,
-          }]
+          }],
+          //properties: properties
         }).returning("*");
     } catch (err) {
+      // TODO: Verify errors
       if(err.message.indexOf("unique constraint") !== -1 && err.message.indexOf("users_username_unique") !== -1) {
         throw new Error("Email already in use by existing account");
       }

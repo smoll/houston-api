@@ -1,6 +1,11 @@
 const BaseModel = require("./base.js");
 
-class OAuthCredential extends BaseModel {
+class OauthCredential extends BaseModel {
+
+  // used to get the provider_type for the users table
+  providerType() {
+    return OauthCredential.PROVIDER_TYPE;
+  }
 
   static get tableName() {
     return "oauth_credentials";
@@ -52,4 +57,6 @@ class OAuthCredential extends BaseModel {
   }
 }
 
-module.exports = OAuthCredential;
+OauthCredential.PROVIDER_TYPE = "oauth";
+
+module.exports = OauthCredential;

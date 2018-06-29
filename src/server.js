@@ -7,8 +7,6 @@ const Config = require("./utils/config.js");
 // Set config defaults
 Config.setDefaults({});
 
-const Passport = require("passport");
-
 const { Postgres, Airflow, PostgresMigration } = require("./database/postgres.js");
 const { OperationManager, TypeManager, SchemaBuilder } = require("./operations.js");
 
@@ -47,11 +45,6 @@ server.express.use(BodyParser.json({
   type: ["application/json", "application/vnd.docker.distribution.events.v1+json"]
 }));
 require("./routes/index.js")(server.express, Application);
-
-// set auth strategy
-const strategy = Config.get(Config.AUTH_STRATEGY);
-Passport.use(Application.service("auth").getAuthStrategy(strategy));
-server.use(Passport.initialize());
 
 (async function() {
   Application.logger().info("Running migrations... ");

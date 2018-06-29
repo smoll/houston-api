@@ -44,8 +44,6 @@ class TeamService extends BaseService {
     }, {
       relate: "users"
     }).returning("*");
-
-
   }
 
   async updateTeam(team, payload) {

@@ -10,10 +10,10 @@ class Config {
     Config.defaults[Config.PLAYGROUND_ENDPOINT_URL] = "/playground";
     Config.defaults[Config.DEBUG_DB] = "false";
     Config.defaults[Config.JWT_PASSPHRASE] = "insecure_passphrase";
-    Config.defaults[Config.AUTH_STRATEGY] = "local";
+    Config.defaults[Config.AUTH_STRATEGY] = "local,google_oauth";
     Config.defaults[Config.HELM_GLOBAL_CONFIG] = {};
-    //Config.defaults[Config.HELM_ASTRO_REPO] = "https://helm.astronomer.io";
     Config.defaults[Config.HELM_ASTRO_REPO] = "http://helm.astronomer.io/";
+    Config.defaults[Config.OAUTH_REDIRECT_URL] = "https://houston.astronomer.win/healthz";
   }
 
   static get(key) {
@@ -44,5 +44,8 @@ Config.HELM_ASTRO_REPO = "HELM_ASTRO_REPO";
 Config.AUTH_STRATEGY = "AUTH_STRATEGY";
 Config.COMMANDER_HOST = "COMMANDER_HOST";
 Config.COMMANDER_PORT = "COMMANDER_PORT";
+Config.OAUTH_REDIRECT_URL = "OAUTH_REDIRECT_URL";
+Config.GOOGLE_CLIENT_ID = "GOOGLE_CLIENT_ID";
+Config.GOOGLE_CLIENT_SECRET = "GOOGLE_CLIENT_SECRET";
 
 module.exports = Config;

@@ -47,8 +47,6 @@ class GroupService extends BaseService {
 
   async createGroupFromTemplate(teamUuid, templateGroupUuid, options = {}) {
     const template = await this.fetchGroupByUuid(templateGroupUuid, options);
-    console.log("Got template");
-    console.log(template);
     return this.createGroup({
       label: template.label,
       description: template.description,

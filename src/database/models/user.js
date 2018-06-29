@@ -24,7 +24,7 @@ class User extends BaseModel {
         username: { type: "string", minLength: 1, maxLength: 255 },
         provider_type: { type: "string", minLength: 1, maxLength: 255 },
         provider_uuid: { type: "string", minLength: 1, maxLength: 255 },
-        full_name: { type: "string", minLength: 1, maxLength: 255 },
+        full_name: { type: "string" },
         status: { type: "string" },
         created_at: { type: "string" },
         updated_at: { type: "string" },
@@ -90,6 +90,7 @@ class User extends BaseModel {
 }
 
 User.PROVIDER_LOCAL = "local";
+User.PROVIDER_OAUTH = "oauth";
 User.PROVIDER_LDAP  = "ldap";
 
 module.exports = User;

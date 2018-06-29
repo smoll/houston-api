@@ -1,6 +1,7 @@
 module.exports = [
 
   // queries
+  require("./query/auth_config.js"),
   require("./query/deployments.js"),
   require("./query/deployment_config.js"),
   require("./query/groups.js"),
