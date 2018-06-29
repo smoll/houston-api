@@ -65,4 +65,4 @@ typings/
 .local/
 
 # docker-compose override (keep secret stuff here)
-docker-compose.override.yml
+docker-compose.override.yaml
