@@ -27,7 +27,7 @@ class CommonService extends BaseService {
     });
   }
 
-  resolveResource(resourceType, resourceUuid) {
+  async resolveResource(resourceType, resourceUuid) {
     switch(resourceType) {
       case "deploymentUuid":
         return this.service("deployment").fetchDeploymentByUuid(resourceUuid);
@@ -36,7 +36,7 @@ class CommonService extends BaseService {
       case "inviteUuid":
         return this.service("invite_token").fetchInviteByUuid(resourceUuid);
       case "serviceAccountUuid":
-        return this("service_account").fetchServiceAccountByUuid(resourceUuid);
+        return this.service("service_account").fetchServiceAccountByUuid(resourceUuid);
       case "teamUuid":
         return this.service("team").fetchTeamByUuid(resourceUuid);
       case "userUuid":
