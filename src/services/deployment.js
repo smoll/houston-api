@@ -3,7 +3,7 @@ const ReleaseNamerUtil = require("../utils/releases_namer.js");
 
 class DeploymentService extends BaseService {
 
-  async fetchByUuid(deploymentUuid, throwError = true) {
+  async fetchDeploymentByUuid(deploymentUuid, throwError = true) {
     let deployment = await this.model("module_deployment")
       .query()
       .findOne("module_deployments.uuid", deploymentUuid);
@@ -17,7 +17,7 @@ class DeploymentService extends BaseService {
     return null;
   }
 
-  async fetchByTeamUuid(teamUuid, throwError = true) {
+  async fetchDeploymentByTeamUuid(teamUuid, throwError = true) {
     const deployments = await this.model("module_deployment")
       .query()
       .where({
@@ -33,7 +33,7 @@ class DeploymentService extends BaseService {
     return [];
   }
 
-  async fetchByReleaseName(releaseName, throwError = true) {
+  async fetchDeploymentByReleaseName(releaseName, throwError = true) {
     // TODO: Once teams are fully implemented, Query for any deployment in any org user is apart of
     const deployment = await this.model("module_deployment")
         .query()

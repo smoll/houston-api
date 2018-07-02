@@ -14,6 +14,15 @@ class CreateTeam extends BaseOperation {
 
   async resolver(root, args, context) {
     try {
+      // Determine default team groups
+      const DEFAULT_GROUPS_KEY = this.model("system_setting").KEY_DEFAULT_TEAM_GROUPS;
+      let groupTemplates = await this.service("system_setting").getSetting(DEFAULT_GROUPS_KEY);
+      if (groupTemplates && groupTemplates.length > 0) {
+        groupTemplates = groupTemplates.split(",");
+      } else {
+        groupTemplates = [];
+      }
+
       let team = await Transaction(this.conn("postgres"), async (trx) => {
         const payload = {
           label: args.label,
@@ -25,16 +34,7 @@ class CreateTeam extends BaseOperation {
 
         const team = await this.service("team").createTeam(context.authUser, payload, options);
 
-        // Determine default team groups
-        const DEFAULT_GROUPS_KEY = this.model("system_setting").KEY_DEFAULT_TEAM_GROUPS;
-        let groupTemplates = await this.service("system_setting").getSetting(DEFAULT_GROUPS_KEY);
-        if (groupTemplates && groupTemplates.length > 0) {
-          groupTemplates = groupTemplates.split(",");
-        } else {
-          groupTemplates = [];
-        }
-
-        const group = this.service("group").createGroupsFromTemplates(team.uuid, groupTemplates, options);
+        await this.service("group").createGroupsFromTemplates(team.uuid, groupTemplates, options);
         return team;
       });
 

@@ -15,14 +15,7 @@ class Teams extends BaseOperation {
     try {
       let teams;
       if (args.teamUuid) {
-        teams = [this.service("team").fetchTeamByUuid(args.teamUuid, {
-          relations: "[users.emails, groups.users.emails]",
-        })];
-
-        // Move to team resolver
-        //const users = await this.service("user").fetchUsersByTeamUuid(team.uuid);
-        //const groups = await this.service("group").fetchGroupsByTeamUuid(team.uuid);
-
+        return [context.resources.team];
       } else {
         if (!args.userUuid) {
           args.userUuid = context.authUser.uuid;

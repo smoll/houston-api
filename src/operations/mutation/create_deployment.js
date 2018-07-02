@@ -38,6 +38,8 @@ class CreateDeployment extends BaseOperation {
         context.resources.team,
         context.resources.team,
       );
+
+      // On duplicate error will be;  duplicate key value violates unique constraint \"unique_team_uuid_label\"",
       return deployment;
       await this.service("commander").createDeployment(deployment, args.config);
 

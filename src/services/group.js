@@ -54,6 +54,7 @@ class GroupService extends BaseService {
     }, options);
   }
 
+  // TODO: Update this to get all templateGroupUuids in a single query and iterate over those
   async createGroupsFromTemplates(teamUuid, templateGroupUuids, options = {}) {
     const promises = [];
 

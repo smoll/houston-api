@@ -13,7 +13,7 @@ class UpdateDeployment extends BaseOperation {
 
   async resolver(root, args, context) {
     try {
-      let deployment = await this.service("deployment").fetchByUuid(args.deploymentUuid);
+      let deployment = await this.service("deployment").fetchDeploymentByUuid(args.deploymentUuid);
 
       if (args.label || !_.isEmpty(args.images) || args.team) {
         deployment = await this.service("deployment").updateDeployment(deployment, {

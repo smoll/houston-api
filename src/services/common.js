@@ -9,25 +9,38 @@ class CommonService extends BaseService {
 
   async resourceResolver(resources) {
     const results = {};
+    const promises = [];
     for(let resourceKey in resources) {
       if (!resources.hasOwnProperty(resourceKey)) {
         continue;
       }
 
-      const uuid = resources[resourceKey];
+      const promise = this.resolveResource(resourceKey, resources[resourceKey]).then((result) => {
+        results[resourceKey.replace("Uuid", "")] = result;
+      });
 
-      results[resourceKey] = await (async () => {
-        switch(resourceKey) {
-          case "userUuid":
-            return this.service("user").fetchByUuid(uuid);
-          case "orgUuid":
-            return null;
-          case "deploymentUuid":
-            return this.service("deployment").fetchByUuid(uuid);
-          case "teamUuid":
-            return null;
-        }
-      })();
+      promises.push(promise);
+    }
+
+    return Promise.all(promises).then(() => {
+      return results;
+    });
+  }
+
+  resolveResource(resourceType, resourceUuid) {
+    switch(resourceType) {
+      case "deploymentUuid":
+        return this.service("deployment").fetchDeploymentByUuid(resourceUuid);
+      case "groupUuid":
+        return this.service("group").fetchGroupByUuid(resourceUuid);
+      case "inviteUuid":
+        return this.service("invite_token").fetchInviteByUuid(resourceUuid);
+      case "serviceAccountUuid":
+        return this("service_account").fetchServiceAccountByUuid(resourceUuid);
+      case "teamUuid":
+        return this.service("team").fetchTeamByUuid(resourceUuid);
+      case "userUuid":
+        return this.service("user").fetchUserByUuid(resourceUuid);
     }
   }
 }

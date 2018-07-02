@@ -14,11 +14,11 @@ class Deployments extends BaseOperation {
   async resolver(root, args, context) {
     try {
       if (args.deploymentUuid) {
-        return [this.service("deployment").fetchByUuid(args.deploymentUuid)];
+        return [this.service("deployment").fetchDeploymentByUuid(args.deploymentUuid)];
       } else if (args.teamUuid) {
-        return this.service("deployment").fetchByTeamUuid(args.teamUuid, false);
+        return this.service("deployment").fetchDeploymentByTeamUuid(args.teamUuid, false);
       } else if (args.releaseName) {
-        return [this.service("deployment").fetchByReleaseName(args.releaseName)];
+        return [this.service("deployment").fetchDeploymentByReleaseName(args.releaseName)];
       } else {
         throw new Error("Deployments can only be listed by deploymentUuid, releaseName, or teamUuid");
       }

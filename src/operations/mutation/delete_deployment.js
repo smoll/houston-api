@@ -13,7 +13,7 @@ class DeleteDeployment extends BaseOperation {
 
   async resolver(root, args, context) {
     try {
-      const deployment = await this.service("deployment").fetchByUuid(args.deploymentUuid);
+      const deployment = await this.service("deployment").fetchDeploymentByUuid(args.deploymentUuid);
 
       if (!deployment) {
         throw new Error("Deployment not found");
