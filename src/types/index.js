@@ -66,5 +66,6 @@ module.exports = [
   Team,
   Token,
   TokenPayload,
+  ServiceAccount,
   User
 ];

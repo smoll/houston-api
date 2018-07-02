@@ -8,6 +8,7 @@ module.exports = [
   require("./oauth_user.js"),
   require("./rbac.js"),
   require("./system_setting.js"),
+  require("./service_account.js"),
   require("./team.js"),
   require("./user.js")
 ];

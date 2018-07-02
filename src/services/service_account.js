@@ -1,5 +1,3 @@
-import {PostgresUser, Service} from "../../../houston/src/data/connectors";
-
 const BaseService = require("./base.js");
 
 class ServiceAccountService extends BaseService {
@@ -54,12 +52,12 @@ class ServiceAccountService extends BaseService {
 
   async createServiceAccount(label, category, type, uuid) {
     // TODO: Add label and category validation
-    return await this.model("group").query().insertGraph([{
+    return await this.model("service_account").query().insertGraph([{
       label: label,
       category: category,
       entityType: type,
       entityUuid: uuid || null
-    }]).returning("*");
+    }]).returning("*").first();
   }
 
   async updateServiceAccount(serviceAccount, payload) {
@@ -68,11 +66,12 @@ class ServiceAccountService extends BaseService {
     if (payload["label"] !== undefined && payload.label !== serviceAccount.label) {
       changes.label = payload.label;
     }
+
     if (payload["category"] !== undefined && payload.description !== serviceAccount.category) {
       changes.category = payload.category;
     }
 
-    if(serviceAccount.keys(changes).length === 0) {
+    if (serviceAccount.keys(changes).length === 0) {
       return false;
     }
 
