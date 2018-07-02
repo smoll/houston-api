@@ -3,7 +3,7 @@ const BaseService = require("./base.js");
 class ServiceAccountService extends BaseService {
 
   async fetchServiceAccountByKey (apiKey, throwError = true) {
-    let service = await this.model("service_accounts")
+    let service = await this.model("service_account")
       .query()
       .eager("roles")
       .where({
@@ -14,13 +14,13 @@ class ServiceAccountService extends BaseService {
       return service;
     }
     if (throwError) {
-      this.notFound("service_account", serviceAccount);
+      this.notFound("service_account", apiKey);
     }
     return null;
   }
 
   async fetchServiceAccountByUuid (uuid, throwError = true) {
-    let service = await this.model("service_accounts")
+    let service = await this.model("service_account")
       .query()
       .eager("roles")
       .findById(uuid);
@@ -29,7 +29,7 @@ class ServiceAccountService extends BaseService {
       return service;
     }
     if (throwError) {
-      this.notFound("service_account", serviceAccount);
+      this.notFound("service_account", uuid);
     }
     return null;
   }
@@ -71,11 +71,11 @@ class ServiceAccountService extends BaseService {
       changes.category = payload.category;
     }
 
-    if (serviceAccount.keys(changes).length === 0) {
+    if (Object.keys(changes).length === 0) {
       return false;
     }
 
-    return await serviceAccount.$query().patch(changes).returning("*");
+    return await serviceAccount.$query().patch(changes).returning("*").first();
   }
 
   async deleteServiceAccount(serviceAccount) {

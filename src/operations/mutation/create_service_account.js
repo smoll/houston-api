@@ -4,7 +4,7 @@ class CreateServiceAccount extends BaseOperation {
     super();
     this.name = "createServiceAccount";
     this.typeDef = `
-      # Create a team and add authenticated user as owner
+      # Create a Service Account
       createServiceAccount(label: String!, category: String!, type: EntityType!, uuid: Uuid!) : ServiceAccount
     `;
     this.entrypoint = "mutation";
