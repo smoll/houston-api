@@ -5,7 +5,8 @@ const AuthUser = require("./auth_user.js");
 const Deployment = require("./deployment.js");
 const Email = require("./email.js");
 const Group = require("./group.js");
-const SystemSetting = require("./system_setting");
+const ServiceAccount = require("./service_account.js");
+const SystemSetting = require("./system_setting.js");
 const Team = require("./team.js");
 const Token = require("./token.js");
 const TokenPayload = require("./token_payload.js");
@@ -44,6 +45,15 @@ SchemaBuilder.addTypeDef(`
   enum AuthStrategy {
     LOCAL
     GOOGLE_OAUTH
+  }
+`);
+
+SchemaBuilder.addTypeDef(`
+  enum EntityType {
+    SYSTEM
+    TEAM
+    DEPLOYMENT
+    USER
   }
 `);
 

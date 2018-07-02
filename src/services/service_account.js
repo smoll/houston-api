@@ -4,74 +4,88 @@ const BaseService = require("./base.js");
 
 class ServiceAccountService extends BaseService {
 
-  async fetchServiceAccountByKey (apiKey) {
+  async fetchServiceAccountByKey (apiKey, throwError = true) {
     let service = await this.model("service_accounts")
       .query()
-      .findOne("api_key". apiKey);
+      .eager("roles")
+      .where({
+        apiKey: apiKey
+      });
 
     if (service) {
       return service;
     }
+    if (throwError) {
+      this.notFound("service_account", serviceAccount);
+    }
     return null;
   }
 
-  async fetchServiceAccountByUuid (uuid) {
+  async fetchServiceAccountByUuid (uuid, throwError = true) {
     let service = await this.model("service_accounts")
       .query()
+      .eager("roles")
       .findById(uuid);
 
     if (service) {
       return service;
     }
+    if (throwError) {
+      this.notFound("service_account", serviceAccount);
+    }
     return null;
   }
 
-  async fetchServiceAccounts(type, uuid = null) {
-    // search by entity type and id
-    let type = [];
-    let uuid = [];
-    if (system === true) {
-      type.push(Service.TYPE_SYSTEM);
-    }
-    if (organization) {
-      type.push(Service.TYPE_ORGANIZATION);
-      uuid.push(organization);
+  async fetchServiceAccountsByEntity(entityType, entityUuid) {
+    const serviceAccounts = await this.model("service_account")
+      .query()
+      .eager("roles")
+      .where({
+        entity_type: entityType,
+        entity_uuid: entityUuid,
+      });
 
-    }
-    if (project) {
-      type.push(Service.TYPE_PROJECT);
-      uuid.push(project);
+    if (serviceAccounts && serviceAccounts.length > 0) {
+      return serviceAccounts;
     }
 
-    let condition = {};
-    if (type.length) {
-      condition.serviceType = type;
-    }
-    if (uuid.length) {
-      condition.serviceUuid = uuid;
-    }
-
-    return Service.findAll({ where: condition });
+    return [];
   }
 
-  async createServiceAccount(user, title, type, category, uuid) {
-    let ServicePrototype = {
-      creatorUuid: sys_user.get("uuid"),
-      title: title,
-      serviceType: type,
-      serviceCategory: category,
-      serviceUuid: uuid
-    };
-
-    if (type === Service.TYPE_SYSTEM) {
-      ServicePrototype["serviceUuid"] = null;
-    } else if (type === Service.TYPE_ORGANIZATION) {
-      //TODO: Save on Organization until all users are ported over to use creatorUuid
-    }
-
-    return Service.create(ServicePrototype);
+  async createServiceAccount(label, category, type, uuid) {
+    // TODO: Add label and category validation
+    return await this.model("group").query().insertGraph([{
+      label: label,
+      category: category,
+      entityType: type,
+      entityUuid: uuid || null
+    }]).returning("*");
   }
 
+  async updateServiceAccount(serviceAccount, payload) {
+    let changes = {};
+
+    if (payload["label"] !== undefined && payload.label !== serviceAccount.label) {
+      changes.label = payload.label;
+    }
+    if (payload["category"] !== undefined && payload.description !== serviceAccount.category) {
+      changes.category = payload.category;
+    }
+
+    if(serviceAccount.keys(changes).length === 0) {
+      return false;
+    }
+
+    return await serviceAccount.$query().patch(changes).returning("*");
+  }
+
+  async deleteServiceAccount(serviceAccount) {
+    return await serviceAccount.$query().delete();
+  }
+
+  async deleteServiceAccountByUuid(uuid) {
+    return await this.model("service_account").query().deleteById(uuid);
+  }
 }
 
 module.exports = ServiceAccountService;

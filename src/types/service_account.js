@@ -1,18 +1,18 @@
 const BaseType = require("./base.js");
 
-class Group extends BaseType {
+class ServiceAccount extends BaseType {
   constructor(application) {
     super(application);
-    this.typeName = "Group";
+    this.typeName = "ServiceAccount";
     this.typeDef = `
-    type Group {
+    type ServiceAccount {
       uuid: Uuid
+      apiKey: String
       label: String
-      description: String
-      team: Team
-      custom: Boolean
+      category: String
+      entityType: EntityType
+      entityUuid: Uuid
       active: Boolean
-      users: [User]
       createdAt: String
       updatedAt: String
     }`;
@@ -23,23 +23,23 @@ class Group extends BaseType {
       uuid(value) {
         return value.uuid || null;
       },
+      apiKey(value) {
+        return value.apiKey || null;
+      },
       label(value) {
         return value.label || null;
       },
-      description(value) {
-        return value.description || null;
+      category(value) {
+        return value.category || null;
       },
-      team(value) {
-        return value.team || null;
-      },
-      custom(value) {
-        return value.custom === true
+      entityType(value) {
+        return value.entityType || null;
+      }
+      entityUuid(value) {
+        return value.entityUuid || null;
       },
       active(value) {
         return value.active === true
-      },
-      users(value) {
-        return value.users || [];
       },
       createdAt(value) {
         return value.createdAt || null;
@@ -51,4 +51,4 @@ class Group extends BaseType {
   }
 }
 
-module.exports = Group;
+module.exports = ServiceAccount;

@@ -10,7 +10,7 @@ class Config {
     Config.defaults[Config.PLAYGROUND_ENDPOINT_URL] = "/playground";
     Config.defaults[Config.DEBUG_DB] = "false";
     Config.defaults[Config.JWT_PASSPHRASE] = "insecure_passphrase";
-    Config.defaults[Config.AUTH_STRATEGY] = "local,google_oauth";
+    Config.defaults[Config.AUTH_STRATEGY] = "local";
     Config.defaults[Config.HELM_GLOBAL_CONFIG] = {};
     Config.defaults[Config.HELM_ASTRO_REPO] = "http://helm.astronomer.io/";
   }

@@ -1,5 +1,7 @@
 const BaseService = require("./base.js");
 
+let USER_COUNT = null;
+
 class UserService extends BaseService {
 
   async fetchUserByEmail(email, throwError = true) {
@@ -63,12 +65,26 @@ class UserService extends BaseService {
     return null;
   }
 
+  async fetchUserCount() {
+    if (USER_COUNT === null) {
+      let result = await this.model("user")
+        .query()
+        .count()
+        .first();
+      USER_COUNT = parseInt(result.count);
+    }
+    return USER_COUNT;
+  }
+
   async createUser(userData, credential) {
     try {
       const email = userData.email;
       const username = userData.username || email;
       const fullName = userData.fullName || "";
       const properties = [];
+
+      // get current user count, will use later to see if user should be a system admin
+      const userCount = await this.fetchUserCount();
 
       // Needs relation added to model
       // if (userData.hasOwnProperty("pictureUrl")) {
@@ -79,7 +95,7 @@ class UserService extends BaseService {
       //   });
       // }
 
-      return await this.model("user")
+      let user = await this.model("user")
         .query()
         .insertGraph({
           username: username,
@@ -90,8 +106,17 @@ class UserService extends BaseService {
             address: email,
             main: true,
           }],
-          //properties: properties
         }).returning("*");
+
+
+      if (userCount === 0) {
+        // this is the first user, lets make them a system owner
+        const adminGroupKey = this.model("system_setting").KEY_ADMIN_GROUP_UUID;
+        const adminGroupUuid = await this.service("system_setting").getSetting(adminGroupKey);
+        const adminGroup = await this.service("group").fetchGroupByUuid(adminGroupUuid);
+        await this.service("group").addUser(adminGroup, user);
+      }
+      return user;
     } catch (err) {
       // TODO: Verify errors
       if(err.message.indexOf("unique constraint") !== -1 && err.message.indexOf("users_username_unique") !== -1) {

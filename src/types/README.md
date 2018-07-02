@@ -7,44 +7,53 @@ so these components, along with a name that matches the typeDef name
 are added to the schema via a function call.
 
 # Adding GraphQL type
-The primary method for the schema builder is `addType`.  It has the signature:
+Create a class definition that extends the base type.  It should have a
+constructor and resovler method
 
-### addType(type, typeDef, resolver)
+### constructor(application)
 
-`type` is a string type, that matches the name of the object in the typeDef
+The constructor should set properties for `typeName` and `typeDef`
+
+`typeName` is a string type, that matches the name of the object in the typeDef
 
 `typeDef` is a string containing the GQL typeDef
 
-`resolver` is an object containing a resolver function for each property of a typeDef
-
+### resolver
+`resolver` should return an object containing a resolver function for
+each property of a typeDef.  An application will be dependency injected
+into the typeDef, giving the resolver access to all models/services/etc.
 
 # Example
 ```
-const { SchemaBuilder } = require("./operations.js");
+const Base = require("./base.js");
 
-SchemaBuilder.addType('Token',
-  `type Token {
-    success: Boolean
-    message: String
-    token: String
-    decoded: DecodedToken
-  }`,
-  {
-    success(payload) {
-      return payload.success;
-    },
-    message(payload) {
-      return payload.message;
-    },
-    token(payload) {
-      return payload.token;
-    },
-    decoded(payload) {
-      return payload.decoded;
-    }
+class NewType extends Base {
+  constructor(application) {
+    super(application);
+    this.typeName = "NewType";
+    this.typeDef = `
+      type NewType {
+        field1: String
+        field2: String
+    `;
   }
-);
+
+  resolver() {
+    return {
+      field1: function(value) {
+        return value.field1;
+      },
+      field2: function(value) {
+        return value.field2;
+      }
+    };
+  }
+}
+
+export NewType;
 ```
 
-# Notes:
-There is no need to export anything as the data is added via the schema builder
+
+# Note: When creating a new typedef, ensure to include it via the index.js file
+Adding it to the array of exported typeDefs will automatically add it to the list
+when the server starts.

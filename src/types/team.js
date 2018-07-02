@@ -23,7 +23,7 @@ class Team extends BaseType {
         return value.uuid || null;
       },
       label(value) {
-        return value.label || false;
+        return value.label || null;
       },
       description(value) {
         return value.description || null;
