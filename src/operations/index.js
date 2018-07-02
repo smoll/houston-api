@@ -10,6 +10,7 @@ module.exports = [
   require("./query/groups.js"),
   require("./query/teams.js"),
   require("./query/users.js"),
+  require("./query/service_accounts.js"),
 
   // =========
   // Mutations

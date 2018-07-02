@@ -12,12 +12,7 @@ class UpdateServiceAccount extends BaseOperation {
 
   async resolver(root, args, context) {
     try {
-      // 1: Find existing Service Account to update
-      const serviceAccount = await this.service("service_account").fetchServiceAccountByUuid(args.serviceAccountUuid);
-
-      // 2: Pass alond existing Service Account and new properties to Service Account Service
-      const updatedServiceAccount = await this.service("service_account").updateServiceAccount(serviceAccount, args.payload); // expects args (serviceAccount, payload)
-
+      const updatedServiceAccount = await this.service("service_account").updateServiceAccount(context.resources.serviceAccount, args.payload); // expects args (serviceAccount, payload)
       return updatedServiceAccount;
     } catch(err) {
       this.error(err.message);
