@@ -38,7 +38,13 @@ const server = new GraphQLServer({
 });
 
 const authService = Application.service("auth");
+const commonService = Application.service("common");
 server.express.use(authService.authorizeRequest.bind(authService));
+
+OperationManager.registerPreHook(async function(root, args, context, operation) {
+  context.resources = await commonService.resourceResolver(args);
+  return Promise.resolve([root, args, context, operation]);
+});
 
 // Build REST routes
 server.express.use(BodyParser.json({
