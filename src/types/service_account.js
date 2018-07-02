@@ -34,7 +34,7 @@ class ServiceAccount extends BaseType {
       },
       entityType(value) {
         return value.entityType || null;
-      }
+      },
       entityUuid(value) {
         return value.entityUuid || null;
       },
