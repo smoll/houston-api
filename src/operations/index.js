@@ -8,6 +8,7 @@ module.exports = [
   require("./query/deployments.js"),
   require("./query/deployment_config.js"),
   require("./query/groups.js"),
+  require("./query/self.js"),
   require("./query/teams.js"),
   require("./query/users.js"),
   require("./query/service_accounts.js"),

@@ -1,20 +1,20 @@
 const BaseOperation = require("../base.js");
 
-class Users extends BaseOperation {
+class Self extends BaseOperation {
   constructor() {
     super();
-    this.name = "users";
+    this.name = "self";
     this.typeDef = `
-      # Fetches a user by username, email
-      users(userUuid: Uuid) : [User]
+      # Fetches info about the authenticated requesting user
+      self : User
     `;
     this.entrypoint = "query";
   }
 
   async resolver(root, args, context) {
     try {
-      let user = context.resources.user;
-      return [user];
+      let user = context.authUser;
+      return user;
     } catch (err) {
       this.error(err.message);
       throw err;
@@ -22,4 +22,4 @@ class Users extends BaseOperation {
   }
 }
 
-module.exports = Users;
+module.exports = Self;
