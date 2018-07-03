@@ -36,11 +36,14 @@ module.exports = [
   // Service Account Operations
   require("./mutation/create_service_account.js"),
   require("./mutation/update_service_account.js"),
+  require("./mutation/delete_service_account.js"),
 
   // Group Operations
   require("./mutation/group_add_user.js"),
   require("./mutation/group_remove_user.js"),
 
-  // subscriptions
+  // =========
+  // Subscriptions
+  // =========
 
 ];
