@@ -5,14 +5,13 @@ class SystemSettingService extends BaseService {
 
   constructor() {
     super(...arguments);
-    this.settings = new NodeCache({ stdTTL: 300 });
+    this.settings = new NodeCache({
+      //stdTTL: 300
+    });
     this.loadingPromise = null;
   }
 
   async fetchAll() {
-    if (this.loadingPromise) {
-      return await this.loadingPromise;
-    }
     this.loadingPromise = this.model("system_setting").query();
 
     const list = await this.loadingPromise;
@@ -36,7 +35,7 @@ class SystemSettingService extends BaseService {
 
     const value = this.settings.get(key);
     if (!value) {
-      throw Error("Unknown permission");
+      throw Error("Unknown setting");
     }
     return value;
   }
