@@ -3,6 +3,7 @@ const { SchemaBuilder } = require("../operations.js");
 const AuthConfig = require("./auth_config.js");
 const AuthUser = require("./auth_user.js");
 const Deployment = require("./deployment.js");
+const DeploymentUrls = require("./deployment_urls.js");
 const Email = require("./email.js");
 const Group = require("./group.js");
 const Invite = require("./invite.js");
@@ -12,6 +13,7 @@ const Team = require("./team.js");
 const Token = require("./token.js");
 const TokenPayload = require("./token_payload.js");
 const User = require("./user.js");
+const UserProperty = require("./user_property.js");
 
 // TypeDefs that are not GQL types (resolvable objects)
 
@@ -79,6 +81,7 @@ module.exports = [
   AuthConfig,
   AuthUser,
   Deployment,
+  DeploymentUrls,
   Email,
   Invite,
   Group,
@@ -86,5 +89,6 @@ module.exports = [
   Token,
   TokenPayload,
   ServiceAccount,
-  User
+  User,
+  UserProperty,
 ];

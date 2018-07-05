@@ -1,4 +1,5 @@
 const BaseService = require("./base.js");
+const _ = require("lodash");
 
 let USER_COUNT = null;
 
@@ -65,6 +66,14 @@ class UserService extends BaseService {
     return null;
   }
 
+  async fetchUserPropertiesByUser(user) {
+    let properties = await user.$relatedQuery("properties");
+    if (properties && properties.length > 0) {
+      return properties;
+    }
+    return [];
+  }
+
   async fetchUserCount() {
     if (USER_COUNT === null) {
       let result = await this.model("user")
@@ -81,19 +90,21 @@ class UserService extends BaseService {
       const email = userData.email;
       const username = userData.username || email;
       const fullName = userData.fullName || "";
+      const status = userData.status || "pending";
       const properties = [];
 
       // get current user count, will use later to see if user should be a system admin
       const userCount = await this.fetchUserCount();
 
-      // Needs relation added to model
-      // if (userData.hasOwnProperty("pictureUrl")) {
-      //   properties.push({
-      //     key: this.model("user_property").KEY_PICTURE_URL,
-      //     value: userData.pictureUrl,
-      //     category: this.model("user_property").CATEGORY_PROFILE
-      //   });
-      // }
+      const AVATAR_URL = this.model("user_property").KEY_AVATAR_URL;
+
+      if (userData.hasOwnProperty(AVATAR_URL)) {
+        properties.push({
+          key: AVATAR_URL,
+          value: userData.avatarUrl,
+          category: this.model("user_property").CATEGORY_PROFILE
+        });
+      }
 
       let user = await this.model("user")
         .query()
@@ -102,10 +113,12 @@ class UserService extends BaseService {
           provider_uuid: credential.uuid,
           provider_type: credential.providerType(),
           full_name: fullName,
+          status: status,
           emails: [{
             address: email,
             main: true,
           }],
+          properties: properties
         }).returning("*");
 
 
@@ -129,18 +142,52 @@ class UserService extends BaseService {
 
   // return false if nothing to update, user on success, throw error on failure
   async updateUser(user, payload) {
-    let changes = {};
+    if (!user.properties) {
+      user.properties = await this.fetchUserPropertiesByUser(user);
+    }
+    const properties = _.keyBy(user.properties, "key");
+
+    let userChanges = {};
+    let propChanges =  [];
 
     // TODO: Do this check in a more extendable way
-    if (payload["full_name"] !== undefined && payload.full_name !== user.fullName) {
-      changes.fullName = payload.full_name;
+    if (payload["fullName"] !== undefined && payload.fullName !== user.fullName) {
+      userChanges.fullName = payload.fullName;
     }
 
-    if(Object.keys(changes).length === 0) {
-      return false;
+    const KEY_AVATAR = this.model("user_property").KEY_AVATAR_URL;
+
+    if (payload[KEY_AVATAR] !== undefined) {
+      if (!properties[KEY_AVATAR]) {
+        propChanges.push(this.model("user_property").query().insertGraphAndFetch({
+          user_uuid: user.uuid,
+          key: KEY_AVATAR,
+          value: payload[KEY_AVATAR],
+          category: this.model("user_property").CATEGORY_PROFILE
+        }).then((property) => {
+          user.properties.push(property);
+        }));
+      } else if(payload[KEY_AVATAR] !== properties[KEY_AVATAR].value) {
+        // TODO: figure out updating the specific model
+        propChanges.push(this.model("user_property").query().where({
+          user_uuid: user.uuid,
+          key: KEY_AVATAR
+        }).patch({ value: payload[KEY_AVATAR] }));
+      }
     }
 
-    await user.$query().patch(changes).returning("*");
+    if(Object.keys(userChanges).length === 0 && Object.keys(propChanges).length === 0) {
+      return user;
+    }
+
+    if(Object.keys(userChanges).length !== 0) {
+      await user.$query().patch(userChanges).returning("*");
+    }
+
+    if(propChanges.length > 0) {
+      await Promise.all(propChanges);
+    }
+
     return user;
   }
 

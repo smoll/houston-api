@@ -5,15 +5,23 @@ class OauthUserService extends BaseService {
   async authenticateUser(data) {
     let user = await this.fetchUserByOAuthCredential(data);
 
+    const userData = {
+      status: "active",
+      email: data.profile.email,
+      username: data.profile.email,
+      fullName: data.profile.fullName,
+      avatarUrl: data.profile.pictureUrl
+    };
+
     if (user) {
-      return user;
+      return await this.service("user").updateUser(user, userData);
     }
 
     // oauth user doesn't exist, but has already been authenticated. Create it!
-    return await this.createUser(data);
+    return await this.createUser(data, userData);
   }
 
-  async createUser(OAuthData) {
+  async createUser(OAuthData, userData) {
     let credential = await this.model("oauth_credential")
       .query()
       .insert({
@@ -23,13 +31,6 @@ class OauthUserService extends BaseService {
         access_token: OAuthData.accessToken,
         expires_at: new Date(OAuthData.expires).toISOString()
       }).returning("*");
-
-    const userData = {
-      email: OAuthData.profile.email,
-      username: OAuthData.profile.email,
-      fullName: OAuthData.profile.fullName,
-      profileUrl: OAuthData.profile.pictureUrl
-    };
 
     return this.service("user").createUser(
       userData,

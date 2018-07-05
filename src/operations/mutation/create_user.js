@@ -17,7 +17,10 @@ class CreateUser extends BaseOperation {
         args.profile = { fullName: null };
       }
 
-      let user = await this.service("local_user").createUser(args.email, args.password, args.username, args.profile.fullName);
+      // ensure profile is an object
+      const profile = Object.assign({}, args.profile);
+
+      let user = await this.service("local_user").createUser(args.email, args.password, args.username, profile);
       let workspace = await this.service("workspace").createWorkspaceWithDefaultGroups(user, {
         label: "Personal",
         description: `Personal workspace for ${user.username}`

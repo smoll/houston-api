@@ -1,4 +1,5 @@
 const BaseType = require("./base.js");
+const Config = require("../utils/config.js");
 
 class Deployment extends BaseType {
   constructor(application) {
@@ -12,6 +13,7 @@ class Deployment extends BaseType {
       releaseName: String
       version: String
       team: Team
+      urls: [DeploymentUrls]
       createdAt: String
       updatedAt: String
     }`;
@@ -36,6 +38,23 @@ class Deployment extends BaseType {
       },
       team(value) {
         return value || {};
+      },
+      urls(value, root, context) {
+        const globalConfig = JSON.parse(Config.get(Config.HELM_GLOBAL_CONFIG));
+
+        // TODO: Add check if user has permission to see it
+        if (value.type === "airflow") {
+          return [
+            {
+              type: "airflow",
+              url: `https://${value.releaseName}-airflow.${globalConfig["baseDomain"]}/admin`
+            },
+            {
+              type: "flower",
+              url: `https://${value.releaseName}-flower.${globalConfig["baseDomain"]}/admin`
+            }
+          ];
+        }
       },
       createdAt(value) {
         return value.createdAt || null;

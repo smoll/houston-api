@@ -46,6 +46,14 @@ class User extends BaseModel {
           to: 'emails.user_uuid'
         }
       },
+      properties: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: `${__dirname}/user_property.js`,
+        join: {
+          from: 'users.uuid',
+          to: 'user_properties.user_uuid'
+        }
+      },
       credential: {
         relation: BaseModel.HasOneRelation,
         modelClass: `${__dirname}/local_credential.js`,

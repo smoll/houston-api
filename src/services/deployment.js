@@ -60,7 +60,7 @@ class DeploymentService extends BaseService {
         label: label,
         release_name: releaseName,
         version: version,
-        team_uuid: team.uuid,
+        workspace_uuid: team.uuid,
       };
 
       return await DeploymentModel
