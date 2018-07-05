@@ -5,6 +5,7 @@ const AuthUser = require("./auth_user.js");
 const Deployment = require("./deployment.js");
 const Email = require("./email.js");
 const Group = require("./group.js");
+const Invite = require("./invite.js");
 const ServiceAccount = require("./service_account.js");
 const SystemSetting = require("./system_setting.js");
 const Team = require("./team.js");
@@ -49,6 +50,15 @@ SchemaBuilder.addTypeDef(`
 `);
 
 SchemaBuilder.addTypeDef(`
+  enum ServiceAccountEntityType {
+    SYSTEM
+    TEAM
+    DEPLOYMENT
+    USER
+  }
+`);
+
+SchemaBuilder.addTypeDef(`
   enum EntityType {
     SYSTEM
     TEAM
@@ -57,11 +67,20 @@ SchemaBuilder.addTypeDef(`
   }
 `);
 
+SchemaBuilder.addTypeDef(`
+  enum GroupEntityType {
+    SYSTEM
+    TEAM
+    DEPLOYMENT
+  }
+`);
+
 module.exports = [
   AuthConfig,
   AuthUser,
   Deployment,
   Email,
+  Invite,
   Group,
   Team,
   Token,

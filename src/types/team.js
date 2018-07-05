@@ -12,6 +12,7 @@ class Team extends BaseType {
       active: Boolean
       users: [User]
       groups: [Group]
+      invites: [Invite]
       createdAt: String
       updatedAt: String
     }`;
@@ -31,11 +32,23 @@ class Team extends BaseType {
       active(value) {
         return value.active === true
       },
+      invites(value) {
+        if (value.invites) {
+          return value.invites
+        }
+        return this.service("invite_token").fetchInvitesByWorkspaceUuid(value.uuid);
+      },
       users(value) {
-        return value.users || [];
+        if (value.users) {
+          return value.users
+        }
+        return this.service("user").fetchUsersByWorkspaceUuid(value.uuid);
       },
       groups(value) {
-        return value.groups || [];
+        if (value.groups) {
+          return value.groups
+        }
+        return this.service("group").fetchGroupsByEntityUuid(this.model("group").ENTITY_WORKSPACE,value.uuid);
       },
       createdAt(value) {
         return value.createdAt || null;
