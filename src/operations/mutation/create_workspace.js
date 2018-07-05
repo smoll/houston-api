@@ -18,7 +18,7 @@ class CreateTeam extends BaseOperation {
         description: args.description
       };
 
-      const workspace = await this.service("workspace").createWorkspaceWithDefaultGroups(context.authUser, payload, options);
+      const workspace = await this.service("workspace").createWorkspaceWithDefaultGroups(context.authUser, payload);
 
       // TODO: Requerying so we know all associated data is there, lets ensure above function properly associates
       // users and groups with the new workspace object so we can just return it and delete the line below
