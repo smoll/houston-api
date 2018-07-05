@@ -5,6 +5,8 @@ const JWT = require("jsonwebtoken");
 
 const Config = require("../utils/config.js");
 const AuthStrategies = require("../utils/auth_strategies.js");
+const CookieUtil = require("../utils/cookie.js");
+
 const Context = require("../context.js");
 
 const MAX_DURATION = 7;
@@ -131,6 +133,10 @@ class AuthService extends BaseService {
     });
   }
 
+  setAuthCookie(response, token, expiration) {
+    CookieUtil.setAuthCookie(response, token, expiration);
+  }
+
   isUserToken(token) {
     // if it isn't a service token, it has to be a user token
     return !this.isServiceToken(token);
@@ -148,6 +154,8 @@ class AuthService extends BaseService {
     this.authenticateRequest(authorization).then((context) => {
       context.origin = req.headers.origin;
       req.context = context;
+      context.req = req;
+      context.res = res;
 
       return next();
     }).catch((err) => {

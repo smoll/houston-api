@@ -10,6 +10,8 @@ class Context {
       valid: true,
       expired: false,
     };
+    this.req = null;
+    this.res = null;
 
     this.permissions = {
       user: {

@@ -42,6 +42,8 @@ class CreateToken extends BaseOperation {
       let tokenPayload = await this.service("auth").generateTokenPayload(user);
       let token = await this.service("auth").createJWT(tokenPayload, args.duration);
 
+      this.service("auth").setAuthCookie(context.res, token, tokenPayload.exp);
+
       return {
         user: user,
         token: {
