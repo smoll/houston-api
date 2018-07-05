@@ -1,6 +1,5 @@
-const Transaction = require('objection').transaction;
-
 const BaseOperation = require("../base.js");
+
 class CreateTeam extends BaseOperation {
   constructor() {
     super();
@@ -14,30 +13,15 @@ class CreateTeam extends BaseOperation {
 
   async resolver(root, args, context) {
     try {
-      // Determine default workspace groups
-      const DEFAULT_GROUPS_KEY = this.model("system_setting").KEY_DEFAULT_WORKSPACE_GROUPS;
-      let groupTemplates = await this.service("system_setting").getSetting(DEFAULT_GROUPS_KEY);
-      if (groupTemplates && groupTemplates.length > 0) {
-        groupTemplates = groupTemplates.split(",");
-      } else {
-        groupTemplates = [];
-      }
+      const payload = {
+        label: args.label,
+        description: args.description
+      };
 
-      let workspace = await Transaction(this.conn("postgres"), async (trx) => {
-        const payload = {
-          label: args.label,
-          description: args.description
-        };
-        const options = {
-          transaction: trx
-        };
+      const workspace = await this.service("workspace").createWorkspaceWithDefaultGroups(context.authUser, payload, options);
 
-        const workspace = await this.service("workspace").createWorkspace(context.authUser, payload, options);
-
-        await this.service("group").createGroupsFromTemplates(this.model("group").ENTITY_WORKSPACE, workspace.uuid, groupTemplates, options);
-        return workspace;
-      });
-
+      // TODO: Requerying so we know all associated data is there, lets ensure above function properly associates
+      // users and groups with the new workspace object so we can just return it and delete the line below
       return await this.service("workspace").fetchWorkspaceByUuid(workspace.uuid, {relations: "[users, groups]"});
     } catch(err) {
       this.error(err.message);

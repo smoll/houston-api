@@ -1,6 +1,8 @@
 const _ = require("lodash");
 const BaseService = require("./base.js");
 
+const Transaction = require('objection').transaction;
+
 class WorkspaceService extends BaseService {
 
   async fetchWorkspaceByUuid(uuid, options = {}, throwError = true) {
@@ -44,6 +46,32 @@ class WorkspaceService extends BaseService {
     }, {
       relate: "users"
     }).returning("*");
+  }
+
+  async createWorkspaceWithDefaultGroups(user, payload) {
+    // Determine default workspace groups
+    const DEFAULT_GROUPS_KEY = this.model("system_setting").KEY_DEFAULT_WORKSPACE_GROUPS;
+    let groupTemplates = await this.service("system_setting").getSetting(DEFAULT_GROUPS_KEY);
+    if (groupTemplates && groupTemplates.length > 0) {
+      groupTemplates = groupTemplates.split(",");
+    } else {
+      groupTemplates = [];
+    }
+
+    return await Transaction(this.conn("postgres"), async (trx) => {
+      const options = {
+        transaction: trx
+      };
+
+      // create workspace
+      const workspace = await this.createWorkspace(user, payload, options);
+
+      // create default groups for workspace
+      await this.service("group").createGroupsFromTemplates(this.model("group").ENTITY_WORKSPACE, workspace.uuid, groupTemplates, options);
+
+      // return workspace
+      return workspace;
+    });
   }
 
   async updateWorkspace(workspace, payload) {

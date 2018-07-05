@@ -18,6 +18,11 @@ class CreateUser extends BaseOperation {
       }
 
       let user = await this.service("local_user").createUser(args.email, args.password, args.username, args.profile.fullName);
+      let workspace = await this.service("workspace").createWorkspaceWithDefaultGroups(user, {
+        label: "Personal",
+        description: `Personal workspace for ${user.username}`
+      });
+      
       let tokenPayload = await this.service("auth").generateTokenPayload(user);
       let token = await this.service("auth").createJWT(tokenPayload, args.duration);
 
