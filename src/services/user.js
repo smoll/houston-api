@@ -51,12 +51,12 @@ class UserService extends BaseService {
     return null;
   }
 
-  async fetchUsersByTeamUuid(teamUuid) {
+  async fetchUsersByWorkspaceUuid(workspaceUuid) {
     let users = await this.model("user")
       .query()
       .joinEager("emails")
-      .leftJoin("user_team_map", "users.uuid", "user_team_map.user_uuid")
-      .where("user_team_map.team_uuid", teamUuid);
+      .leftJoin("user_workspace_map", "users.uuid", "user_workspace_map.user_uuid")
+      .where("user_workspace_map.workspace_uuid", workspaceUuid);
 
     if (users && users.length > 0) {
       return users;

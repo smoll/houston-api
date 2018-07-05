@@ -1,10 +1,10 @@
 const _ = require("lodash");
 const BaseModel = require("./base.js");
 
-class ModuleDeployment extends BaseModel {
+class Deployment extends BaseModel {
 
   static get tableName() {
-    return "module_deployments";
+    return "deployments";
   }
 
   static get idColumn() {
@@ -14,7 +14,7 @@ class ModuleDeployment extends BaseModel {
   static get jsonSchema () {
     return {
       type: "object",
-      required: ["type", "label", "release_name", "version", "team_uuid"],
+      required: ["type", "label", "release_name", "version", "workspace_uuid"],
 
       properties: {
         uuid: { type: "uuid" },
@@ -22,7 +22,7 @@ class ModuleDeployment extends BaseModel {
         label: { type: "string", minLength: 1, maxLength: 255 },
         release_name: { type: "string", minLength: 1, maxLength: 128 },
         version: { type: "string" },
-        team_uuid: { type: ["string"] },
+        workspace_uuid: { type: ["string"] },
         config: { type: "object" },
         created_at: { type: "string" },
         updated_at: { type: "string" },
@@ -31,17 +31,17 @@ class ModuleDeployment extends BaseModel {
   }
 
   static get jsonAttributes() {
-    return ["uuid", "type", "label", "release_name", "version", "team_uuid", "config", "created_at", "updated_at"];
+    return ["uuid", "type", "label", "release_name", "version", "workspace_uuid", "config", "created_at", "updated_at"];
   }
 
   static get relationMappings() {
     return {
-      team: {
+      workspace: {
         relation: BaseModel.BelongsToOneRelation,
-        modelClass: `${__dirname}/team.js`,
+        modelClass: `${__dirname}/workspace.js`,
         join: {
-          from: 'module_deployments.team_uuid',
-          to: 'teams.uuid'
+          from: 'deployments.workspace_uuid',
+          to: 'workspaces.uuid'
         }
       }
     };
@@ -52,7 +52,6 @@ class ModuleDeployment extends BaseModel {
   }
 }
 
-ModuleDeployment.MODULE_AIRFLOW = "airflow";
-ModuleDeployment.MODULE_CLICKSTREAM = "clickstream";
+Deployment.MODULE_AIRFLOW = "airflow";
 
-module.exports = ModuleDeployment;
+module.exports = Deployment;

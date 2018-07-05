@@ -13,16 +13,16 @@ class Teams extends BaseOperation {
 
   async resolver(root, args, context) {
     try {
-      let teams;
+      let workspaces;
       if (args.teamUuid) {
         return [context.resources.team];
       } else {
         if (!args.userUuid) {
           args.userUuid = context.authUser.uuid;
         }
-        teams = await this.service("team").fetchTeamsByUserUuid(args.userUuid);
+        workspaces = await this.service("workspace").fetchWorkspacesByUserUuid(args.userUuid);
       }
-      return teams;
+      return workspaces;
     } catch (err) {
       this.error(err.message);
       throw err;

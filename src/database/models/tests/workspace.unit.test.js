@@ -1,11 +1,11 @@
 const Faker = require("faker");
 
 const Postgres = require("../../postgres.js");
-const Team = require("../team.js");
+const Workspace = require("../workspace.js");
 const Group = require("../group.js");
 const User = require("../user.js");
-const UserTeam = require("../user_team_map.js");
-describe("When testing teams", () => {
+const UserWorkspace = require("../user_workspace_map.js");
+describe("When testing workspaces", () => {
 
   beforeAll((done) => {
     return Postgres.PostgresMigration().then(() => {
@@ -17,55 +17,56 @@ describe("When testing teams", () => {
     test("is successful", async (done) => {
       let label = Faker.lorem.words();
 
-      let team = await Team.query().insertAndFetch({
+      let workspace = await Workspace.query().insertAndFetch({
         label: label,
         description: Faker.lorem.sentence(),
       });
-      expect(team.label).toEqual(label);
+      expect(workspace.label).toEqual(label);
       done();
     });
   });
 
   describe("querying relationships", () => {
     test("for groups", async (done) => {
-      let teamLabel = Faker.lorem.words();
+      let workspaceLabel = Faker.lorem.words();
       let groupLabel = Faker.lorem.words();
 
-      let team = await Team.query().insertAndFetch({
-        label: teamLabel,
+      let workspace = await Workspace.query().insertAndFetch({
+        label: workspaceLabel,
         description: Faker.lorem.sentence(),
       });
 
       let group = await Group.query().insertAndFetch({
         label: groupLabel,
         description: Faker.lorem.sentence(),
-        team_uuid: team.uuid
+        entity_uuid: workspace.uuid,
+        entity_type: Group.ENTITY_WORKSPACE
       });
 
-      let relationTest = await team.$relatedQuery('groups');
+      let relationTest = await workspace.$relatedQuery('groups');
       expect(relationTest[0].label).toEqual(group.label);
       done();
     });
 
     test("for users", async (done) => {
-      let teamLabel = Faker.lorem.words();
+      let workspaceLabel = Faker.lorem.words();
       let username = Faker.internet.userName();
 
       const user = await User.query().insertAndFetch({
         username: username,
       });
 
-      let team = await Team.query().insertAndFetch({
-        label: teamLabel,
+      let workspace = await Workspace.query().insertAndFetch({
+        label: workspaceLabel,
         description: Faker.lorem.sentence(),
       });
 
-      let userTeam = await UserTeam.query().insertAndFetch({
+      let userWorkspace = await UserWorkspace.query().insertAndFetch({
         user_uuid: user.uuid,
-        team_uuid: team.uuid
+        workspace_uuid: workspace.uuid
       });
 
-      let relationTest = await team.$relatedQuery('users');
+      let relationTest = await workspace.$relatedQuery('users');
       expect(relationTest[0].username).toEqual(username);
       done();
     });

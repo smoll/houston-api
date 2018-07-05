@@ -14,14 +14,7 @@ class UpdateTeam extends BaseOperation {
 
   async resolver(root, args, context) {
     try {
-      let team = await this.service("team").fetchTeamByUuid(args.teamUuid);
-
-      if (!team) {
-        throw new Error("Team not found");
-      }
-
-      let updatedTeam = await this.service("team").updateTeam(team, args.payload);
-      return updatedTeam;
+      return await this.service("workspace").updateWorkspace(context.resources.team, args.payload);
     } catch (err) {
       this.error(err.message);
       throw err;

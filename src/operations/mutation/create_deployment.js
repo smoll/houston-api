@@ -26,20 +26,14 @@ class CreateDeployment extends BaseOperation {
         throw new Error("Team uuid is required to create a deployment");
       }
 
-      // TODO: Remove in place of context.resource.team
-      let team = await this.service("team").fetchTeamByUuid(args.teamUuid);
-
       let deployment = await this.service("deployment").createDeployment(
-        team,
+        context.resources.team,
         args.type,
         args.version,
         args.label,
-        context.resources.user,
-        context.resources.team,
-        context.resources.team,
       );
 
-      // On duplicate error will be;  duplicate key value violates unique constraint \"unique_team_uuid_label\"",
+      // On duplicate error will be;  duplicate key value violates unique constraint \"unique_workspace_uuid_label\"",
       return deployment;
       await this.service("commander").createDeployment(deployment, args.config);
 

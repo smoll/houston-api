@@ -20,7 +20,8 @@ class Group extends BaseModel {
         uuid: { type: "uuid" },
         label: { type: "string", minLength: 1, maxLength: 255 },
         description: { type: "string", minLength: 1, maxLength: 255 },
-        team_uuid: { type: "uuid" },
+        entity_uuid: { type: "uuid" },
+        entity_type: { type: "string" },
         custom: { type: "boolean" },
         active: { type: "boolean" },
         created_at: { type: "string" },
@@ -30,7 +31,7 @@ class Group extends BaseModel {
   }
 
   static get jsonAttributes() {
-    return ["uuid", "label", "description", "team_uud", "active"];
+    return ["uuid", "label", "description", "entity_uuid", "entity_type", "custom", "active"];
   }
 
   static get relationMappings() {
@@ -78,5 +79,9 @@ class Group extends BaseModel {
     return super.$beforeInsert(context);
   }
 }
+
+Group.ENTITY_SYSTEM = "system";
+Group.ENTITY_WORKSPACE = "workspace";
+Group.ENTITY_DEPLOYMENT = "deployment";
 
 module.exports = Group;

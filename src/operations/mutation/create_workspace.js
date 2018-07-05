@@ -14,8 +14,8 @@ class CreateTeam extends BaseOperation {
 
   async resolver(root, args, context) {
     try {
-      // Determine default team groups
-      const DEFAULT_GROUPS_KEY = this.model("system_setting").KEY_DEFAULT_TEAM_GROUPS;
+      // Determine default workspace groups
+      const DEFAULT_GROUPS_KEY = this.model("system_setting").KEY_DEFAULT_WORKSPACE_GROUPS;
       let groupTemplates = await this.service("system_setting").getSetting(DEFAULT_GROUPS_KEY);
       if (groupTemplates && groupTemplates.length > 0) {
         groupTemplates = groupTemplates.split(",");
@@ -23,7 +23,7 @@ class CreateTeam extends BaseOperation {
         groupTemplates = [];
       }
 
-      let team = await Transaction(this.conn("postgres"), async (trx) => {
+      let workspace = await Transaction(this.conn("postgres"), async (trx) => {
         const payload = {
           label: args.label,
           description: args.description
@@ -32,13 +32,13 @@ class CreateTeam extends BaseOperation {
           transaction: trx
         };
 
-        const team = await this.service("team").createTeam(context.authUser, payload, options);
+        const workspace = await this.service("workspace").createWorkspace(context.authUser, payload, options);
 
-        await this.service("group").createGroupsFromTemplates(team.uuid, groupTemplates, options);
-        return team;
+        await this.service("group").createGroupsFromTemplates(this.model("group").ENTITY_WORKSPACE, workspace.uuid, groupTemplates, options);
+        return workspace;
       });
 
-      return await this.service("team").fetchTeamByUuid(team.uuid, {relations: "[users, groups]"});
+      return await this.service("workspace").fetchWorkspaceByUuid(workspace.uuid, {relations: "[users, groups]"});
     } catch(err) {
       this.error(err.message);
       throw err;

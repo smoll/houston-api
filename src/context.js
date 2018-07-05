@@ -44,17 +44,17 @@ class Context {
         user_role_update: false,
         user_role_delete: false,
 
-        // teams
-        user_team_create: false,
-        user_team_list: false,
-        user_team_view: false,
-        user_team_update: false,
-        user_team_delete: false,
+        // workspaces
+        user_workspace_create: false,
+        user_workspace_list: false,
+        user_workspace_view: false,
+        user_workspace_update: false,
+        user_workspace_delete: false,
 
-        // team users
-        user_team_user_add: false,
-        user_team_user_remove: false,
-        user_team_user_list: false,
+        // workspace users
+        user_workspace_user_add: false,
+        user_workspace_user_remove: false,
+        user_workspace_user_list: false,
 
         user_deployment_create: false,
         user_deployment_list: false,
@@ -100,18 +100,18 @@ class Context {
         global_role_update: false,
         global_role_delete: false,
 
-        // teams
-        global_team_create: false,
-        global_team_list: false,
-        global_team_view: false,
-        global_team_update: false,
-        global_team_delete: false,
+        // workspaces
+        global_workspace_create: false,
+        global_workspace_list: false,
+        global_workspace_view: false,
+        global_workspace_update: false,
+        global_workspace_delete: false,
 
-        // team users
-        global_team_user_add: false,
-        global_team_user_remove: false,
-        global_team_user_invites: false,
-        global_team_user_list: false,
+        // workspace users
+        global_workspace_user_add: false,
+        global_workspace_user_remove: false,
+        global_workspace_user_invites: false,
+        global_workspace_user_list: false,
 
         // deployments
         global_deployment_create: false,
@@ -141,12 +141,12 @@ class Context {
     this.origin = null;
 
     // TODO: Populate this resource cache per request based on entrypoint
-    // args like "userId", "orgId", "deploymentId", "teamId", "sourceId", or "destinationId"
+    // args like "userId", "orgId", "deploymentId", "workspaceId", "sourceId", or "destinationId"
 
     // cache of resources as determine by the graphql entrypoint
     this.resources = {
       user: null,
-      team: null,
+      workspace: null,
       deployment: null,
     };
   }

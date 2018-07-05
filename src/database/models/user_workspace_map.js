@@ -1,13 +1,13 @@
 const BaseModel = require("./base.js");
 
-class UserTeam extends BaseModel {
+class UserWorkspace extends BaseModel {
 
   static get tableName() {
-    return "user_team_map";
+    return "user_workspace_map";
   }
 
   static get idColumn() {
-    return ["user_uuid", "team_uuid"];
+    return ["user_uuid", "workspace_uuid"];
   }
 
   static get uuidFields() {
@@ -17,11 +17,11 @@ class UserTeam extends BaseModel {
   static get jsonSchema () {
     return {
       type: "object",
-      required: ["user_uuid", "team_uuid"],
+      required: ["user_uuid", "workspace_uuid"],
 
       properties: {
         user_uuid: { type: "uuid" },
-        team_uuid: { type: "uuid" },
+        workspace_uuid: { type: "uuid" },
         created_at: { type: "string" },
         updated_at: { type: "string" },
       }
@@ -29,7 +29,7 @@ class UserTeam extends BaseModel {
   }
 
   static get jsonAttributes() {
-    return ["user_uuid", "team_uuid"];
+    return ["user_uuid", "workspace_uuid"];
   }
 
   static get relationMappings() {
@@ -38,20 +38,20 @@ class UserTeam extends BaseModel {
         relation: BaseModel.BelongsToOneRelation,
         modelClass: `${__dirname}/user.js`,
         join: {
-          from: 'user_team_map.user_uuid',
+          from: 'user_workspace_map.user_uuid',
           to: 'users.uuid',
         }
       },
-      team: {
+      workspace: {
         relation: BaseModel.BelongsToOneRelation,
-        modelClass: `${__dirname}/team.js`,
+        modelClass: `${__dirname}/workspace.js`,
         join: {
-          from: 'user_team_map.team_uuid',
-          to: 'teams.uuid',
+          from: 'user_workspace_map.workspace_uuid',
+          to: 'workspaces.uuid',
         }
       },
     };
   }
 }
 
-module.exports = UserTeam;
+module.exports = UserWorkspace;

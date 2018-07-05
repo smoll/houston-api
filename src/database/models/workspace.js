@@ -1,9 +1,9 @@
 const BaseModel = require("./base.js");
 
-class Team extends BaseModel {
+class Workspace extends BaseModel {
 
   static get tableName() {
-    return "teams";
+    return "workspaces";
   }
 
   static get idColumn() {
@@ -36,19 +36,19 @@ class Team extends BaseModel {
         relation: BaseModel.HasManyRelation,
         modelClass: `${__dirname}/group.js`,
         join: {
-          from: 'teams.uuid',
-          to: 'groups.team_uuid'
+          from: 'workspaces.uuid',
+          to: 'groups.entity_uuid'
         }
       },
       users: {
         relation: BaseModel.ManyToManyRelation,
         modelClass: `${__dirname}/user.js`,
         join: {
-          from: 'teams.uuid',
+          from: 'workspaces.uuid',
           through: {
-            model: `${__dirname}/user_team_map.js`,
-            from: `user_team_map.team_uuid`,
-            to: `user_team_map.user_uuid`
+            model: `${__dirname}/user_workspace_map.js`,
+            from: `user_workspace_map.workspace_uuid`,
+            to: `user_workspace_map.user_uuid`
           },
           to: 'users.uuid',
         }
@@ -57,4 +57,4 @@ class Team extends BaseModel {
   }
 }
 
-module.exports = Team;
+module.exports = Workspace;

@@ -13,6 +13,8 @@ class Teams extends BaseOperation {
 
   async resolver(root, args, context) {
     try {
+      console.log(args.entityType);
+      return [];
       if (args.serviceAccountUuid) {
         return [context.resources.serviceAccount];
       } else if (args.apiKey) {

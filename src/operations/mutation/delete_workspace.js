@@ -13,12 +13,12 @@ class DeleteTeam extends BaseOperation {
 
   async resolver(root, args, context) {
     try {
-      const team = await this.service("team").fetchTeamByUuid(args.teamUuid);
+      const workspace = await this.service("workspace").fetchWorkspaceByUuid(args.teamUuid);
 
-      await this.service("team").deleteTeam(team);
+      await this.service("workspace").deleteWorkspace(workspace);
 
       return {
-        uuid: team.uuid
+        uuid: workspace.uuid
       }
     } catch (err) {
       this.error(err.message);

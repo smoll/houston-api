@@ -1,13 +1,13 @@
 const BaseModel = require("./base.js");
 
-class TeamProperty extends BaseModel {
+class WorkspaceProperty extends BaseModel {
 
   static get tableName() {
-    return "team_properties";
+    return "workspace_properties";
   }
 
   static get idColumn() {
-    return ["team_uuid", "key"];
+    return ["workspace_uuid", "key"];
   }
 
   static get uuidFields() {
@@ -17,10 +17,10 @@ class TeamProperty extends BaseModel {
   static get jsonSchema () {
     return {
       type: "object",
-      required: ["team_uuid", "key", "value"],
+      required: ["workspace_uuid", "key", "value"],
 
       properties: {
-        team_uuid: { type: "uuid" },
+        workspace_uuid: { type: "uuid" },
         key: { type: "string" },
         value: { type: "string" },
         category: { type: "string" },
@@ -31,21 +31,21 @@ class TeamProperty extends BaseModel {
   }
 
   static get jsonAttributes() {
-    return ["team_uuid", "key", "value", "category"];
+    return ["workspace_uuid", "key", "value", "category"];
   }
 
   static get relationMappings() {
     return {
-      team: {
+      workspace: {
         relation: BaseModel.BelongsToOneRelation,
-        modelClass: `${__dirname}/team.js`,
+        modelClass: `${__dirname}/workspace.js`,
         join: {
-          from: 'team_properties.team_uuid',
-          to: 'teams.uuid',
+          from: 'workspace_properties.workspace_uuid',
+          to: 'workspaces.uuid',
         }
       },
     };
   }
 }
 
-module.exports = TeamProperty;
+module.exports = WorkspaceProperty;

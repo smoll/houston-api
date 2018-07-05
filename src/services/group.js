@@ -18,11 +18,29 @@ class GroupService extends BaseService {
     return null;
   }
 
-  async fetchGroupsByTeamUuid(teamUuid) {
+  async fetchGroupsByEntityUuid(entityType, entityUuid) {
     const groups = await this.model("group")
       .query()
       .joinEager("users.emails")
-      .where("groups.team_uuid", teamUuid);
+      .where({
+        "groups.entity_type": entityType,
+        "groups.entity_uuid": entityUuid,
+      });
+
+    if (groups && groups.length) {
+      return groups;
+    }
+    return [];
+  }
+
+  async fetchGroupsByDeploymentUuid(deploymentUuid) {
+    const groups = await this.model("group")
+      .query()
+      .joinEager("users.emails")
+      .where({
+        "groups.entity_type": this.model("group").ENTITY_DEPLOYMENT,
+        "groups.entity_uuid": deploymentUuid,
+      });
 
     if (groups && groups.length) {
       return groups;
@@ -32,7 +50,7 @@ class GroupService extends BaseService {
 
   async createGroup(payload, options = {}) {
     payload = Object.assign({
-      team_uuid: null,
+      entity_uuid: null,
       custom: true,
     }, payload);
 
@@ -40,38 +58,40 @@ class GroupService extends BaseService {
     return await this.model("group").query(options.transaction).insertGraph([{
       label: payload.label,
       description: payload.description,
-      team_uuid: payload.team_uuid || null,
+      entity_type: payload.entity_type || null,
+      entity_uuid: payload.entity_uuid || null,
       custom: payload.custom
     }]).returning("*");
   }
 
-  async createGroupFromTemplate(teamUuid, templateGroupUuid, options = {}) {
+  async createGroupFromTemplate(entityType, entityUuid, templateGroupUuid, options = {}) {
     const template = await this.fetchGroupByUuid(templateGroupUuid, options);
     return this.createGroup({
       label: template.label,
       description: template.description,
-      team_uuid: teamUuid
+      entity_type: entityType,
+      entity_uuid: entityUuid,
     }, options);
   }
 
   // TODO: Update this to get all templateGroupUuids in a single query and iterate over those
-  async createGroupsFromTemplates(teamUuid, templateGroupUuids, options = {}) {
+  async createGroupsFromTemplates(entityType, entityUuid, templateGroupUuids, options = {}) {
     const promises = [];
 
     for (let groupUuid of templateGroupUuids) {
-      promises.push(this.createGroupFromTemplate(teamUuid, groupUuid, options));
+      promises.push(this.createGroupFromTemplate(entityType, entityUuid, groupUuid, options));
     }
     return Promise.all(promises);
   }
 
-  async updateGroup(team, payload) {
+  async updateGroup(group, payload) {
     let changes = {};
 
     // TODO: Do this check in a more extendable way
-    if (payload["label"] !== undefined && payload.label !== team.label) {
+    if (payload["label"] !== undefined && payload.label !== group.label) {
       changes.label = payload.label;
     }
-    if (payload["description"] !== undefined && payload.description !== team.description) {
+    if (payload["description"] !== undefined && payload.description !== group.description) {
       changes.description = payload.description;
     }
 
@@ -79,8 +99,8 @@ class GroupService extends BaseService {
       return false;
     }
 
-    await team.$query().patch(changes).returning("*");
-    return team;
+    await group.$query().patch(changes).returning("*");
+    return group;
   }
 
   async addUser(group, user) {

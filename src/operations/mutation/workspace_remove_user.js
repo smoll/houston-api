@@ -14,12 +14,10 @@ class TeamRemoveUser extends BaseOperation {
 
   async resolver(root, args, context) {
     try {
-      const user = await this.service("user").fetchUserByUuid(args.userUuid);
-      const team = await this.service("team").fetchTeamByUuid(args.teamUuid);
-      await this.service("team").removeUser(team, user);
+      await this.service("workspace").removeUser(context.resources.team, context.resources.user);
 
       // refetch team
-      return await this.service("team").fetchTeamByUuid(team.uuid, { relation: "users, groups, groups.users]" });
+      return await this.service("workspace").fetchWorkspaceByUuid(context.resources.team.uuid, { relation: "users, groups, groups.users]" });
     } catch (err) {
       this.error(err);
       throw err;

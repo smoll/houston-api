@@ -42,26 +42,26 @@ const scopedPermissions = {
       "delete": "Requestor can remove this Role",
     },
 
-    "team": { // Grouping of Groups
-      "create": "Requestor can create a new Team",
-      "list": "Requestor can view created Teams",
-      "view": "Requestor can review information about a specific Team",
-      "update": "Requestor can update details about a specific Team",
-      "delete": "Requestor can Remove this Team",
+    "workspace": { // Grouping of Groups
+      "create": "Requestor can create a new Workspace",
+      "list": "Requestor can view created Workspaces",
+      "view": "Requestor can review information about a specific Workspace",
+      "update": "Requestor can update details about a specific Workspace",
+      "delete": "Requestor can Remove this Workspace",
     },
 
-    "team_user": { // Individual Users linked to a Team
-      "add": "Requestor can add another User to a specific Team",
-      "remove": "Requestor can remove themselves or another User from a specific Team",
-      "list": "Requestor can view Users associated with a Team",
+    "workspace_user": { // Individual Users linked to a Workspace
+      "add": "Requestor can add another User to a specific Workspace",
+      "remove": "Requestor can remove themselves or another User from a specific Workspace",
+      "list": "Requestor can view Users associated with a Workspace",
     },
 
-    "team_service_account": { // Individual Service Accounts linked to a Team
-      "create": "Create service accounts for a team or deployment",
-      "list": "List services accounts for team or deployments",
-      "view": "View service accounts for team or deployment",
-      "update": "Update service accounts for team or deployment",
-      "delete": "Delete service accounts for team or deployment",
+    "workspace_service_account": { // Individual Service Accounts linked to a Workspace
+      "create": "Create service accounts for a workspace or deployment",
+      "list": "List services accounts for workspace or deployments",
+      "view": "View service accounts for workspace or deployment",
+      "update": "Update service accounts for workspace or deployment",
+      "delete": "Delete service accounts for workspace or deployment",
     },
 
     "deployment": { // A single instance within the system
@@ -76,11 +76,11 @@ const scopedPermissions = {
     },
 
     "deployment_service_account": { // Individual Service Accounts linked to a Deployment
-      "create": "Create service accounts for a team or deployment",
-      "list": "List services accounts for team or deployments",
-      "view": "View service accounts for team or deployment",
-      "update": "Update service accounts for team or deployment",
-      "delete": "Delete service accounts for team or deployment",
+      "create": "Create service accounts for a workspace or deployment",
+      "list": "List services accounts for workspace or deployments",
+      "view": "View service accounts for workspace or deployment",
+      "update": "Update service accounts for workspace or deployment",
+      "delete": "Delete service accounts for workspace or deployment",
     }
   },
 
@@ -116,24 +116,24 @@ const scopedPermissions = {
       "delete": "Requestor can remove this Role",
     },
 
-    "team": { // Grouping of Groups
-      "create": "Requestor can create a new Team",
-      "list": "Requestor can view created Teams",
-      "view": "Requestor can review information about a specific Team",
-      "update": "Requestor can update details about a specific Team",
-      "delete": "Requestor can Remove this Team",
+    "workspace": { // Grouping of Groups
+      "create": "Requestor can create a new Workspace",
+      "list": "Requestor can view created Workspaces",
+      "view": "Requestor can review information about a specific Workspace",
+      "update": "Requestor can update details about a specific Workspace",
+      "delete": "Requestor can Remove this Workspace",
     },
 
-    "team_user": { // Individual Users linked to a Team
-      "add": "Requestor can add another User to a specific Team",
-      "remove": "Requestor can remove themselves or another User from a specific Team",
-      "list": "Requestor can view Users associated with a Team",
+    "workspace_user": { // Individual Users linked to a Workspace
+      "add": "Requestor can add another User to a specific Workspace",
+      "remove": "Requestor can remove themselves or another User from a specific Workspace",
+      "list": "Requestor can view Users associated with a Workspace",
       "invites": "Globally handle user invitations, including viewing the token",
     },
 
     "deployment": { // A single instance within the system
-      "create": "Create a deployment on the behalf of any team",
-      "list": "List the deployments of a given team or all teams",
+      "create": "Create a deployment on the behalf of any workspace",
+      "list": "List the deployments of a given workspace or all workspaces",
       "view": "View details about any deployment in the system",
       "update": "Update any deployment in the system",
       "delete": "Delete any deployment in the system",
@@ -161,9 +161,9 @@ const scopedPermissions = {
 const groupDesc = {
   "default_user": "Permissions all users in the system should have by default",
   "default_admin": "Permissions all users in the system should have by default",
-  "template_team_owner": "Template for the default team owner group",
-  "template_team_admin": "Template for the default team admin group",
-  "template_team_user": "Template for the default team user group",
+  "template_workspace_owner": "Template for the default workspace owner group",
+  "template_workspace_admin": "Template for the default workspace admin group",
+  "template_workspace_user": "Template for the default workspace user group",
 };
 
 const roles = [
@@ -177,36 +177,36 @@ const roles = [
       "user_user_update",
       "user_user_delete",
       "user_user_service_account",
-      "user_team_list",
+      "user_workspace_list",
     ]
   },
   {
-    label: "Create teams",
-    category: "team",
+    label: "Create workspaces",
+    category: "workspace",
     scope: "user",
     groups: ["default_user"],
     permissions: [
-      "user_team_create",
+      "user_workspace_create",
     ]
   },
   {
-    label: "View team details",
-    category: "team",
+    label: "View workspace details",
+    category: "workspace",
     scope: "user",
-    groups: ["template_team_user"],
+    groups: ["template_workspace_user"],
     permissions: [
       "user_group_list",
       "user_group_view",
       "user_group_user_list",
-      "user_team_view",
-      "user_team_user_list"
+      "user_workspace_view",
+      "user_workspace_user_list"
     ]
   },
   {
-    label: "Manage team users",
-    category: "team",
+    label: "Manage workspace users",
+    category: "workspace",
     scope: "user",
-    groups: ["template_team_admin", "template_team_owner"],
+    groups: ["template_workspace_admin", "template_workspace_owner"],
     permissions: [
       "user_group_list",
       "user_group_view",
@@ -214,29 +214,29 @@ const roles = [
       "user_group_user_remove",
       "user_group_user_list",
       "user_group_user_manage_permissions",
-      "user_team_user_add",
-      "user_team_user_remove",
-      "user_team_user_list",
+      "user_workspace_user_add",
+      "user_workspace_user_remove",
+      "user_workspace_user_list",
     ]
   },
   {
-    label: "Manage team service accounts",
-    category: "team",
+    label: "Manage workspace service accounts",
+    category: "workspace",
     scope: "user",
-    groups: ["template_team_admin", "template_team_owner"],
+    groups: ["template_workspace_admin", "template_workspace_owner"],
     permissions: [
-      "user_team_service_account_create",
-      "user_team_service_account_list",
-      "user_team_service_account_view",
-      "user_team_service_account_update",
-      "user_team_service_account_delete",
+      "user_workspace_service_account_create",
+      "user_workspace_service_account_list",
+      "user_workspace_service_account_view",
+      "user_workspace_service_account_update",
+      "user_workspace_service_account_delete",
     ]
   },
   {
-    label: "Manage team",
-    category: "team",
+    label: "Manage workspace",
+    category: "workspace",
     scope: "user",
-    groups: ["template_team_owner"],
+    groups: ["template_workspace_owner"],
     permissions: [
       "user_group_create",
       "user_group_list",
@@ -252,18 +252,18 @@ const roles = [
       "user_role_view",
       "user_role_update",
       "user_role_delete",
-      "user_team_list",
-      "user_team_view",
-      "user_team_update",
-      "user_team_delete",
-      "user_team_user_add",
-      "user_team_user_remove",
-      "user_team_user_list",
-      "user_team_service_account_create",
-      "user_team_service_account_list",
-      "user_team_service_account_view",
-      "user_team_service_account_update",
-      "user_team_service_account_delete",
+      "user_workspace_list",
+      "user_workspace_view",
+      "user_workspace_update",
+      "user_workspace_delete",
+      "user_workspace_user_add",
+      "user_workspace_user_remove",
+      "user_workspace_user_list",
+      "user_workspace_service_account_create",
+      "user_workspace_service_account_list",
+      "user_workspace_service_account_view",
+      "user_workspace_service_account_update",
+      "user_workspace_service_account_delete",
       "user_deployment_service_account_create",
       "user_deployment_service_account_list",
       "user_deployment_service_account_view",
@@ -272,10 +272,10 @@ const roles = [
     ]
   },
   {
-    label: "Manage team deployments",
-    category: "team",
+    label: "Manage workspace deployments",
+    category: "workspace",
     scope: "user",
-    groups: ["template_team_admin", "template_team_owner"],
+    groups: ["template_workspace_admin", "template_workspace_owner"],
     permissions: [
       "user_deployment_create",
       "user_deployment_list",
@@ -293,10 +293,10 @@ const roles = [
     ]
   },
   {
-    label: "Push team images",
-    category: "team",
+    label: "Push workspace images",
+    category: "workspace",
     scope: "user",
-    groups: ["template_team_user", "template_team_admin", "template_team_owner"],
+    groups: ["template_workspace_user", "template_workspace_admin", "template_workspace_owner"],
     permissions: [
       "user_deployment_images",
     ]
@@ -327,15 +327,15 @@ const roles = [
       "global_role_view",
       "global_role_update",
       "global_role_delete",
-      "global_team_create",
-      "global_team_list",
-      "global_team_view",
-      "global_team_update",
-      "global_team_delete",
-      "global_team_user_add",
-      "global_team_user_remove",
-      "global_team_user_list",
-      "global_team_user_invites",
+      "global_workspace_create",
+      "global_workspace_list",
+      "global_workspace_view",
+      "global_workspace_update",
+      "global_workspace_delete",
+      "global_workspace_user_add",
+      "global_workspace_user_remove",
+      "global_workspace_user_list",
+      "global_workspace_user_invites",
       "global_deployment_create",
       "global_deployment_list",
       "global_deployment_view",
@@ -437,7 +437,7 @@ exports.up = function(knex) {
         uuid: null
       },
       template: {
-        key:  "default_team_groups",
+        key:  "default_workspace_groups",
         uuid: []
       },
     };
@@ -454,7 +454,8 @@ exports.up = function(knex) {
         uuid: groupUuid,
         label: group,
         description: groupDesc[group],
-        team_uuid: null,
+        entity_type: "SYSTEM",
+        entity_uuid: null,
         custom: false,
         active: true,
         created_at: new Date().toISOString(),

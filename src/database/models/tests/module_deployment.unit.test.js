@@ -3,14 +3,14 @@ const Faker = require("faker");
 
 const Postgres = require("../../postgres.js");
 
-const ModuleDeploymentModel = require("../module_deployment.js");
+const DeploymentModel = require("../deployment.js");
 
 
 const application = new Application({}, new DefaultLogger(DefaultLogger.DEBUG));
 
 application.registerService(UserService);
 
-describe("test module_deployment", () => {
+describe("test deployment", () => {
 
   beforeAll(async (done) => {
     await Postgres.PostgresMigration();
@@ -18,18 +18,17 @@ describe("test module_deployment", () => {
   });
   test("config update", async () => {
     const payload = {
-      type: ModuleDeploymentModel.MODULE_AIRFLOW,
+      type: DeploymentModel.MODULE_AIRFLOW,
       label: Faker.random.words(),
       release_name: Faker.random.word(),
       version: "0.0.0",
-      team_uuid: null,
-      team_uuid: null,
+      workspace_uuid: null,
       config: {
         foo: "bar"
       }
     };
 
-    let deployment = await ModuleDeploymentModel
+    let deployment = await DeploymentModel
       .query()
       .insertGraph(payload).returning("*");
 
@@ -39,9 +38,9 @@ describe("test module_deployment", () => {
       }
     }).returning("*");
 
-    let check = await ModuleDeploymentModel
+    let check = await DeploymentModel
       .query()
-      .findOne("module_deployments.uuid", deployment.uuid);
+      .findOne("deployments.uuid", deployment.uuid);
 
     expect(check.config.foo).toEqual("derp");
   });

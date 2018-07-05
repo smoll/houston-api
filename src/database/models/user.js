@@ -54,16 +54,16 @@ class User extends BaseModel {
           to: 'local_credentials.uuid'
         }
       },
-      teams: {
+      workspaces: {
         relation: BaseModel.ManyToManyRelation,
-        modelClass: `${__dirname}/team.js`,
+        modelClass: `${__dirname}/workspace.js`,
         join: {
           from: 'users.uuid',
-          to: 'teams.uuid',
+          to: 'workspaces.uuid',
           through: {
-            model: `${__dirname}/user_team_map.js`,
-            from: `user_team_map.user_uuid`,
-            to: `user_team_map.team_uuid`
+            model: `${__dirname}/user_workspace_map.js`,
+            from: `user_workspace_map.user_uuid`,
+            to: `user_workspace_map.workspace_uuid`
           },
         }
       },

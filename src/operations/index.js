@@ -9,7 +9,7 @@ module.exports = [
   require("./query/deployment_config.js"),
   require("./query/groups.js"),
   require("./query/self.js"),
-  require("./query/teams.js"),
+  require("./query/workspaces.js"),
   require("./query/users.js"),
   require("./query/service_accounts.js"),
 
@@ -28,11 +28,11 @@ module.exports = [
   require("./mutation/delete_deployment.js"),
 
   // Team Operations
-  require("./mutation/create_team.js"),
-  require("./mutation/delete_team.js"),
-  require("./mutation/update_team.js"),
-  require("./mutation/team_add_user.js"),
-  require("./mutation/team_remove_user.js"),
+  require("./mutation/create_workspace.js"),
+  require("./mutation/delete_workspace.js"),
+  require("./mutation/update_workspace.js"),
+  require("./mutation/workspace_add_user.js"),
+  require("./mutation/workspace_remove_user.js"),
 
   // Service Account Operations
   require("./mutation/create_service_account.js"),
