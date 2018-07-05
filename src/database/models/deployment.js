@@ -43,7 +43,18 @@ class Deployment extends BaseModel {
           from: 'deployments.workspace_uuid',
           to: 'workspaces.uuid'
         }
-      }
+      },
+      groups: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: `${__dirname}/group.js`,
+        filter: {
+          "entity_type": "deployment"
+        },
+        join: {
+          from: 'deployments.uuid',
+          to: 'groups.entity_uuid'
+        }
+      },
     };
   }
 

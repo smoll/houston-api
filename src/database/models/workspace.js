@@ -35,6 +35,9 @@ class Workspace extends BaseModel {
       groups: {
         relation: BaseModel.HasManyRelation,
         modelClass: `${__dirname}/group.js`,
+        filter: {
+          "entity_type": "workspace"
+        },
         join: {
           from: 'workspaces.uuid',
           to: 'groups.entity_uuid'
@@ -54,6 +57,11 @@ class Workspace extends BaseModel {
         }
       },
     };
+  }
+
+  $beforeInsert(context) {
+    this.active = true;
+    return super.$beforeInsert(context);
   }
 }
 
