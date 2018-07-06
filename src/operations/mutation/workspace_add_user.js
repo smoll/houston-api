@@ -9,6 +9,7 @@ class WorkspaceAddUser extends BaseOperation {
       workspaceAddUser(workspaceUuid: Uuid!, email: String!, permissions: String) : Workspace
     `;
     this.entrypoint = "mutation";
+    this.guards = ["authenticated"];
     // this.guards = ["authenticated", "permission:user_workspace_user_add"];
   }
 

@@ -9,6 +9,7 @@ class DeleteWorkspace extends BaseOperation {
       deleteWorkspace(workspaceUuid: Uuid) : Workspace
     `;
     this.entrypoint = "mutation";
+    this.guards = ["authenticated"];
   }
 
   async resolver(root, args, context) {

@@ -151,14 +151,20 @@ class Context {
     };
   }
 
+  debugOutput() {
+    console.log({
+      requester: this.requester,
+      authorization: this.authorization,
+      token: this.token,
+      permissions: this.permissions,
+      authUser: this.authUser,
+      origin: this.origin,
+      resources: this.resources
+    });
+  }
+
   setAuthUser(user) {
     this.authUser = user;
-
-    // TODO: This is temporary, remove once we have property hook in place to
-    // set these based on gql entrypoint
-    this.resources.user = user;
-    this.permissions.user.view_self = true;
-    this.permissions.user.edit_self = true;
   }
 
   setSuperAdmin() {

@@ -28,7 +28,6 @@ class CreateToken extends BaseOperation {
         try {
           user = await this.service("auth").authenticateOAuth(strategy, args.credentials);
         } catch (err) {
-          console.log(err);
           throw err;
         }
       } else {

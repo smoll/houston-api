@@ -8,6 +8,7 @@ class DeleteServiceAccount extends BaseOperation {
       deleteServiceAccount(serviceAccountUuid: Uuid!) : ServiceAccount
     `;
     this.entrypoint = "mutation";
+    this.guards = ["authenticated"];
   }
 
   async resolver(root, args, context) {

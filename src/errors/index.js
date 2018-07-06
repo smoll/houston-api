@@ -20,11 +20,9 @@ const ResourceNotFound = createError('ResourceNotFoundError', {
 module.exports = {
   AuthExpired: () =>{
     return new AuthExpiredError({
-      data: {
-        something: 'important'
-      },
+      data: {},
       internalData: {
-        error: `The SQL server died.`
+        error: `Your authorization token has expired`
       }
     });
   },

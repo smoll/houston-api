@@ -9,6 +9,7 @@ class UpdateDeployment extends BaseOperation {
       updateDeployment(deploymentUuid: Uuid, label: String, workspaceUuid: Uuid, images: JSON, sync: Boolean) : Deployment
     `;
     this.entrypoint = "mutation";
+    this.guards = ["authenticated"];
   }
 
   async resolver(root, args, context) {

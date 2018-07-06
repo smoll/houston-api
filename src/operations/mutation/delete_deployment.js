@@ -9,6 +9,7 @@ class DeleteDeployment extends BaseOperation {
       deleteDeployment(deploymentUuid: Uuid) : Deployment
     `;
     this.entrypoint = "mutation";
+    this.guards = ["authenticated"];
   }
 
   async resolver(root, args, context) {

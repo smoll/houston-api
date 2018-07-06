@@ -83,6 +83,10 @@ class AuthService extends BaseService {
           case "jwt expired":
             context.token.expired = true;
             break;
+          case "jwt malformed":
+            context.token.valid = false;
+            context.token.expired = true;
+            break;
         }
         this.error(err.message);
       }

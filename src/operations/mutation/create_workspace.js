@@ -9,6 +9,7 @@ class CreateWorkspace extends BaseOperation {
       createWorkspace(label: String!, description: String) : Workspace
     `;
     this.entrypoint = "mutation";
+    this.guards = ["authenticated"];
   }
 
   async resolver(root, args, context) {

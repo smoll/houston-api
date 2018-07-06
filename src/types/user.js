@@ -34,7 +34,6 @@ class User extends BaseType {
       },
       profile(value) {
         if (!value.properties) {
-          console.log(value);
           return this.service("user").fetchUserPropertiesByUser(value);
         }
         return value.properties || [];

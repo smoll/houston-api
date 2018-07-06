@@ -8,6 +8,7 @@ class CreateServiceAccount extends BaseOperation {
       createServiceAccount(label: String!, category: String!, type: EntityType!, uuid: Uuid!) : ServiceAccount
     `;
     this.entrypoint = "mutation";
+    this.guards = ["authenticated"];
   }
 
   async resolver(root, args, context) {

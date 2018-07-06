@@ -8,6 +8,7 @@ class UpdateServiceAccount extends BaseOperation {
       updateServiceAccount(serviceAccountUuid: Uuid!, payload: JSON!) : ServiceAccount
     `;
     this.entrypoint = "mutation";
+    this.guards = ["authenticated"];
   }
 
   async resolver(root, args, context) {

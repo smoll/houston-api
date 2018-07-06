@@ -9,6 +9,7 @@ class CreateDeployment extends BaseOperation {
       createDeployment(type: String!, label: String!, workspaceUuid: Uuid, version: String) : Deployment
     `;
     this.entrypoint = "mutation";
+    this.guards = ["authenticated"];
   }
 
   async resolver(root, args, context) {

@@ -9,7 +9,13 @@ class AuthenticatedGuard extends SchemaBuilderGuard {
     if (!context) {
       return false;
     }
-    return context.userId !== null;
+    if (!context.token.valid) {
+      return false;
+    }
+    if (context.token.expired) {
+      return false;
+    }
+    return context.authUser !== null;
   }
 }
 
