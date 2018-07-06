@@ -9,12 +9,9 @@ exports.up = function(knex) {
     }
 
     return knex.schema.createTable(TABLE_NAME, function (table) {
-      table.uuid("uuid").primary();
+      table.uuid("user_uuid").primary();
       table.string("password").unique();
       table.timestamps();
-      table.timestamp("deleted_at");
-    }).then(() => {
-      return MigrationHelper.timestampTrigger(knex, TABLE_NAME);
     });
   });
 };

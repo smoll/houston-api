@@ -3,80 +3,73 @@ const ReleaseNamerUtil = require("../utils/releases_namer.js");
 
 class DeploymentService extends BaseService {
 
-  async fetchByUuid(deploymentUuid) {
-    let deployment = await this.model("module_deployment")
+  async fetchDeploymentByUuid(deploymentUuid, throwError = true) {
+    let deployment = await this.model("deployment")
       .query()
-      .joinEager("creator")
-      .whereNull("module_deployments.deleted_at")
-      .findOne("module_deployments.uuid", deploymentUuid);
+      .findOne("deployments.uuid", deploymentUuid);
+
     if (deployment) {
       return deployment;
+    }
+    if (throwError) {
+      this.notFound("deployment", deploymentUuid);
     }
     return null;
   }
 
-  async fetchByOrgUuid(orgUuid) {
-    return await this.model("module_deployment")
+  async fetchDeploymentByWorkspaceUuid(workspaceUuid, throwError = true) {
+    const deployments = await this.model("deployment")
       .query()
-      .joinEager("creator")
-      .whereNull("module_deployments.deleted_at")
       .where({
-        "organization_uuid": orgUuid,
+        "workspace_uuid": workspaceUuid,
       });
+
+    if (deployments && deployments.length > 0) {
+      return deployments;
+    }
+    if (throwError) {
+      this.notFound("deployment", workspaceUuid);
+    }
+    return [];
   }
 
-  async fetchByUserUuid(userUuid) {
-    // TODO: Once orgs are fully implemented, Query for any deployment in any org user is apart of
-    const deployments = await this.model("module_deployment")
-      .query()
-      .joinEager("creator")
-      .whereNull("module_deployments.deleted_at");
-    return deployments;
-  }
-
-  async fetchByReleaseName(releaseName) {
-    // TODO: Once orgs are fully implemented, Query for any deployment in any org user is apart of
-    const deployments = await this.model("module_deployment")
+  async fetchDeploymentByReleaseName(releaseName, throwError = true) {
+    const deployment = await this.model("deployment")
         .query()
-        .joinEager("creator")
-        .whereNull("module_deployments.deleted_at")
         .findOne({
           "release_name": releaseName,
         });
-    return deployments;
+    if (deployment) {
+      return deployment;
+    }
+    if (throwError) {
+      this.notFound("deployment", releaseName);
+    }
+    return null;
   }
 
-  async createDeployment(type, version, title, creator, organization = null, team = null) {
+  async createDeployment(workspace, type, version, label) {
     try {
-      const DeploymentModel = this.model("module_deployment");
+      const DeploymentModel = this.model("deployment");
 
       const releaseName = ReleaseNamerUtil.generate();
 
       const payload = {
         type: type,
-        title: title,
+        label: label,
         release_name: releaseName,
         version: version,
-        creator_uuid: creator.uuid,
-        organization_uuid: null,
-        team_uuid: null
+        workspace_uuid: workspace.uuid,
       };
-
-      if (organization) {
-        payload.organization_uuid = organization.uuid;
-      }
-
-      if (team) {
-        payload.team_uuid = team.uuid;
-      }
 
       return await DeploymentModel
         .query()
         .insertGraph(payload).returning("*");
     } catch (err) {
+
       if(err.message.indexOf("unique constraint") !== -1 &&
-         err.message.indexOf("module_deployments_organization_uuid_title_unique") !== -1) {
-        throw new Error(`Organization already has a deployment named ${title}`);
+         err.message.indexOf("deployments_workspace_uuid_label_unique") !== -1) {
+        throw new Error(`Workspace already has a deployment named ${label}`);
       }
       throw err;
     }
@@ -90,11 +83,11 @@ class DeploymentService extends BaseService {
     if (payload["config"] !== undefined && payload.config !== deployment.config) {
       changes.config = payload.config;
     }
-    if (payload["title"] !== undefined && payload.title !== deployment.title) {
-      changes.title = payload.title;
+    if (payload["label"] !== undefined && payload.label !== deployment.label) {
+      changes.label = payload.label;
     }
-    if (payload["team"] !== undefined && payload.team && payload.team.uuid !== deployment.teamUuid) {
-      changes.team_uuid = payload.team.uuid;
+    if (payload["workspace"] !== undefined && payload.workspace && payload.workspace.uuid !== deployment.workspaceUuid) {
+      changes.workspace_uuid = payload.workspace.uuid;
     }
 
     // TODO: Currently mutually exclusive to payload.config (will overwrite)
@@ -116,7 +109,7 @@ class DeploymentService extends BaseService {
 
   async updateDeploymentImage(deployment, image) {
     switch(deployment.type) {
-      case this.model("module_deployment").MODULE_AIRFLOW:
+      case this.model("deployment").MODULE_AIRFLOW:
         let config = deployment.getConfigCopy();
         config.images.airflow = image;
         return await this.updateDeployment(deployment, {
@@ -125,14 +118,8 @@ class DeploymentService extends BaseService {
     }
   }
 
-  async deleteDeployment(deployment, hard = false) {
-    if (hard) {
-      return await deployment.$query().delete();
-    } else {
-      return await deployment.$query().patch({
-        deleted_at: new Date().toISOString()
-      }).returning("*");
-    }
+  async deleteDeployment(deployment) {
+    return await deployment.$query().delete();
   }
 
   computeImageChanges(current, latest) {

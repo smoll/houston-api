@@ -4,6 +4,9 @@ const _ = require("lodash");
 const JWT = require("jsonwebtoken");
 
 const Config = require("../utils/config.js");
+const AuthStrategies = require("../utils/auth_strategies.js");
+const CookieUtil = require("../utils/cookie.js");
+
 const Context = require("../context.js");
 
 const MAX_DURATION = 7;
@@ -11,9 +14,41 @@ const MIN_DURATION = 1;
 
 class AuthService extends BaseService {
 
-  async authenticateUser(emailOrUsername, password) {
-    // currently just supporting local user auth, but we can expand later to be other sources
+  constructor() {
+    super(...arguments);
+    this.strategyUtil = new AuthStrategies();
+  }
 
+  defaultStrategy() {
+    return this.strategyUtil.defaultStrategy();
+  }
+
+  isStrategy(strategy) {
+    return this.strategyUtil.isStrategy(strategy);
+  }
+
+  isOAuthStrategy(strategy) {
+    return this.strategyUtil.isOAuth(strategy);
+  }
+
+  isStrategyEnabled(strategy) {
+    return this.strategyUtil.isEnabled(strategy);
+  }
+
+  getStrategyInfo(state) {
+    return {
+      localEnabled: this.isStrategyEnabled(AuthStrategies.LOCAL),
+      googleEnabled: this.isStrategyEnabled(AuthStrategies.GOOGLE),
+      googleOAuthUrl: this.strategyUtil.getOAuthUrl(AuthStrategies.GOOGLE, state),
+    }
+  }
+
+  async authenticateOAuth(strategy, token) {
+    const data = await this.strategyUtil.getUserData(strategy, token);
+    return await this.service("oauth_user").authenticateUser(data);
+  }
+
+  async authenticateUser(emailOrUsername, password) {
     return this.service("local_user").authenticateUser(emailOrUsername, password);
   }
 
@@ -34,8 +69,10 @@ class AuthService extends BaseService {
     if(authorization && authorization.length > 0) {
       try {
         let decoded = await this.decodeJWT(authorization);
-        let user = await this.service("user").fetchUserByUuid(decoded.id);
-        context.setAuthUser(user);
+        let user = await this.service("user").fetchUserByUuid(decoded.uuid, false);
+        if (user) {
+          context.setAuthUser(user);
+        }
       } catch (err) {
 
         // add context... to context, specifying why a token was invalid
@@ -55,8 +92,7 @@ class AuthService extends BaseService {
 
   async generateTokenPayload(user, context = {}) {
     const tokenPayload = {
-      id: user.uuid,
-      sU: user.superAdmin || false
+      uuid: user.uuid,
     };
 
     return tokenPayload;
@@ -71,7 +107,8 @@ class AuthService extends BaseService {
 
     let passphrase = Config.get(Config.JWT_PASSPHRASE);
     let options = {
-      expiresIn: `${expiration_days} days`
+      expiresIn: `${expiration_days} days`,
+      mutatePayload: true, // mutation the payload passed so we don't have to decode after to return with API call
     };
 
     return await new Promise((resolve, reject) => {
@@ -96,6 +133,10 @@ class AuthService extends BaseService {
     });
   }
 
+  setAuthCookie(response, token, expiration) {
+    CookieUtil.setAuthCookie(response, token, expiration);
+  }
+
   isUserToken(token) {
     // if it isn't a service token, it has to be a user token
     return !this.isServiceToken(token);
@@ -113,6 +154,8 @@ class AuthService extends BaseService {
     this.authenticateRequest(authorization).then((context) => {
       context.origin = req.headers.origin;
       req.context = context;
+      context.req = req;
+      context.res = res;
 
       return next();
     }).catch((err) => {
@@ -156,7 +199,7 @@ class AuthService extends BaseService {
 //               TokenPayload.message = "Not A Valid Token";
 //               return resolve(TokenPayload);
 //             } else {
-//               UserHelper.fetchUserById(decoded.id)
+//               UserHelper.fetchUserById(decoded.uuid)
 //                   .then((user)=>{
 //                     TokenPayload.user = user;
 //                     TokenPayload.success = true;
@@ -212,18 +255,14 @@ class AuthService extends BaseService {
   // and then we'll need to make a request back to the 3rd party with that token.  It is currently unclear whether
   // we can just rely on the client to handle the first part of the interaction.
 
-  getAuthStrategy(providerType) {
-    let strategies = {};
-    let userModel = this.model("user");
-    strategies[userModel.PROVIDER_LOCAL] = this.service("local_user").getAuthStrategy();
-
-    return strategies[providerType];
-  }
   //
   // authenticateUser(providerType, request) {
   //   let strategy = this.getAuthStrategy(providerType);
   //   return strategy(request);
   // }
 }
+
+AuthService.AUTH_LOCAL = "local";
+AuthService.AUTH_GOOGLE = "google";
 
 module.exports = AuthService;

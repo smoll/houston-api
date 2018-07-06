@@ -1,24 +1,26 @@
-const { SchemaBuilder } = require("../operations.js");
+const BaseType = require("./base.js");
 
-SchemaBuilder.addType('Token',
-  `type Token {
-    success: Boolean
-    message: String
-    token: String
-    decoded: DecodedToken
-  }`,
-  {
-    success(value) {
-      return value.success;
-    },
-    message(value) {
-      return value.message;
-    },
-    token(value) {
-      return value.token;
-    },
-    decoded(value) {
-      return value.decoded;
-    }
+class Token extends BaseType {
+  constructor(application) {
+    super(application);
+    this.typeName = "Token";
+    this.typeDef = `
+    type Token {
+      value: String
+      payload: TokenPayload
+    }`;
   }
-);
+
+  resolver() {
+    return {
+      value(value) {
+        return value.value || null;
+      },
+      payload(value) {
+        return value.payload || false;
+      },
+    };
+  }
+}
+
+module.exports = Token;

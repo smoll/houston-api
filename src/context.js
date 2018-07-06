@@ -10,59 +10,143 @@ class Context {
       valid: true,
       expired: false,
     };
+    this.req = null;
+    this.res = null;
 
     this.permissions = {
       user: {
-        view_self: false,
-        edit_self: false,
-        edit_other: false,
-        create_org: false,
-      },
-      // org: {
-      //   // owner will be all true
-      //   // admin will be all true
-      //   view_self: false,
-      //   edit_self: false,
-      //   delete_self: false,
-      //
-      //   view_sources: false,
-      //   create_sources: false,
-      //   edit_sources: false,
-      //   delete_sources: false,
-      //
-      //   view_destinations: false,
-      //   create_destinations: false,
-      //   edit_destinations: false,
-      //   delete_destinations: false,
-      //
-      //   manage_users: false,
-      //
-      //   view_connections: false,
-      //   create_connections: false,
-      //   edit_connections: false,
-      //   delete_connections: false,
-      //
-      //   airflow_status: false,
-      //   airflow_info: false,
-      //   airflow_deploy: false,
-      //   airflow_admin: false,
-      // }
+
+        ////// USER LEVEL (Specific to objects associated with a user)
+
+        // user
+        user_user_view: false,
+        user_user_view_other: false,
+        user_user_update: false,
+        user_user_delete: false,
+
+        // groups
+        user_group_create: false,
+        user_group_list: false,
+        user_group_view: false,
+        user_group_update: false,
+        user_group_delete: false,
+
+        // group users
+        user_group_user_add: false,
+        user_group_user_remove: false,
+        user_group_user_list: false,
+        user_group_user_manage_permissions: false,
+
+        // roles
+        user_role_create: false,
+        user_role_list: false,
+        user_role_view: false,
+        user_role_update: false,
+        user_role_delete: false,
+
+        // workspaces
+        user_workspace_create: false,
+        user_workspace_list: false,
+        user_workspace_view: false,
+        user_workspace_update: false,
+        user_workspace_delete: false,
+
+        // workspace users
+        user_workspace_user_add: false,
+        user_workspace_user_remove: false,
+        user_workspace_user_list: false,
+
+        user_deployment_create: false,
+        user_deployment_list: false,
+        user_deployment_view: false,
+        user_deployment_update: false,
+        user_deployment_delete: false,
+        user_deployment_deploy: false,
+        user_deployment_external: false,
+
+        // service accounts
+        user_service_account_create: false,
+        user_service_account_list: false,
+        user_service_account_view: false,
+        user_service_account_update: false,
+        user_service_account_delete: false,
+
+        ////// GLOBAL LEVEL (All objects in the system)
+
+        // users
+        global_user_create: false,
+        global_user_list: false,
+        global_user_view: false,
+        global_user_update: false,
+        global_user_delete: false,
+
+        // groups
+        global_group_create: false,
+        global_group_list: false,
+        global_group_view: false,
+        global_group_update: false,
+        global_group_delete: false,
+
+        // group users
+        global_group_user_add: false,
+        global_group_user_remove: false,
+        global_group_user_list: false,
+        global_group_user_manage_permissions: false,
+
+        // roles
+        global_role_create: false,
+        global_role_list: false,
+        global_role_view: false,
+        global_role_update: false,
+        global_role_delete: false,
+
+        // workspaces
+        global_workspace_create: false,
+        global_workspace_list: false,
+        global_workspace_view: false,
+        global_workspace_update: false,
+        global_workspace_delete: false,
+
+        // workspace users
+        global_workspace_user_add: false,
+        global_workspace_user_remove: false,
+        global_workspace_user_invites: false,
+        global_workspace_user_list: false,
+
+        // deployments
+        global_deployment_create: false,
+        global_deployment_list: false,
+        global_deployment_view: false,
+        global_deployment_update: false,
+        global_deployment_delete: false,
+        global_deployment_deploy: false,
+        global_deployment_external: false,
+
+        // service accounts
+        global_service_create: false,
+        global_service_list: false,
+        global_service_view: false,
+        global_service_update: false,
+        global_service_delete: false,
+
+        global_system_setting_list: false,
+        global_system_setting_view: false,
+        global_system_setting_update: false,
+      }
     };
 
     // This should never be used for user level endpoint permissions.
-    this.isSuperAdmin = false;
     this.authUser = null;
     // this.org = null;
     this.origin = null;
 
     // TODO: Populate this resource cache per request based on entrypoint
-    // args like "userId", "orgId", "deploymentId", "teamId", "sourceId", or "destinationId"
+    // args like "userId", "orgId", "deploymentId", "workspaceId", "sourceId", or "destinationId"
 
     // cache of resources as determine by the graphql entrypoint
     this.resources = {
       user: null,
-      organization: null,
-      team: null,
+      workspace: null,
       deployment: null,
     };
   }
@@ -73,13 +157,8 @@ class Context {
     // TODO: This is temporary, remove once we have property hook in place to
     // set these based on gql entrypoint
     this.resources.user = user;
-    if (this.authUser.superAdmin) {
-      this.setSuperAdmin();
-    } else {
-      this.permissions.user.view_self = true;
-      this.permissions.user.edit_self = true;
-      // this.permissions.user.create_org = true;
-    }
+    this.permissions.user.view_self = true;
+    this.permissions.user.edit_self = true;
   }
 
   setSuperAdmin() {
@@ -112,6 +191,15 @@ class Context {
     return null;
   }
 
+  hasPermissions(permissions) {
+    if (!_.isArray(permissions)) {
+      permissions = [permissions];
+    }
+
+
+
+  }
+
   // orgId() {
   //   if (this.org) {
   //     return this.org.uui;
@@ -133,5 +221,6 @@ class Context {
 
 Context.REQUESTER_USER = "user";
 Context.REQUESTER_SERVICE = "service";
+Context.REQUESTER_SYSTEM = "system";
 
 module.exports = Context;

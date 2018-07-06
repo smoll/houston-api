@@ -5,21 +5,27 @@ class Users extends BaseOperation {
     super();
     this.name = "users";
     this.typeDef = `
-      # Fetches are user by username or email
-      users(search: String!) : [User]
+      # Fetches a user by username, email
+      users(userUuid: Uuid, username: String, email: String) : [User]
     `;
     this.entrypoint = "query";
   }
 
   async resolver(root, args, context) {
-    try {
-      let user = context.resources.user;
-
-      return [user];
-    } catch (err) {
-      this.error(err.message);
-      // TODO: Should throw error
-      return [];
+    if (args.userUuid) {
+      return [this.service("user").fetchUserByUuid(args.userUuid)];
+    } else if (args.username) {
+      return [this.service("user").fetchUserByUsername(args.username)];
+    } else if (args.email) {
+      return [this.service("user").fetchUserByEmail(args.email)];
+    } else {
+      try {
+        let user = context.resources.user;
+        return [user];
+      } catch (err) {
+        this.error(err.message);
+        throw err;
+      }
     }
   }
 }

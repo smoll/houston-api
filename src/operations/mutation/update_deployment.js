@@ -6,19 +6,18 @@ class UpdateDeployment extends BaseOperation {
     this.name = "updateDeployment";
     this.typeDef = `
       # Creates a new deployment
-      updateDeployment(deploymentUuid: ID, title: String, teamUuid: ID, images: JSON, sync: Boolean) : StatusMessage
+      updateDeployment(deploymentUuid: Uuid, label: String, workspaceUuid: Uuid, images: JSON, sync: Boolean) : Deployment
     `;
     this.entrypoint = "mutation";
   }
 
   async resolver(root, args, context) {
     try {
-      let deployment = await this.service("deployment").fetchByUuid(args.deploymentUuid);
+      let deployment = await this.service("deployment").fetchDeploymentByUuid(args.deploymentUuid);
 
-      if (args.title || !_.isEmpty(args.images) || args.team) {
+      if (args.label || !_.isEmpty(args.images)) {
         deployment = await this.service("deployment").updateDeployment(deployment, {
-          title: args.title,
-          team: context.resources.team,
+          label: args.label,
           images: args.images,
           sync: args.sync
         });
@@ -28,20 +27,10 @@ class UpdateDeployment extends BaseOperation {
         await this.service("commander").updateDeployment(deployment);
       }
 
-      return {
-        success: true,
-        message: "Deployment updated",
-        id: deployment.uuid,
-        code: null
-      }
+      return deployment;
     } catch (err) {
       this.error(err);
-      return {
-        success: true,
-        message: "Deployment failed to update",
-        id: null,
-        code: null
-      }
+      throw err;
     }
   }
 }

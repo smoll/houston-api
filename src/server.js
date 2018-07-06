@@ -1,14 +1,14 @@
 const { makeExecutableSchema } = require("graphql-tools");
 const { GraphQLServer } = require("graphql-yoga");
 const BodyParser = require("body-parser");
+const ApolloError = require("apollo-errors").formatError;
 const Config = require("./utils/config.js");
+
 // Set config defaults
 Config.setDefaults({});
 
-const Passport = require("passport");
-
 const { Postgres, Airflow, PostgresMigration } = require("./database/postgres.js");
-const { OperationManager, TypeManager } = require("./operations.js");
+const { OperationManager, TypeManager, SchemaBuilder } = require("./operations.js");
 
 const Application = require("./application.js");
 
@@ -18,15 +18,17 @@ Application.registerConnection("airflow", Airflow);
 
 const types = require("./types/index.js");
 const operations = require("./operations/index.js");
+const guards = require("./guards/index.js");
 
 // Register types & operations
 TypeManager.registerTypes(types, Application);
 OperationManager.registerOperations(operations, Application);
+SchemaBuilder.registerGuards(guards);
 
 // Create the schema
 const schema = makeExecutableSchema({
-  typeDefs: OperationManager.schemaBuilder.generateTypeDefs(),
-  resolvers: OperationManager.schemaBuilder.generateResolvers()
+  typeDefs: SchemaBuilder.generateTypeDefs({}, []),
+  resolvers: SchemaBuilder.generateResolvers({}, [])
 });
 
 // Start the server
@@ -36,18 +38,19 @@ const server = new GraphQLServer({
 });
 
 const authService = Application.service("auth");
+const commonService = Application.service("common");
 server.express.use(authService.authorizeRequest.bind(authService));
+
+OperationManager.registerPreHook(async function(root, args, context, operation) {
+  context.resources = await commonService.resourceResolver(args);
+  return Promise.resolve([root, args, context, operation]);
+});
 
 // Build REST routes
 server.express.use(BodyParser.json({
   type: ["application/json", "application/vnd.docker.distribution.events.v1+json"]
 }));
 require("./routes/index.js")(server.express, Application);
-
-// set auth strategy
-const strategy = Config.get(Config.AUTH_STRATEGY);
-Passport.use(Application.service("auth").getAuthStrategy(strategy));
-server.use(Passport.initialize());
 
 (async function() {
   Application.logger().info("Running migrations... ");
@@ -70,9 +73,11 @@ server.use(Passport.initialize());
     rootValue: {
       schema: schema,
       application: Application,
-    }
+    },
+    formatError: ApolloError
   });
 }).catch((error) => {
   Application.logger().error("Migrations failed, abort starting server");
+  console.log(error);
   Application.logger().error(error);
 });
