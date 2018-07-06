@@ -137,6 +137,8 @@ class Context {
 
     // This should never be used for user level endpoint permissions.
     this.authUser = null;
+    this.authServiceAccount = null;
+    
     // this.org = null;
     this.origin = null;
 
@@ -167,6 +169,10 @@ class Context {
     this.authUser = user;
   }
 
+  setAuthServiceAccount(serviceAccount) {
+    this.authServiceAccount = serviceAccount;
+  }
+
   setSuperAdmin() {
     this.isSuperAdmin = true;
     function setObjectKeysToTrue(object) {
@@ -188,6 +194,10 @@ class Context {
 
   setPerm(group, key, value) {
     this.permissions[group][key] = value;
+  }
+
+  computePermissions() {
+
   }
 
   userUuid() {
