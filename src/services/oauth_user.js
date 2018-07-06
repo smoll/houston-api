@@ -6,13 +6,13 @@ class OauthUserService extends BaseService {
 
     // TODO: Objection failing to populate data when selecting by email and credentials or just creds alone.
     // Doing the working but unoptimized alternative.. figure out what is wrong with doing it the right way.
-    let user = await this.service("user").fetchUserByEmail(data.profile.email);
+    let user = await this.service("user").fetchUserByEmail(data.profile.email, false);
     let credential = await this.fetchCredentials(data.providerType, data.providerUserId);
 
     if (!user && credential) {
       console.log("credential.user_uuid");
       console.log(credential.user_uuid);
-      user = await this.service("user").fetchUserByUuid(credential.user_uuid)
+      user = await this.service("user").fetchUserByUuid(credential.user_uuid, false)
     }
 
     if (credential) {
