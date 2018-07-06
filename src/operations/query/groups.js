@@ -20,7 +20,7 @@ class Groups extends BaseOperation {
           relations: "[users.emails]",
         })];
       } else if (args.workspaceUuid) {
-        groups = this.service("group").fetchGroupsByEntityUuid(args.workspaceUuid,this.models("group").ENTITY_WORKSPACE, {
+        groups = this.service("group").fetchGroupsByEntityUuid(args.workspaceUuid, this.model("group").ENTITY_WORKSPACE, {
           relations: "[users.emails]",
         });
       } else {
