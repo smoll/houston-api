@@ -4,9 +4,12 @@ let YAML = require("yamljs");
 
 let Request = require("./request.js");
 
+const EDGE_REGEX = /^\d+\.\d+\.\d+-rc\.\d+$/;
+
 class HelmMetadata {
-  constructor(repoUrl) {
+  constructor(repoUrl, allowEdge = false) {
     this.request = new Request(repoUrl);
+    this.allowEdge = allowEdge;
     this.cache = new NodeCache();
   }
 
@@ -66,6 +69,9 @@ class HelmMetadata {
 
       let latest = "0.0.0";
       for (let chart of repo.entries[chartName]) {
+        if (!this.allowEdge && chart.version.match(EDGE_REGEX)) {
+          continue;
+        }
         if (Semver.gt(chart.version, latest)) {
           latest = chart.version;
         }

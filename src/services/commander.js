@@ -11,7 +11,10 @@ class CommanderService extends BaseService {
   constructor() {
     super(...arguments);
     this.commander = new CommanderClient(Config.get(Config.COMMANDER_HOST), Config.get(Config.COMMANDER_PORT));
-    this.helmMetadata = new HelmMetadata(Config.get(Config.HELM_ASTRO_REPO));
+    this.helmMetadata = new HelmMetadata(
+      Config.get(Config.HELM_ASTRO_REPO),
+      Config.get(Config.HELM_REPO_EDGE) === "true"
+    );
   }
 
   // grpc wrappers

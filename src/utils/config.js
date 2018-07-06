@@ -13,6 +13,7 @@ class Config {
     Config.defaults[Config.AUTH_STRATEGY] = "local";
     Config.defaults[Config.HELM_GLOBAL_CONFIG] = {};
     Config.defaults[Config.HELM_ASTRO_REPO] = "http://helm.astronomer.io/";
+    Config.defaults[Config.HELM_REPO_EDGE] = "false";
   }
 
   static get(key) {
@@ -40,6 +41,7 @@ Config.DEBUG_DB = "DEBUG_DB";
 Config.JWT_PASSPHRASE = "JWT_PASSPHRASE";
 Config.HELM_GLOBAL_CONFIG = "HELM_GLOBAL_CONFIG";
 Config.HELM_ASTRO_REPO = "HELM_ASTRO_REPO";
+Config.HELM_REPO_EDGE = "HELM_REPO_EDGE";
 Config.AUTH_STRATEGY = "AUTH_STRATEGY";
 Config.COMMANDER_HOST = "COMMANDER_HOST";
 Config.COMMANDER_PORT = "COMMANDER_PORT";
