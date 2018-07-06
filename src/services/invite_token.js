@@ -48,16 +48,15 @@ class InviteTokenService extends BaseService {
     return [];
   }
 
-  async createInviteToken(email, workspaceUuid, assignment = {}) {
+  async createInviteToken(email, workspaceUuid, assignments = {}) {
     try {
       let invite = await this.model("invite_token")
         .query()
         .insertGraph({
           email: email,
           workspace_uuid: workspaceUuid,
-          assignments: assignment,
+          assignments: assignments,
         }).returning("*");
-      console.log(invite);
       return invite;
     } catch (err) {
       this.error(err);
