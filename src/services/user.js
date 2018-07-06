@@ -85,7 +85,7 @@ class UserService extends BaseService {
     return USER_COUNT;
   }
 
-  async createUser(userData, credential) {
+  async createUser(userData) {
     try {
       const email = userData.email;
       const username = userData.username || email;
@@ -110,8 +110,6 @@ class UserService extends BaseService {
         .query()
         .insertGraph({
           username: username,
-          provider_uuid: credential.uuid,
-          provider_type: credential.providerType(),
           full_name: fullName,
           status: status,
           emails: [{
@@ -120,7 +118,6 @@ class UserService extends BaseService {
           }],
           properties: properties
         }).returning("*");
-
 
       if (userCount === 0) {
         // this is the first user, lets make them a system owner

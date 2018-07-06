@@ -17,16 +17,20 @@ class LocalCredential extends Password(BaseModel) {
   }
 
   static get idColumn() {
-    return "uuid";
+    return "user_uuid";
+  }
+
+  static get uuidFields() {
+    return [];
   }
 
   static get jsonSchema () {
     return {
       type: "object",
-      required: ["password"],
+      required: ["user_uuid", "password"],
 
       properties: {
-        uuid: { type: "uuid" },
+        user_uuid: { type: "uuid" },
         password: { type: "string", minLength: 1, maxLength: 255 },
         created_at: { type: "string" },
         updated_at: { type: "string" },
@@ -35,7 +39,7 @@ class LocalCredential extends Password(BaseModel) {
   }
 
   static get jsonAttributes() {
-    return ["uuid", "password", "created_at", "updated_at"];
+    return ["user_uuid", "password", "created_at", "updated_at"];
   }
 
   static get relationMappings() {
@@ -43,15 +47,9 @@ class LocalCredential extends Password(BaseModel) {
       user: {
         relation: BaseModel.BelongsToOneRelation,
         modelClass: `${__dirname}/user.js`,
-        filter: {
-          provider: "local"
-        },
-        beforeInsert(model) {
-          model.provider = 'local';
-        },
         join: {
-          from: 'local_credentials.uuid',
-          to: 'users.provider_uuid'
+          from: 'local_credentials.user_uuid',
+          to: 'users.uuid'
         }
       }
     };

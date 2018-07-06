@@ -22,8 +22,6 @@ class User extends BaseModel {
       properties: {
         uuid: { type: "uuid" },
         username: { type: "string", minLength: 1, maxLength: 255 },
-        provider_type: { type: "string", minLength: 1, maxLength: 255 },
-        provider_uuid: { type: "string", minLength: 1, maxLength: 255 },
         full_name: { type: "string" },
         status: { type: "string" },
         created_at: { type: "string" },
@@ -33,7 +31,7 @@ class User extends BaseModel {
   }
 
   static get jsonAttributes() {
-    return ["uuid", "username", "provider_type", "provider_uuid", "full_name", "status", "created_at", "updated_at"];
+    return ["uuid", "username", "full_name", "status", "created_at", "updated_at"];
   }
 
   static get relationMappings() {
@@ -54,12 +52,20 @@ class User extends BaseModel {
           to: 'user_properties.user_uuid'
         }
       },
-      credential: {
+      localCredential: {
         relation: BaseModel.HasOneRelation,
         modelClass: `${__dirname}/local_credential.js`,
         join: {
-          from: 'users.provider_uuid',
-          to: 'local_credentials.uuid'
+          from: 'users.uuid',
+          to: 'local_credentials.user_uuid'
+        }
+      },
+      oauthCredentials: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: `${__dirname}/oauth_credential.js`,
+        join: {
+          from: 'users.uuid',
+          to: 'oauth_credentials.user_uuid'
         }
       },
       workspaces: {

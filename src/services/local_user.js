@@ -21,22 +21,25 @@ class LocalUserService extends BaseService {
   }
 
   async createUser(email, password, username, userData = {}) {
-    let credential = await this.model("local_credential")
-      .query()
-      .insert({
-        password: password
-      }).returning("*");
-
     userData.email = email;
     userData.username = username;
 
-    return this.service("user").createUser(userData, credential);
+    const user = await this.service("user").createUser(userData);
+
+    await this.model("local_credential")
+      .query()
+      .insert({
+        user_uuid: user.uuid,
+        password: password
+      }).returning("*");
+
+    return user;
   }
 
   async fetchCredentialsForUser(user) {
     let credentials = this.model("local_credential")
         .query()
-        .findById(user.providerUuid);
+        .findById(user.uuid);
     if (credentials) {
       return credentials;
     }
