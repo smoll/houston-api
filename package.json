@@ -31,8 +31,8 @@
   "homepage": "https://github.com/astronomerio/houston-api#readme",
   "dependencies": {
     "@moilandtoil/sealab-application": "0.0.8",
-    "@moilandtoil/sealab-operation": "0.0.4",
-    "@moilandtoil/sealab-schema-builder": "0.0.4",
+    "@moilandtoil/sealab-operation": "0.0.5",
+    "@moilandtoil/sealab-schema-builder": "0.0.6",
     "@moilandtoil/sealab-type": "0.0.5",
     "apollo-cache-control": "^0.1.0",
     "apollo-errors": "^1.9.0",
