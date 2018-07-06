@@ -20,6 +20,7 @@ class OauthUserService extends BaseService {
     const userData = {
       status: "active",
       email: data.profile.email,
+      emailVerified: true,
       username: data.profile.email,
       fullName: data.profile.fullName,
       avatarUrl: data.profile.pictureUrl
@@ -50,7 +51,7 @@ class OauthUserService extends BaseService {
   }
 
   async createUser(OAuthData, userData) {
-    const user = this.service("user").createUser(userData);
+    const user = await this.service("user").createUser(userData);
 
     if (!user.oauthCredentials) {
       user.oauthCredentials = [];
