@@ -1,3 +1,5 @@
+const _ = require("lodash");
+
 const BaseOperation = require("../base.js");
 
 class WorkspaceAddUser extends BaseOperation {
@@ -6,7 +8,7 @@ class WorkspaceAddUser extends BaseOperation {
     this.name = "workspaceAddUser";
     this.typeDef = `
       # Add user to a workspace
-      workspaceAddUser(workspaceUuid: Uuid!, email: String!, permissions: String) : Workspace
+      workspaceAddUser(workspaceUuid: Uuid!, email: String!, groupUuids: String) : Workspace
     `;
     this.entrypoint = "mutation";
     this.guards = ["authenticated"];
@@ -18,13 +20,15 @@ class WorkspaceAddUser extends BaseOperation {
       let user = await this.service("user").fetchUserByEmail(args.email, false);
       let workspace = context.resources.workspace;
 
+      let groupUuids = args.groupUuids.split(",");
+
       if (!user) {
         let invites = await this.service("invite_token").fetchInvitesByWorkspaceUuid(workspace.uuid);
         if (this.userInvited(invites, args.email)) {
           throw new Error("User already invited to group");
         }
         const assignments = {
-          groupUuids: args.permissions
+          groupUuids: groupUuids
         };
         const invite = await this.service("invite_token").createInviteToken(args.email, workspace.uuid, assignments);
         invites.push(invite);
@@ -32,6 +36,7 @@ class WorkspaceAddUser extends BaseOperation {
         return workspace;
       } else {
         await this.service("workspace").addUser(workspace, user);
+
         return await this.service("workspace").fetchWorkspaceByUuid(workspace.uuid, { relation: "users, groups, groups.users]" });
       }
     } catch (err) {
