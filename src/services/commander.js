@@ -68,7 +68,6 @@ class CommanderService extends BaseService {
     const deployDB    = `${deployId}_airflow`;
     const airflowId   = `${deployId}_airflow`;
     const celeryId    = `${deployId}_celery`;
-    const grafanaId   = `${deployId}_grafana`;
 
     // create db
     await PostgresUtil.createDatabase(this.conn("airflow"), deployDB);
@@ -79,7 +78,6 @@ class CommanderService extends BaseService {
     // Create user, schema, assign privs for user in schema, set schema as user default
     let airflowUri = await this.createDeploySchema(userDB, deployDB, "airflow", airflowId);
     let celeryUri = await this.createDeploySchema(userDB, deployDB, "celery", celeryId);
-    let grafanaUri = await this.createDeploySchema(userDB, deployDB, "grafana", grafanaId);
 
     // Close user db connection
     await userDB.destroy();
@@ -87,7 +85,6 @@ class CommanderService extends BaseService {
     // overwrite the secret names to add the deployment release name
     config["data"]["airflowMetadataSecret"] = `${deployment.releaseName}-airflow-metadata`;
     config["data"]["airflowResultBackendSecret"] = `${deployment.releaseName}-airflow-result-backend`;
-    config["data"]["grafanaBackendSecret"] = `${deployment.releaseName}-grafana-backend`;
     config["data"]["airflowBrokerSecret"] = `${deployment.releaseName}-airflow-broker`;
 
     const secrets = [
@@ -101,13 +98,6 @@ class CommanderService extends BaseService {
         key: "connection",
         value: PostgresUtil.uriReplace(celeryUri, {
           protocol: "db+postgresql"
-        })
-      },
-      {
-        name: config["data"]["grafanaBackendSecret"],
-        key: "connection",
-        value: PostgresUtil.uriReplace(grafanaUri, {
-          protocol: "postgres"
         })
       },
       {
