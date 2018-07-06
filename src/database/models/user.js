@@ -98,7 +98,9 @@ class User extends BaseModel {
   }
 
   $beforeInsert(context) {
-    this.status = "pending";
+    if (!this.status) {
+      this.status = "pending";
+    }
     return super.$beforeInsert(context);
   }
 }
