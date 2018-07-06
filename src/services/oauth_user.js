@@ -3,7 +3,21 @@ const BaseService = require("./base.js");
 class OauthUserService extends BaseService {
 
   async authenticateUser(data) {
-    let user = await this.fetchUserByOAuthData(data);
+
+    // TODO: Objection failing to populate data when selecting by email and credentials or just creds alone.
+    // Doing the working but unoptimized alternative.. figure out what is wrong with doing it the right way.
+    let user = await this.service("user").fetchUserByEmail(data.profile.email);
+    let credential = await this.fetchCredentials(data.providerType, data.providerUserId);
+
+    if (!user && credential) {
+      console.log("credential.user_uuid");
+      console.log(credential.user_uuid);
+      user = await this.service("user").fetchUserByUuid(credential.user_uuid)
+    }
+
+    if (credential) {
+      user.oauthCredentials = [credential];
+    }
 
     const userData = {
       status: "active",
@@ -22,6 +36,19 @@ class OauthUserService extends BaseService {
 
     // oauth user doesn't exist, but has already been authenticated. Create it!
     return await this.createUser(data, userData);
+  }
+
+  async fetchCredentials(providerType, providerUserId) {
+    let credential = await this.model("oauth_credential")
+      .query()
+      .where("oauth_credentials.oauth_provider", providerType)
+      .where("oauth_credentials.oauth_user_id", providerUserId)
+      .first();
+
+    if (credential) {
+      return credential;
+    }
+    return null;
   }
 
   async createUser(OAuthData, userData) {
