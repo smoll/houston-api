@@ -9,6 +9,7 @@ class ServiceAccounts extends BaseOperation {
       serviceAccounts(apiKey: String, serviceAccountUuid: String, entityType: EntityType, entityUuid: Uuid): [ServiceAccount]
     `;
     this.entrypoint = "query";
+    this.guards = ["authenticated"];
   }
 
   async resolver(root, args, context) {

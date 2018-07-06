@@ -9,6 +9,7 @@ class Self extends BaseOperation {
       self : User
     `;
     this.entrypoint = "query";
+    this.guards = ["authenticated"];
   }
 
   async resolver(root, args, context) {

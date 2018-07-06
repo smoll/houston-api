@@ -9,6 +9,7 @@ class Groups extends BaseOperation {
       groups(groupUuid: Uuid, workspaceUuid: Uuid) : [Group]
     `;
     this.entrypoint = "query";
+    this.guards = ["authenticated"];
   }
 
   async resolver(root, args, context) {

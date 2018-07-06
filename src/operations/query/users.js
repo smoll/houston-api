@@ -9,6 +9,7 @@ class Users extends BaseOperation {
       users(userUuid: Uuid, username: String, email: String) : [User]
     `;
     this.entrypoint = "query";
+    this.guards = ["authenticated"];
   }
 
   async resolver(root, args, context) {

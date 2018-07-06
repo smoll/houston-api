@@ -9,6 +9,7 @@ class Deployments extends BaseOperation {
       deployments(deploymentUuid: Uuid, workspaceUuid: Uuid, releaseName: String): [Deployment]
     `;
     this.entrypoint = "query";
+    this.guards = ["authenticated"];
   }
 
   async resolver(root, args, context) {

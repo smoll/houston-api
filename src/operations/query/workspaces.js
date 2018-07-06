@@ -9,6 +9,7 @@ class Workspaces extends BaseOperation {
       workspaces(userUuid: Uuid, workspaceUuid: Uuid) : [Workspace]
     `;
     this.entrypoint = "query";
+    this.guards = ["authenticated"];
   }
 
   async resolver(root, args, context) {
