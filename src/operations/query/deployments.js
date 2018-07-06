@@ -26,8 +26,7 @@ class Deployments extends BaseOperation {
 
     } catch (err) {
       this.error(err.message);
-      // TODO: Should throw error
-      return [];
+      throw err;
     }
   }
 }

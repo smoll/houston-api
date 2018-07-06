@@ -86,9 +86,9 @@ class DeploymentService extends BaseService {
     if (payload["label"] !== undefined && payload.label !== deployment.label) {
       changes.label = payload.label;
     }
-    if (payload["workspace"] !== undefined && payload.workspace && payload.workspace.uuid !== deployment.workspaceUuid) {
-      changes.workspace_uuid = payload.workspace.uuid;
-    }
+    // if (payload["workspace"] !== undefined && payload.workspace && payload.workspace.uuid !== deployment.workspaceUuid) {
+    //   changes.workspace_uuid = payload.workspace.uuid;
+    // }
 
     // TODO: Currently mutually exclusive to payload.config (will overwrite)
     if (payload["images"] !== undefined) {

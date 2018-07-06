@@ -5,8 +5,13 @@ class UpdateDeployment extends BaseOperation {
     super();
     this.name = "updateDeployment";
     this.typeDef = `
-      # Creates a new deployment
-      updateDeployment(deploymentUuid: Uuid, label: String, workspaceUuid: Uuid, images: JSON, sync: Boolean) : Deployment
+      # Updates an existing deployment
+      # Payload options:
+      # {
+      #   label: String
+      #   description: String
+      #   images: Object 
+      updateDeployment(deploymentUuid: Uuid, payload: JSON!, sync: Boolean) : Deployment
     `;
     this.entrypoint = "mutation";
     this.guards = ["authenticated"];
@@ -14,15 +19,9 @@ class UpdateDeployment extends BaseOperation {
 
   async resolver(root, args, context) {
     try {
-      let deployment = await this.service("deployment").fetchDeploymentByUuid(args.deploymentUuid);
+      let deployment = context.resources.deployment;
 
-      if (args.label || !_.isEmpty(args.images)) {
-        deployment = await this.service("deployment").updateDeployment(deployment, {
-          label: args.label,
-          images: args.images,
-          sync: args.sync
-        });
-      }
+      deployment = await this.service("deployment").updateDeployment(deployment, args.payload);
 
       if (args.sync === true) {
         await this.service("commander").updateDeployment(deployment);
