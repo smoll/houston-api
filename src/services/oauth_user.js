@@ -10,8 +10,6 @@ class OauthUserService extends BaseService {
     let credential = await this.fetchCredentials(data.providerType, data.providerUserId);
 
     if (!user && credential) {
-      console.log("credential.user_uuid");
-      console.log(credential.user_uuid);
       user = await this.service("user").fetchUserByUuid(credential.user_uuid, false)
     }
 
@@ -57,7 +55,8 @@ class OauthUserService extends BaseService {
     if (!user.oauthCredentials) {
       user.oauthCredentials = [];
     }
-    await this.createOAuthCredential(user, OAuthData);
+    user.oauthCredentials = [await this.createOAuthCredential(user, OAuthData)];
+    return user;
   }
 
   async createOAuthCredential(user, OAuthData) {
