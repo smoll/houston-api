@@ -1,19 +1,19 @@
 const BaseOperation = require("../base.js");
 
-class DeleteTeam extends BaseOperation {
+class DeleteWorkspace extends BaseOperation {
   constructor() {
     super();
-    this.name = "deleteTeam";
+    this.name = "deleteWorkspace";
     this.typeDef = `
-      # Deletes an existing team
-      deleteTeam(teamUuid: Uuid) : Team
+      # Deletes an existing workspace
+      deleteWorkspace(workspaceUuid: Uuid) : Workspace
     `;
     this.entrypoint = "mutation";
   }
 
   async resolver(root, args, context) {
     try {
-      const workspace = await this.service("workspace").fetchWorkspaceByUuid(args.teamUuid);
+      const workspace = context.resources.workspace;
 
       await this.service("workspace").deleteWorkspace(workspace);
 
@@ -27,4 +27,4 @@ class DeleteTeam extends BaseOperation {
   }
 }
 
-module.exports = DeleteTeam;
+module.exports = DeleteWorkspace;

@@ -12,7 +12,7 @@ class Deployment extends BaseType {
       label: String
       releaseName: String
       version: String
-      team: Team
+      workspace: Workspace
       urls: [DeploymentUrls]
       createdAt: String
       updatedAt: String
@@ -36,8 +36,8 @@ class Deployment extends BaseType {
       version(value) {
         return value.version || null;
       },
-      team(value) {
-        return value || {};
+      workspace(value) {
+        return value.workspace || {};
       },
       urls(value, root, context) {
         const globalConfig = JSON.parse(Config.get(Config.HELM_GLOBAL_CONFIG));

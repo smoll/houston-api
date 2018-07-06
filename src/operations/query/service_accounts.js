@@ -1,6 +1,6 @@
 const BaseOperation = require("../base.js");
 
-class Teams extends BaseOperation {
+class ServiceAccounts extends BaseOperation {
   constructor() {
     super();
     this.name = "serviceAccounts";
@@ -32,4 +32,4 @@ class Teams extends BaseOperation {
   }
 }
 
-module.exports = Teams;
+module.exports = ServiceAccounts;

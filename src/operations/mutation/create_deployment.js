@@ -6,7 +6,7 @@ class CreateDeployment extends BaseOperation {
     this.name = "createDeployment";
     this.typeDef = `
       # Creates a new deployment
-      createDeployment(type: String!, label: String!, teamUuid: Uuid, version: String) : Deployment
+      createDeployment(type: String!, label: String!, workspaceUuid: Uuid, version: String) : Deployment
     `;
     this.entrypoint = "mutation";
   }
@@ -22,12 +22,12 @@ class CreateDeployment extends BaseOperation {
         }
       }
 
-      if (!args.teamUuid) {
-        throw new Error("Team uuid is required to create a deployment");
+      if (!args.workspaceUuid) {
+        throw new Error("Workspace uuid is required to create a deployment");
       }
 
       let deployment = await this.service("deployment").createDeployment(
-        context.resources.team,
+        context.resources.workspace,
         args.type,
         args.version,
         args.label,

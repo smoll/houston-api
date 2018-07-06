@@ -1,28 +1,26 @@
 const BaseOperation = require("../base.js");
 
-class Teams extends BaseOperation {
+class Workspaces extends BaseOperation {
   constructor() {
     super();
-    this.name = "teams";
+    this.name = "workspaces";
     this.typeDef = `
-      # Fetch team by userUuid, teamUuid, or
-      teams(userUuid: Uuid, teamUuid: Uuid) : [Team]
+      # Fetch workspace by userUuid, workspaceUuid, or
+      workspaces(userUuid: Uuid, workspaceUuid: Uuid) : [Workspace]
     `;
     this.entrypoint = "query";
   }
 
   async resolver(root, args, context) {
     try {
-      let workspaces;
-      if (args.teamUuid) {
-        return [context.resources.team];
+      if (args.workspaceUuid) {
+        return [context.resources.workspace];
       } else {
         if (!args.userUuid) {
           args.userUuid = context.authUser.uuid;
         }
-        workspaces = await this.service("workspace").fetchWorkspacesByUserUuid(args.userUuid);
+        return await this.service("workspace").fetchWorkspacesByUserUuid(args.userUuid);
       }
-      return workspaces;
     } catch (err) {
       this.error(err.message);
       throw err;
@@ -30,4 +28,4 @@ class Teams extends BaseOperation {
   }
 }
 
-module.exports = Teams;
+module.exports = Workspaces;

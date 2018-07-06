@@ -2,11 +2,11 @@ const BaseService = require("./base.js");
 
 class RbacService extends BaseService {
 
-  // Permissions assigned at the global group, team group, or service account level
+  // Permissions assigned at the global group, workspace group, or service account level
 
   transformGroupPermissions(groups) {
     // for each group, translate the permissions to a flattened list, and for each permission
-    // determine if it was granted by a global group or team group
+    // determine if it was granted by a global group or workspace group
   }
 
   transformAllRolePermissions(roles) {
@@ -18,7 +18,7 @@ class RbacService extends BaseService {
     /*
     {
       global: true/false,
-      team: true/false,
+      workspace: true/false,
       service: true/false
      */
   }

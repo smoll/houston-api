@@ -7,7 +7,7 @@ class CreateToken extends BaseOperation {
     this.typeDef = `
       # Verify a User's credentials and issues a token if valid. Adding an orgId validates a User's credentials 
       # and access to that Organization, failing if a User does not have access to that Organization.
-      createToken(credentials: String!, identity: String, authStrategy: AuthStrategy, teamUuid: String, permission: String, duration: Int) : AuthUser
+      createToken(credentials: String!, identity: String, authStrategy: AuthStrategy, workspaceUuid: String, permission: String, duration: Int) : AuthUser
     `;
     this.entrypoint = "mutation";
   }

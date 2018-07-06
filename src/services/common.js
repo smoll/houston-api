@@ -37,7 +37,7 @@ class CommonService extends BaseService {
         return this.service("invite_token").fetchInviteByUuid(resourceUuid);
       case "serviceAccountUuid":
         return this.service("service_account").fetchServiceAccountByUuid(resourceUuid);
-      case "teamUuid":
+      case "workspaceUuid":
         return this.service("workspace").fetchWorkspaceByUuid(resourceUuid);
       case "userUuid":
         return this.service("user").fetchUserByUuid(resourceUuid);

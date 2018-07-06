@@ -34,7 +34,6 @@ class DeploymentService extends BaseService {
   }
 
   async fetchDeploymentByReleaseName(releaseName, throwError = true) {
-    // TODO: Once teams are fully implemented, Query for any deployment in any org user is apart of
     const deployment = await this.model("deployment")
         .query()
         .findOne({
@@ -49,7 +48,7 @@ class DeploymentService extends BaseService {
     return null;
   }
 
-  async createDeployment(team, type, version, label) {
+  async createDeployment(workspace, type, version, label) {
     try {
       const DeploymentModel = this.model("deployment");
 
@@ -60,7 +59,7 @@ class DeploymentService extends BaseService {
         label: label,
         release_name: releaseName,
         version: version,
-        workspace_uuid: team.uuid,
+        workspace_uuid: workspace.uuid,
       };
 
       return await DeploymentModel

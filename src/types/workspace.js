@@ -1,11 +1,11 @@
 const BaseType = require("./base.js");
 
-class Team extends BaseType {
+class Workspace extends BaseType {
   constructor(application) {
     super(application);
-    this.typeName = "Team";
+    this.typeName = "Workspace";
     this.typeDef = `
-    type Team {
+    type Workspace {
       uuid: Uuid
       label: String
       description: String
@@ -60,4 +60,4 @@ class Team extends BaseType {
   }
 }
 
-module.exports = Team;
+module.exports = Workspace;

@@ -1,12 +1,12 @@
 const BaseOperation = require("../base.js");
 
-class CreateTeam extends BaseOperation {
+class CreateWorkspace extends BaseOperation {
   constructor() {
     super();
-    this.name = "createTeam";
+    this.name = "createWorkspace";
     this.typeDef = `
-      # Create a team and add authenticated user as owner
-      createTeam(label: String!, description: String) : Team
+      # Create a workspace and add authenticated user as owner
+      createWorkspace(label: String!, description: String) : Workspace
     `;
     this.entrypoint = "mutation";
   }
@@ -30,4 +30,4 @@ class CreateTeam extends BaseOperation {
   }
 }
 
-module.exports = CreateTeam;
+module.exports = CreateWorkspace;

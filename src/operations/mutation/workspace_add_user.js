@@ -1,31 +1,31 @@
 const BaseOperation = require("../base.js");
 
-class TeamAddUser extends BaseOperation {
+class WorkspaceAddUser extends BaseOperation {
   constructor() {
     super();
-    this.name = "teamAddUser";
+    this.name = "workspaceAddUser";
     this.typeDef = `
-      # Add user to a team
-      teamAddUser(teamUuid: Uuid!, email: String!, permissions: String) : Team
+      # Add user to a workspace
+      workspaceAddUser(workspaceUuid: Uuid!, email: String!, permissions: String) : Workspace
     `;
     this.entrypoint = "mutation";
-    // this.guards = ["authenticated", "permission:user_team_user_add"];
+    // this.guards = ["authenticated", "permission:user_workspace_user_add"];
   }
 
   async resolver(root, args, context) {
     try {
       let user = await this.service("user").fetchUserByEmail(args.email, false);
-      let workspace = context.resources.team;
+      let workspace = context.resources.workspace;
 
       if (!user) {
-        let invites = await this.service("invite_token").fetchInvitesByWorkspaceUuid(args.teamUuid);
+        let invites = await this.service("invite_token").fetchInvitesByWorkspaceUuid(workspace.uuid);
         if (this.userInvited(invites, args.email)) {
           throw new Error("User already invited to group");
         }
         const assignments = {
           groupUuids: args.permissions
         };
-        const invite = await this.service("invite_token").createInviteToken(args.email, args.teamUuid, assignments);
+        const invite = await this.service("invite_token").createInviteToken(args.email, workspace.uuid, assignments);
         invites.push(invite);
         workspace.invites = invites;
         return workspace;
@@ -52,4 +52,4 @@ class TeamAddUser extends BaseOperation {
   }
 }
 
-module.exports = TeamAddUser;
+module.exports = WorkspaceAddUser;

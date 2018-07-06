@@ -9,7 +9,7 @@ class Group extends BaseType {
       uuid: Uuid
       label: String
       description: String
-      team: Team
+      workspace: Workspace
       custom: Boolean
       active: Boolean
       users: [User]
@@ -29,8 +29,8 @@ class Group extends BaseType {
       description(value) {
         return value.description || null;
       },
-      team(value) {
-        return value.team || null;
+      workspace(value) {
+        return value.workspace || null;
       },
       custom(value) {
         return value.custom === true

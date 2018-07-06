@@ -1,12 +1,12 @@
 const BaseOperation = require("../base.js");
 
-class UpdateTeam extends BaseOperation {
+class UpdateWorkspace extends BaseOperation {
   constructor() {
     super();
-    this.name = "updateTeam";
+    this.name = "updateWorkspace";
     this.typeDef = `
-      # Update an existing team
-      updateTeam(teamUuid: Uuid!, payload: JSON!) : Team
+      # Update an existing workspace
+      updateWorkspace(workspaceUuid: Uuid!, payload: JSON!) : Workspace
     `;
     this.entrypoint = "mutation";
     this.quards = ["authenticated"];
@@ -14,7 +14,7 @@ class UpdateTeam extends BaseOperation {
 
   async resolver(root, args, context) {
     try {
-      return await this.service("workspace").updateWorkspace(context.resources.team, args.payload);
+      return await this.service("workspace").updateWorkspace(context.resources.workspace, args.payload);
     } catch (err) {
       this.error(err.message);
       throw err;
@@ -22,4 +22,4 @@ class UpdateTeam extends BaseOperation {
   }
 }
 
-module.exports = UpdateTeam;
+module.exports = UpdateWorkspace;

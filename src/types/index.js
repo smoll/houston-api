@@ -9,7 +9,7 @@ const Group = require("./group.js");
 const Invite = require("./invite.js");
 const ServiceAccount = require("./service_account.js");
 const SystemSetting = require("./system_setting.js");
-const Team = require("./team.js");
+const Workspace = require("./workspace.js");
 const Token = require("./token.js");
 const TokenPayload = require("./token_payload.js");
 const User = require("./user.js");
@@ -54,7 +54,7 @@ SchemaBuilder.addTypeDef(`
 SchemaBuilder.addTypeDef(`
   enum ServiceAccountEntityType {
     SYSTEM
-    TEAM
+    WORKSPACE
     DEPLOYMENT
     USER
   }
@@ -63,7 +63,7 @@ SchemaBuilder.addTypeDef(`
 SchemaBuilder.addTypeDef(`
   enum EntityType {
     SYSTEM
-    TEAM
+    WORKSPACE
     DEPLOYMENT
     USER
   }
@@ -72,7 +72,7 @@ SchemaBuilder.addTypeDef(`
 SchemaBuilder.addTypeDef(`
   enum GroupEntityType {
     SYSTEM
-    TEAM
+    WORKSPACE
     DEPLOYMENT
   }
 `);
@@ -85,7 +85,7 @@ module.exports = [
   Email,
   Invite,
   Group,
-  Team,
+  Workspace,
   Token,
   TokenPayload,
   ServiceAccount,

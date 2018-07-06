@@ -27,7 +27,7 @@ module.exports = [
   require("./mutation/update_deployment.js"),
   require("./mutation/delete_deployment.js"),
 
-  // Team Operations
+  // Workspace Operations
   require("./mutation/create_workspace.js"),
   require("./mutation/delete_workspace.js"),
   require("./mutation/update_workspace.js"),

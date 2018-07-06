@@ -6,7 +6,7 @@ class Deployments extends BaseOperation {
     this.name = "deployments";
     this.typeDef = `
       # Fetches one or more deployments based on input. If a deploymentUuid is return, it will return at most one deployment
-      deployments(deploymentUuid: Uuid, teamUuid: Uuid, releaseName: String): [Deployment]
+      deployments(deploymentUuid: Uuid, workspaceUuid: Uuid, releaseName: String): [Deployment]
     `;
     this.entrypoint = "query";
   }
@@ -15,12 +15,12 @@ class Deployments extends BaseOperation {
     try {
       if (args.deploymentUuid) {
         return [this.service("deployment").fetchDeploymentByUuid(args.deploymentUuid)];
-      } else if (args.teamUuid) {
-        return this.service("deployment").fetchDeploymentByWorkspaceUuid(args.teamUuid, false);
+      } else if (args.workspaceUuid) {
+        return this.service("deployment").fetchDeploymentByWorkspaceUuid(args.workspaceUuid, false);
       } else if (args.releaseName) {
         return [this.service("deployment").fetchDeploymentByReleaseName(args.releaseName)];
       } else {
-        throw new Error("Deployments can only be listed by deploymentUuid, releaseName, or teamUuid");
+        throw new Error("Deployments can only be listed by deploymentUuid, releaseName, or workspaceUuid");
       }
 
     } catch (err) {
