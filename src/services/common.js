@@ -43,6 +43,10 @@ class CommonService extends BaseService {
         return this.service("user").fetchUserByUuid(resourceUuid);
     }
   }
+
+  async resolveRequesterPermissions(context) {
+    return this.service("rbac").resolveContextPermissions(context);
+  }
 }
 
 module.exports = CommonService;

@@ -23,6 +23,7 @@ class WorkspaceAddUser extends BaseOperation {
       let groupUuids = args.groupUuids.split(",");
 
       if (!user) {
+        this.userNotFound(args.email);
         let invites = await this.service("invite_token").fetchInvitesByWorkspaceUuid(workspace.uuid);
         if (this.userInvited(invites, args.email)) {
           throw new Error("User already invited to group");

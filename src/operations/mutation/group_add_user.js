@@ -6,7 +6,7 @@ class GroupAddUser extends BaseOperation {
     this.name = "groupAddUser";
     this.typeDef = `
       # Add user to a group
-      groupAddUser(groupUuid: Uuid, email: String) : Group
+      groupAddUser(groupUuid: Uuid, userUuid: String) : Group
     `;
     this.entrypoint = "mutation";
     this.guards = ["authenticated"];

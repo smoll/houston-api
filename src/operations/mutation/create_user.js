@@ -6,7 +6,7 @@ class CreateUser extends BaseOperation {
     this.name = "createUser";
     this.typeDef = `
       # Creates a new user
-      createUser(email: String!, password: String!, username: String, profile: JSON) : AuthUser
+      createUser(email: String!, password: String!, username: String, profile: JSON, inviteToken: String) : AuthUser
     `;
     this.entrypoint = "mutation";
   }
@@ -21,10 +21,6 @@ class CreateUser extends BaseOperation {
       const profile = Object.assign({}, args.profile);
 
       let user = await this.service("local_user").createUser(args.email, args.password, args.username, profile);
-      let workspace = await this.service("workspace").createWorkspaceWithDefaultGroups(user, {
-        label: "Personal",
-        description: `Personal workspace for ${user.username}`
-      });
       
       let tokenPayload = await this.service("auth").generateTokenPayload(user);
       let token = await this.service("auth").createJWT(tokenPayload, args.duration);

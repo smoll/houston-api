@@ -6,6 +6,7 @@ class DeploymentService extends BaseService {
   async fetchDeploymentByUuid(deploymentUuid, throwError = true) {
     let deployment = await this.model("deployment")
       .query()
+      .joinEager("workspace")
       .findOne("deployments.uuid", deploymentUuid);
 
     if (deployment) {
@@ -35,10 +36,11 @@ class DeploymentService extends BaseService {
 
   async fetchDeploymentByReleaseName(releaseName, throwError = true) {
     const deployment = await this.model("deployment")
-        .query()
-        .findOne({
-          "release_name": releaseName,
-        });
+      .query()
+      .joinEager("workspace")
+      .findOne({
+        "release_name": releaseName,
+      });
     if (deployment) {
       return deployment;
     }

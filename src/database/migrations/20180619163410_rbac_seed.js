@@ -454,7 +454,7 @@ exports.up = function(knex) {
         uuid: groupUuid,
         label: group,
         description: groupDesc[group],
-        entity_type: "SYSTEM",
+        entity_type: "system",
         entity_uuid: null,
         custom: false,
         active: true,

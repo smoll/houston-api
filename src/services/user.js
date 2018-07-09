@@ -91,6 +91,7 @@ class UserService extends BaseService {
       const username = userData.username || email;
       const fullName = userData.fullName || "";
       const status = userData.status || "pending";
+      const emailVerified = userData.emailVerfied || false;
       const properties = [];
 
       // get current user count, will use later to see if user should be a system admin
@@ -115,6 +116,7 @@ class UserService extends BaseService {
           emails: [{
             address: email,
             main: true,
+            verified: emailVerified,
           }],
           properties: properties
         }).returning("*");
@@ -126,6 +128,13 @@ class UserService extends BaseService {
         const adminGroup = await this.service("group").fetchGroupByUuid(adminGroupUuid);
         await this.service("group").addUser(adminGroup, user);
       }
+
+      // create default workspace for user
+      await this.service("workspace").createWorkspaceWithDefaultGroups(user, {
+        label: "Personal",
+        description: `Personal workspace for ${user.username}`
+      });
+
       return user;
     } catch (err) {
       // TODO: Verify errors

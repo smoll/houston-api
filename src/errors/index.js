@@ -1,5 +1,5 @@
 const createError = require('apollo-errors').createError;
-
+const _ = require("lodash");
 
 const AuthExpiredError = createError('AuthExpiredError', {
   message: 'Your authorization token has expired, please login again'
@@ -15,6 +15,10 @@ const InputInvalidError = createError('InputValidationError', {
 
 const ResourceNotFound = createError('ResourceNotFoundError', {
   message: 'Resource was not found'
+});
+
+const UserNotFound = createError('UserNotFoundError', {
+  message: 'User was not found'
 });
 
 module.exports = {
@@ -36,12 +40,12 @@ module.exports = {
       }
     });
   },
-  InputInvalid: (operation, field, requirement) => {
+  InputInvalid: (operation, errors) => {
+    if (_.isArray(errors)) {
+      errors = [errors];
+    }
     return new InputInvalidError({
-      data: {
-        field: field,
-        requirement: requirement
-      },
+      data: errors,
       internalData: {
         error: `GQL input validation failed in ${operation}`
       }
@@ -55,6 +59,16 @@ module.exports = {
       },
       internalData: {
         error: `Could not find resource "${resource}" that matches ${criteria}`
+      }
+    });
+  },
+  UserNotFound: (criteria) => {
+    return new UserNotFound({
+      data: {
+        criteria: criteria
+      },
+      internalData: {
+        error: `Could not find User that matches ${criteria}`
       }
     });
   },

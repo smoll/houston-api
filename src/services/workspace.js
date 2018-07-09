@@ -67,8 +67,12 @@ class WorkspaceService extends BaseService {
       const workspace = await this.createWorkspace(user, payload, options);
 
       // create default groups for workspace
-      await this.service("group").createGroupsFromTemplates(this.model("group").ENTITY_WORKSPACE, workspace.uuid, groupTemplates, options);
-
+      const groups = await this.service("group").createGroupsFromTemplates(this.model("group").ENTITY_WORKSPACE, workspace.uuid, groupTemplates, options);
+      const promises = [];
+      for(let group of groups) {
+        promises.push(this.service("group").addUser(group, user, options));
+      }
+      await Promise.all(promises);
       // return workspace
       return workspace;
     });

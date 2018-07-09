@@ -1,5 +1,4 @@
 const BaseModel = require("./base.js");
-const CommonUtil = require("../../utils/common.js");
 
 class Group extends BaseModel {
 

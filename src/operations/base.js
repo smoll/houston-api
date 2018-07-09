@@ -11,6 +11,14 @@ class HoustonOperation extends BaseOperation {
     throw Errors.Unauthorized(action);
   }
 
+  invalidInput(errors) {
+    throw Errors.InputInvalid(this.name, errors);
+  }
+
+  userNotFound(criteria) {
+    throw Errors.UserNotFound(criteria);
+  }
+
   guardError(error, context) {
     if (error.guardId === "authenticated") {
       if (context.token.expired) {

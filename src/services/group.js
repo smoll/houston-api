@@ -61,7 +61,7 @@ class GroupService extends BaseService {
       entity_type: payload.entity_type || null,
       entity_uuid: payload.entity_uuid || null,
       custom: payload.custom
-    }]).returning("*");
+    }]).returning("*").first();
   }
 
   async createGroupFromTemplate(entityType, entityUuid, templateGroupUuid, options = {}) {
@@ -103,8 +103,9 @@ class GroupService extends BaseService {
     return group;
   }
 
-  async addUser(group, user) {
-    return this.model("user_group").query()
+  async addUser(group, user, options = {}) {
+    return this.model("user_group")
+      .query(options.transaction)
       .insertGraph({
         user_uuid: user.uuid,
         group_uuid: group.uuid,
