@@ -1,5 +1,7 @@
 // TODO: Move defaults to .env files
 
+let HelmConfig = null;
+
 class Config {
   static setDefaults(defaults) {
     Config.defaults = Object.assign({}, defaults);
@@ -24,6 +26,17 @@ class Config {
       return Config.defaults[key];
     }
     return null;
+  }
+
+  static helmConfig() {
+    if (!HelmConfig) {
+      HelmConfig = JSON.parse(Config.get(Config.HELM_GLOBAL_CONFIG));
+    }
+    return HelmConfig;
+  }
+
+  static baseDomain() {
+    return this.helmConfig()["baseDomain"];
   }
 }
 
