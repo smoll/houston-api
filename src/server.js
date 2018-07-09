@@ -60,7 +60,7 @@ require("./routes/index.js")(server.express, Application);
   server.start({
     // cors config options https://github.com/expressjs/cors#configuration-options
     cors: {
-      origin: [Config.baseDomain()],
+      origin: [new RegExp(`.${Config.baseDomain()}$`)],
       methods: "GET,PUT,POST,DELETE,OPTIONS",
       allowedHeaders: "Content-Type, Authorization, Content-Length, X-Requested-With",
       credentials: true,
