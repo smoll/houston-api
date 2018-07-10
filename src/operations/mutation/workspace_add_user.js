@@ -20,7 +20,10 @@ class WorkspaceAddUser extends BaseOperation {
       let user = await this.service("user").fetchUserByEmail(args.email, false);
       let workspace = context.resources.workspace;
 
-      let groupUuids = args.groupUuids.split(",");
+      let groupUuids = "";
+      if (args.groupUuids) {
+        groupUuids = args.groupUuids.split(",");
+      }
 
       if (!user) {
         this.userNotFound(args.email);

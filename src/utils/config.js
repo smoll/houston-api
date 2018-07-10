@@ -28,6 +28,10 @@ class Config {
     return null;
   }
 
+  static isProd() {
+    return this.get(Config.NODE_ENV) === "production";
+  }
+
   static helmConfig() {
     if (!HelmConfig) {
       HelmConfig = JSON.parse(Config.get(Config.HELM_GLOBAL_CONFIG));

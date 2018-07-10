@@ -35,7 +35,6 @@ class CreateDeployment extends BaseOperation {
       );
 
       // On duplicate error will be;  duplicate key value violates unique constraint \"unique_workspace_uuid_label\"",
-      return deployment;
       await this.service("commander").createDeployment(deployment, args.config);
 
       return deployment;

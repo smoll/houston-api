@@ -39,7 +39,10 @@ class Group extends BaseType {
         return value.active === true
       },
       users(value) {
-        return value.users || [];
+        if (value.users) {
+          return value.users;
+        }
+        return this.service("user").fetchUsersByGroupUuid(values.uuid);
       },
       createdAt(value) {
         return value.createdAt || null;

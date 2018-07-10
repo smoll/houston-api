@@ -30,6 +30,10 @@ class CommanderService extends BaseService {
       config = await this.fetchHelmConfig(deployment.type, deployment.version);
     }
 
+    if (!Config.isProd()) {
+      return Promise.resolve(deployment);
+    }
+
     let request = await this.createModuleRequest(deployment, config);
     return this.commander.createDeployment(deployment, request).then((response) => {
       return this.service("deployment").updateDeployment(deployment, { config: request.config }).then(() => {
