@@ -63,7 +63,7 @@ class UserService extends BaseService {
       return users;
     }
 
-    return null;
+    return [];
   }
 
   async fetchUserPropertiesByUser(user) {
@@ -72,6 +72,21 @@ class UserService extends BaseService {
       return properties;
     }
     return [];
+  }
+
+  async fetchUsersByGroupUuid(groupUuid) {
+    let users = await this.model("user")
+      .query()
+      .joinEager("emails")
+      .leftJoin("user_group_map", "users.uuid", "user_group_map.user_uuid")
+      .where("user_group_map.group_uuid", groupUuid);
+
+    if (users && users.length > 0) {
+      return users;
+    }
+
+    return null;
+
   }
 
   async fetchUserCount() {
