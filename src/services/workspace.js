@@ -5,6 +5,19 @@ const Transaction = require('objection').transaction;
 
 class WorkspaceService extends BaseService {
 
+  async fetchWorkspaceByLabel(label, options = {}) {
+    const workspace = await this.model("workspace")
+      .query()
+      .eager(options.relations || [])
+      .findOne("label", label);
+
+    if (workspace) {
+      return workspace;
+    }
+    return null;
+  }
+
+
   async fetchWorkspaceByUuid(uuid, options = {}, throwError = true) {
     const workspace = await this.model("workspace")
       .query()

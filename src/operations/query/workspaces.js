@@ -6,7 +6,7 @@ class Workspaces extends BaseOperation {
     this.name = "workspaces";
     this.typeDef = `
       # Fetch workspace by userUuid, workspaceUuid, or
-      workspaces(userUuid: Uuid, workspaceUuid: Uuid) : [Workspace]
+      workspaces(userUuid: Uuid, workspaceUuid: Uuid, label: String) : [Workspace]
     `;
     this.entrypoint = "query";
     this.guards = ["authenticated"];
@@ -16,7 +16,10 @@ class Workspaces extends BaseOperation {
     try {
       if (args.workspaceUuid) {
         return [context.resources.workspace];
-      } else {
+      } else if  (args.label) {
+        return await [this.service("workspace").fetchWorkspaceByLabel(args.label)];
+      }
+      else {
         if (!args.userUuid) {
           args.userUuid = context.authUser.uuid;
         }
