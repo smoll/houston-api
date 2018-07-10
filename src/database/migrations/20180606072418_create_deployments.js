@@ -12,6 +12,7 @@ exports.up = function(knex) {
       table.uuid("uuid").primary();
       table.string("type");
       table.string("label");
+      table.string("description");
       table.uuid("workspace_uuid").references("uuid").inTable("workspaces").notNullable().onDelete("RESTRICT").index();
       table.string("release_name").unique();
       table.string("version");
