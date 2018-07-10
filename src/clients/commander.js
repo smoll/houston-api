@@ -47,7 +47,7 @@ class CommanderClient {
         name: deployment.type,
         version: deployment.version,
       },
-      team_uuid: deployment.workspaceUuid,
+      organization_uuid: deployment.workspaceUuid,
       raw_config: JSON.stringify(options.config),
       secrets: options.secrets
     };
