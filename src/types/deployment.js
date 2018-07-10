@@ -51,7 +51,7 @@ class Deployment extends BaseType {
             },
             {
               type: "flower",
-              url: `https://${value.releaseName}-flower.${globalConfig["baseDomain"]}/admin`
+              url: `https://${value.releaseName}-flower.${globalConfig["baseDomain"]}`
             }
           ];
         }
