@@ -53,6 +53,7 @@
     "knex": "^0.14.3",
     "lodash": "^4.17.5",
     "node-cache": "^4.2.0",
+    "node-forge": "^0.7.5",
     "objection": "^1.0.0",
     "objection-password": "^0.2.0",
     "objection-soft-delete": "^1.0.4",
