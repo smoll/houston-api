@@ -6,6 +6,7 @@ module.exports = (express, application) => {
   // root routes
   routerBuilder.registerRoute(require("./healthz.js"));
   routerBuilder.registerRoute(require("./authorization.js"));
+  routerBuilder.registerRoute(require("./registry.js"));
 
   // webhook routes
   routerBuilder.group("v1", () => {

@@ -16,6 +16,10 @@ class Config {
     Config.defaults[Config.HELM_GLOBAL_CONFIG] = {};
     Config.defaults[Config.HELM_ASTRO_REPO] = "http://helm.astronomer.io/";
     Config.defaults[Config.HELM_REPO_EDGE] = "false";
+
+
+    Config.defaults[Config.DOCKER_CERT_PATH] = "/tmp/houston/";
+    Config.defaults[Config.DOCKER_ISSUER] = "houston";
   }
 
   static get(key) {
@@ -56,6 +60,8 @@ Config.AIRFLOW_POSTGRES_URI = "AIRFLOW_POSTGRES_URI";
 Config.AIRFLOW_REDIS_URI = "AIRFLOW_REDIS_URI";
 Config.DEBUG_DB = "DEBUG_DB";
 Config.JWT_PASSPHRASE = "JWT_PASSPHRASE";
+Config.DOCKER_CERT_PATH = "DOCKER_CERT_PATH";
+Config.DOCKER_ISSUER = "DOCKER_ISSUER";
 Config.HELM_GLOBAL_CONFIG = "HELM_GLOBAL_CONFIG";
 Config.HELM_ASTRO_REPO = "HELM_ASTRO_REPO";
 Config.HELM_REPO_EDGE = "HELM_REPO_EDGE";

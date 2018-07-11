@@ -11,7 +11,7 @@ module.exports = {
     response.cookie("astronomer_auth", jwt, {
       domain: `.${baseDomain}`,
       path: '/',
-      expires: new Date(expiresAt),
+      expires: new Date(expiresAt * 1000).toUTCString(),
       secure: true
     });
   }

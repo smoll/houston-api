@@ -1,0 +1,169 @@
+const URL = require("url");
+const _ = require("lodash");
+
+const BaseRoute = require("./base.js");
+const DockerJWT = require("../utils/docker_jwt.js");
+
+class RegistryRoute extends BaseRoute {
+  route() {
+    return "registry";
+  }
+
+  method() {
+    return ["get", "post"];
+  }
+
+  async action(req, res) {
+    try {
+      if (!req.headers["x-original-uri"]) {
+        return this.unknown(res, "Unknown registry service request");
+      }
+
+      let authorization = req.headers.authorization;
+
+      if (!authorization) {
+        return this.unauthorized(res, "No authorization credentials specified");
+      }
+
+      if (authorization.substr(0, 5) === "Basic") {
+        authorization = authorization.substr(6);
+        let creds = Buffer.from(authorization, 'base64').toString().split(":");
+
+        let token;
+        if (creds.length === 1) {
+          token = creds[0];
+        }
+        else {
+          token = creds[1];
+        }
+
+        const context = await this.service("auth").authenticateRequest(token);
+
+        if (!context.userUuid()) {
+          if (context.token.expired) {
+            return this.unauthorized(res, "Authorization token expired, please login again");
+          }
+          if (!context.token.valid) {
+            return this.unauthorized(res, "Authorization token invalid, please login again");
+          }
+        }
+
+        const dockerJWT = new DockerJWT();
+
+        let payload = [];
+
+        const requestPayload = URL.parse(req.headers["x-original-uri"]);
+
+
+        const queryArgs = this.parseQuery(requestPayload.query);
+        // TODO: Will this ever not be set?
+        const service = queryArgs.service;
+
+        if (queryArgs.scope) {
+          let data;
+          if (!_.isArray(queryArgs.scope)) {
+            queryArgs.scope = [queryArgs.scope];
+          }
+          for (let scope of queryArgs.scope) {
+            data = this.scopeExtractReleaseName(scope);
+            if (data) {
+              break;
+            }
+          }
+
+          if (!data) {
+            return this.unknown(res, "Unknown scope, cannot determine repository or image ");
+          }
+
+          context.resources.deployment = await this.service("deployment").fetchDeploymentByReleaseName(data.release);
+
+          await this.service("common").resolveRequesterPermissions(context);
+
+          if (!context.hasPermissions("user_deployment_images")) {
+            return this.denied(res, "You do not have authorization to manage deployment images");
+          }
+
+          payload.push({
+            type: data.type,
+            name: `${data.release}/${data.image}`,
+            actions: data.actions
+          })
+        }
+        token = await dockerJWT.generate(context.userUuid(), service, payload);
+        const json = JSON.stringify({
+          token: token,
+          expires_in: 3600,
+          issued_at: new Date().toISOString(),
+        });
+        res.set("Content-Type", "application/json");
+        return res.status(200).end(json);
+      } else {
+        return this.unauthorized(res, "Unknown authentication pattern")
+      }
+
+
+    } catch (err) {
+      this.error(err.message);
+      this.unauthorized(res, "Authorization error");
+    }
+  }
+
+  parseQuery(query) {
+    let result = {};
+    let pairs = query.split("&");
+    for(let pair of pairs) {
+      let kv = pair.split("=");
+      const key = kv[0];
+      const value = decodeURIComponent(kv[1]);
+      if (result[key] === undefined) {
+        result[key] = value;
+      } else {
+        if (!_.isArray(result[key])) {
+          result[key] = [result[key]];
+        }
+        result[key].push(value);
+      }
+    }
+    return result;
+  }
+
+  scopeExtractReleaseName(scope) {
+    const matches = scope.match(/(repository):([a-z]+-[a-z]+-[0-9]{0,4})\/(airflow):([a-z,]+)/);
+    if (matches) {
+      return {
+        type: matches[1],
+        release: matches[2],
+        image: matches[3],
+        actions: matches[4].split(",")
+      }
+    }
+    return null;
+  }
+
+  denied(res, message) {
+    return this.error(res, "DENIED", message);
+  }
+
+  unauthorized(res, message) {
+    return this.error(res, "UNAUTHORIZED", message);
+  }
+
+  unknown(res, message) {
+    return this.error(res, "NAME_UNKNOWN", message);
+  }
+
+  error(res, code, message) {
+    // Error docs https://docs.docker.com/registry/spec/api/#errors-2
+    const payload = {
+      "errors": [{
+        "code": code,
+        "message": message,
+        "details": [],
+      }]
+    };
+
+    return res.status(401).end(JSON.stringify(payload));
+  }
+}
+
+module.exports = RegistryRoute;

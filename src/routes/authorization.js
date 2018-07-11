@@ -2,7 +2,7 @@ const URL = require("url");
 
 const BaseRoute = require("./base.js");
 
-class Authorization extends BaseRoute {
+class AuthorizationRoute extends BaseRoute {
   route() {
     return "authorization";
   }
@@ -13,16 +13,13 @@ class Authorization extends BaseRoute {
 
   async action(req, res) {
     try {
-      this.granted(res);
-      req.headers.authorization = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiNjViZTU0MDQtNzdmMS00MzRjLTgyNzUtMDY2YWVkNWQ0MzM2IiwiaWF0IjoxNTMxMTU5NzkyLCJleHAiOjE1MzEyNDYxOTJ9.1TyVGvVWxNQeCQ8W8oMj6xImkzB3O3sMdujCGWSyQ6M";
       const context = await this.service("auth").authenticateRequest(req.headers.authorization);
       context.req = null;
       context.res = null;
 
-      // console.log(context);
-      const requestUrl = URL.parse(req.headers["x-original-url"]);
+      const requestPayload = URL.parse(req.headers["x-original-url"]);
 
-      const hostname = requestUrl.hostname;
+      const hostname = requestPayload.hostname;
       const subdomains = hostname.split('.');
 
       let subdomain = subdomains[0];
@@ -45,15 +42,21 @@ class Authorization extends BaseRoute {
 
       switch (subdomain) {
         case "grafana":
-        case "prometheus":
-          // if superadmin
-          return this.granted(res);
+          if (context.hasPermissions("global_deployment_external")) {
+            return this.granted(res);
+          }
+          break;
         case "airflow":
         case "flower":
-          return this.granted(res);
+          if (context.hasPermissions("user_deployment_external") || context.hasPermissions("global_deployment_external")) {
+            return this.granted(res);
+          }
+          break;
         default:
-          return this.denied(res);
+          this.info(`Authorization for unknown resource (${subdomain}) requested`) ;
+          break;
       }
+      return this.denied(res);
     } catch (err) {
       this.error(err.message);
       this.denied(res);
@@ -69,4 +72,4 @@ class Authorization extends BaseRoute {
   }
 }
 
-module.exports = Authorization;
+module.exports = AuthorizationRoute;
