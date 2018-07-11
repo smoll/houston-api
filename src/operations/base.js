@@ -20,11 +20,16 @@ class HoustonOperation extends BaseOperation {
   }
 
   guardError(error, context) {
-    if (error.guardId === "authenticated") {
-      if (context.token.expired) {
-        throw Errors.AuthExpired();
-      }
-      throw Errors.Unauthorized(this.name);
+    switch(error.guardId) {
+      case "authenticated":
+        if (context.token.expired) {
+          throw Errors.AuthExpired();
+        }
+        throw Errors.Unauthorized(this.name);
+      case "permission":
+        throw Errors.Unauthorized(this.name);
+      default:
+        throw Errors.Unauthorized(this.name);
     }
   }
 
