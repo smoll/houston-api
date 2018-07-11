@@ -21,6 +21,8 @@ class Context {
       user_user_view_other: false,
       user_user_update: false,
       user_user_delete: false,
+      user_user_service_account: false,
+
 
       // groups
       user_group_create: false,
@@ -59,15 +61,24 @@ class Context {
       user_deployment_view: false,
       user_deployment_update: false,
       user_deployment_delete: false,
-      user_deployment_deploy: false,
+      user_deployment_resources: false,
+      user_deployment_images: false,
       user_deployment_external: false,
 
-      // service accounts
-      user_service_account_create: false,
-      user_service_account_list: false,
-      user_service_account_view: false,
-      user_service_account_update: false,
-      user_service_account_delete: false,
+      // workspace service accounts
+      user_workspace_service_account_create: false,
+      user_workspace_service_account_list: false,
+      user_workspace_service_account_view: false,
+      user_workspace_service_account_update: false,
+      user_workspace_service_account_delete: false,
+
+
+      // deployment service accounts
+      user_deployment_service_account_create: false,
+      user_deployment_service_account_list: false,
+      user_deployment_service_account_view: false,
+      user_deployment_service_account_update: false,
+      user_deployment_service_account_delete: false,
 
       ////// GLOBAL LEVEL (All objects in the system)
 
@@ -117,15 +128,16 @@ class Context {
       global_deployment_view: false,
       global_deployment_update: false,
       global_deployment_delete: false,
-      global_deployment_deploy: false,
+      global_deployment_resources: false,
+      global_deployment_images: false,
       global_deployment_external: false,
 
       // service accounts
-      global_service_create: false,
-      global_service_list: false,
-      global_service_view: false,
-      global_service_update: false,
-      global_service_delete: false,
+      global_service_account_create: false,
+      global_service_account_list: false,
+      global_service_account_view: false,
+      global_service_account_update: false,
+      global_service_account_delete: false,
 
       global_system_setting_list: false,
       global_system_setting_view: false,
