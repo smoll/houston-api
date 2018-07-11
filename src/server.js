@@ -43,6 +43,7 @@ server.express.use(authService.authorizeRequest.bind(authService));
 
 OperationManager.registerPreHook(async function(root, args, context, operation) {
   context.resources = await commonService.resourceResolver(args);
+  await commonService.resolveRequesterPermissions(context);
   return Promise.resolve([root, args, context, operation]);
 });
 
