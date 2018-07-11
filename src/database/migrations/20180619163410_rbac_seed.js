@@ -162,8 +162,6 @@ const groupDesc = {
   "default_user": "Permissions all users in the system should have by default",
   "default_admin": "Permissions all users in the system should have by default",
   "template_workspace_owner": "Template for the default workspace owner group",
-  "template_workspace_admin": "Template for the default workspace admin group",
-  "template_workspace_user": "Template for the default workspace user group",
 };
 
 const roles = [
@@ -178,66 +176,20 @@ const roles = [
       "user_user_delete",
       "user_user_service_account",
       "user_workspace_list",
-    ]
-  },
-  {
-    label: "Create workspaces",
-    category: "workspace",
-    scope: "user",
-    groups: ["default_user"],
-    permissions: [
       "user_workspace_create",
     ]
   },
   {
-    label: "View workspace details",
-    category: "workspace",
-    scope: "user",
-    groups: ["template_workspace_user"],
-    permissions: [
-      "user_group_list",
-      "user_group_view",
-      "user_group_user_list",
-      "user_workspace_view",
-      "user_workspace_user_list"
-    ]
-  },
-  {
-    label: "Manage workspace users",
-    category: "workspace",
-    scope: "user",
-    groups: ["template_workspace_admin", "template_workspace_owner"],
-    permissions: [
-      "user_group_list",
-      "user_group_view",
-      "user_group_user_add",
-      "user_group_user_remove",
-      "user_group_user_list",
-      "user_group_user_manage_permissions",
-      "user_workspace_user_add",
-      "user_workspace_user_remove",
-      "user_workspace_user_list",
-    ]
-  },
-  {
-    label: "Manage workspace service accounts",
-    category: "workspace",
-    scope: "user",
-    groups: ["template_workspace_admin", "template_workspace_owner"],
-    permissions: [
-      "user_workspace_service_account_create",
-      "user_workspace_service_account_list",
-      "user_workspace_service_account_view",
-      "user_workspace_service_account_update",
-      "user_workspace_service_account_delete",
-    ]
-  },
-  {
-    label: "Manage workspace",
+    label: "Workspace Owner",
     category: "workspace",
     scope: "user",
     groups: ["template_workspace_owner"],
     permissions: [
+      "user_user_view",
+      "user_user_view_other",
+      "user_user_update",
+      "user_user_delete",
+      "user_user_service_account",
       "user_group_create",
       "user_group_list",
       "user_group_view",
@@ -252,6 +204,7 @@ const roles = [
       "user_role_view",
       "user_role_update",
       "user_role_delete",
+      "user_workspace_create",
       "user_workspace_list",
       "user_workspace_view",
       "user_workspace_update",
@@ -264,19 +217,6 @@ const roles = [
       "user_workspace_service_account_view",
       "user_workspace_service_account_update",
       "user_workspace_service_account_delete",
-      "user_deployment_service_account_create",
-      "user_deployment_service_account_list",
-      "user_deployment_service_account_view",
-      "user_deployment_service_account_update",
-      "user_deployment_service_account_delete",
-    ]
-  },
-  {
-    label: "Manage workspace deployments",
-    category: "workspace",
-    scope: "user",
-    groups: ["template_workspace_admin", "template_workspace_owner"],
-    permissions: [
       "user_deployment_create",
       "user_deployment_list",
       "user_deployment_view",
@@ -290,15 +230,6 @@ const roles = [
       "user_deployment_service_account_view",
       "user_deployment_service_account_update",
       "user_deployment_service_account_delete",
-    ]
-  },
-  {
-    label: "Push workspace images",
-    category: "workspace",
-    scope: "user",
-    groups: ["template_workspace_user", "template_workspace_admin", "template_workspace_owner"],
-    permissions: [
-      "user_deployment_images",
     ]
   },
 
