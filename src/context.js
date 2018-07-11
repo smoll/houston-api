@@ -198,6 +198,12 @@ class Context {
     if (!_.isArray(permissions)) {
       permissions = [permissions];
     }
+    for(let permission of permissions) {
+      if (!this.permissions[permission]) {
+        return false;
+      }
+    }
+    return true;
   }
 
   // orgId() {
