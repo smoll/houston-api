@@ -40,18 +40,16 @@ class Deployment extends BaseType {
         return value.workspace || {};
       },
       urls(value, root, context) {
-        const globalConfig = JSON.parse(Config.get(Config.HELM_GLOBAL_CONFIG));
-
         // TODO: Add check if user has permission to see it
         if (value.type === "airflow") {
           return [
             {
               type: "airflow",
-              url: `https://${value.releaseName}-airflow.${globalConfig["baseDomain"]}/admin`
+              url: `https://${value.releaseName}-airflow.${Config.baseDomain()}/admin`
             },
             {
               type: "flower",
-              url: `https://${value.releaseName}-flower.${globalConfig["baseDomain"]}`
+              url: `https://${value.releaseName}-flower.${Config.baseDomain()}`
             }
           ];
         }

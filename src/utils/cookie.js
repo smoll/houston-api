@@ -2,13 +2,14 @@ const Config = require("./config.js");
 
 module.exports = {
   setAuthCookie(response, jwt, expiresAt) {
-    const globalConfig = JSON.parse(Config.get(Config.HELM_GLOBAL_CONFIG));
+    const baseDomain = Config.baseDomain();
 
-    if (!globalConfig['baseDomain']) {
+    if (!baseDomain ) {
       throw new Error("Cannot authenticate, no base domain set");
     }
+
     response.cookie("astronomer_auth", jwt, {
-      domain: `.${globalConfig['baseDomain']}`,
+      domain: `.${baseDomain}`,
       path: '/',
       expires: new Date(expiresAt),
       secure: true

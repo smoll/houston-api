@@ -39,7 +39,7 @@ class CommanderClient {
 
   createDeployment(deployment, options = {}) {
     // add static global config to options.config
-    options.config["global"] = JSON.parse(Config.get(Config.HELM_GLOBAL_CONFIG));
+    options.config["global"] = Config.helmConfig();
 
     const payload = {
       release_name: deployment.releaseName,
@@ -67,7 +67,7 @@ class CommanderClient {
   updateDeployment(deployment) {
     // add static global config
     let config = deployment.getConfigCopy();
-    config["global"] = JSON.parse(Config.get(Config.HELM_GLOBAL_CONFIG));
+    config["global"] = Config.helmConfig();
 
     const payload = {
       release_name: deployment.releaseName,
