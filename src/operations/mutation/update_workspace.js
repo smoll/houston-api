@@ -9,7 +9,7 @@ class UpdateWorkspace extends BaseOperation {
       updateWorkspace(workspaceUuid: Uuid!, payload: JSON!) : Workspace
     `;
     this.entrypoint = "mutation";
-    this.quards = ["authenticated"];
+    this.quards = ["authenticated", "permission:user_workspace_update"];
   }
 
   async resolver(root, args, context) {

@@ -9,8 +9,7 @@ class WorkspaceRemoveUser extends BaseOperation {
       workspaceRemoveUser(workspaceUuid: Uuid!, userUuid: Uuid, email: String) : Workspace
     `;
     this.entrypoint = "mutation";
-    this.guards = ["authenticated"];
-    // this.guards = ["authenticated", "permission:user_workspace_user_remove"];
+    this.guards = ["authenticated", "permission:user_workspace_user_remove"];
   }
 
   async resolver(root, args, context) {

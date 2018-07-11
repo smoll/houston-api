@@ -9,7 +9,7 @@ class UpdateUser extends BaseOperation {
       updateUser(userId: Uuid, payload: JSON!) : User
     `;
     this.entrypoint = "mutation";
-    this.quards = ["authenticated"];
+    this.quards = ["authenticated", "permission:user_user_update"];
   }
 
   async resolver(root, args, context) {

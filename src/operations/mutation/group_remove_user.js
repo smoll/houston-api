@@ -9,7 +9,7 @@ class GroupAddUser extends BaseOperation {
       groupRemoveUser(groupUuid: Uuid, userUuid: Uuid) : Group
     `;
     this.entrypoint = "mutation";
-    this.guards = ["authenticated"];
+    this.guards = ["authenticated", "permission:user_group_user_remove"];
   }
 
   async resolver(root, args, context) {

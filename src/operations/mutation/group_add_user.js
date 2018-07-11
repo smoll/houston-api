@@ -9,7 +9,7 @@ class GroupAddUser extends BaseOperation {
       groupAddUser(groupUuid: Uuid, userUuid: String) : Group
     `;
     this.entrypoint = "mutation";
-    this.guards = ["authenticated"];
+    this.guards = ["authenticated", "permission:user_group_user_add"];
   }
 
   async resolver(root, args, context) {

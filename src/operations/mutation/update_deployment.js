@@ -14,7 +14,7 @@ class UpdateDeployment extends BaseOperation {
       updateDeployment(deploymentUuid: Uuid, payload: JSON!, sync: Boolean) : Deployment
     `;
     this.entrypoint = "mutation";
-    this.guards = ["authenticated"];
+    this.guards = ["authenticated", "permission:user_deployment_update"];
   }
 
   async resolver(root, args, context) {
