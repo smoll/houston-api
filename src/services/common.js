@@ -45,7 +45,12 @@ class CommonService extends BaseService {
   }
 
   async resolveRequesterPermissions(context) {
-    return this.service("rbac").resolveContextPermissions(context);
+    const permissions = await this.service("rbac").fetchPermissionsForContext(context);
+    if (permissions.length > 0) {
+      for(let permission of permissions) {
+        context.permissions[permission] = true;
+      }
+    }
   }
 }
 
