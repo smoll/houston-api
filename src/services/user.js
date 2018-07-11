@@ -144,6 +144,12 @@ class UserService extends BaseService {
         await this.service("group").addUser(adminGroup, user);
       }
 
+      // Add all users to the system level users group
+      const usersGroupKey = this.model("system_setting").KEY_USERS_GROUP_UUID;
+      const usersGroupUuid = await this.service("system_setting").getSetting(usersGroupKey);
+      const usersnGroup = await this.service("group").fetchGroupByUuid(usersGroupUuid);
+      await this.service("group").addUser(usersnGroup, user);
+
       // create default workspace for user
       await this.service("workspace").createWorkspaceWithDefaultGroups(user, {
         label: "Personal",
