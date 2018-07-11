@@ -48,7 +48,7 @@ class GroupService extends BaseService {
     return [];
   }
 
-  async createGroup(payload, options = {}) {
+  async createGroup(payload, roles = [], options = {}) {
     payload = Object.assign({
       entity_uuid: null,
       custom: true,
@@ -60,18 +60,44 @@ class GroupService extends BaseService {
       description: payload.description,
       entity_type: payload.entity_type || null,
       entity_uuid: payload.entity_uuid || null,
-      custom: payload.custom
+      custom: payload.custom,
+      group_roles: roles.map((role) => {
+        return {
+          role_uuid: role.uuid
+        };
+      }),
     }]).returning("*").first();
   }
 
   async createGroupFromTemplate(entityType, entityUuid, templateGroupUuid, options = {}) {
-    const template = await this.fetchGroupByUuid(templateGroupUuid, options);
+    const opts = Object.assign({
+      relations: "roles"
+    }, options);
+    const template = await this.fetchGroupByUuid(templateGroupUuid, opts);
+    const text = this.personalizeText(template.label);
+
     return this.createGroup({
-      label: template.label,
-      description: template.description,
+      label: text.label,
+      description: text.description,
       entity_type: entityType,
       entity_uuid: entityUuid,
-    }, options);
+    }, template.roles, options);
+  }
+
+  personalizeText(label) {
+    // kinda hacky, unsure if default group will continue
+    switch(label) {
+      case "template_workspace_owner":
+        return {
+          label: "Workspace Owner",
+          description: "Users in this group have full access to everything in the workspace",
+        };
+      default:
+        return {
+          label: label,
+          description: "Default workspace group",
+        };
+    }
   }
 
   // TODO: Update this to get all templateGroupUuids in a single query and iterate over those
