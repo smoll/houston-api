@@ -89,7 +89,6 @@ class CommanderService extends BaseService {
     // overwrite the secret names to add the deployment release name
     config["data"]["airflowMetadataSecret"] = `${deployment.releaseName}-airflow-metadata`;
     config["data"]["airflowResultBackendSecret"] = `${deployment.releaseName}-airflow-result-backend`;
-    config["data"]["airflowBrokerSecret"] = `${deployment.releaseName}-airflow-broker`;
 
     const secrets = [
       {
@@ -103,11 +102,6 @@ class CommanderService extends BaseService {
         value: PostgresUtil.uriReplace(celeryUri, {
           protocol: "db+postgresql"
         })
-      },
-      {
-        name: config["data"]["airflowBrokerSecret"],
-        key: "connection",
-        value: Config.get(Config.AIRFLOW_REDIS_URI)
       }
     ];
 
