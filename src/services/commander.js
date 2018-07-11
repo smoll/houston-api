@@ -112,12 +112,7 @@ class CommanderService extends BaseService {
     ];
 
     const deployConfigs = {
-      "env": [
-        {
-          name: "AIRFLOW__CELERY__DEFAULT_QUEUE",
-          value: `${deployId}_queue`
-        }
-      ]
+      "env": []
     };
 
     return {
