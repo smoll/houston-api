@@ -48,6 +48,14 @@ class Group extends BaseModel {
           },
         }
       },
+      group_roles: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: `${__dirname}/group_role_map.js`,
+        join: {
+          from: 'groups.uuid',
+          to: 'group_role_map.group_uuid',
+        }
+      },
       users: {
         relation: BaseModel.ManyToManyRelation,
         modelClass: `${__dirname}/user.js`,
