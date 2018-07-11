@@ -39,7 +39,7 @@ const server = new GraphQLServer({
 
 const authService = Application.service("auth");
 const commonService = Application.service("common");
-server.express.use(authService.authorizeRequest.bind(authService));
+server.express.use(Config.get(Config.API_ENDPOINT_URL), authService.authorizeRequest.bind(authService));
 
 OperationManager.registerPreHook(async function(root, args, context, operation) {
   context.resources = await commonService.resourceResolver(args);
