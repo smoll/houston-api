@@ -185,13 +185,6 @@ const roles = [
     scope: "user",
     groups: ["template_workspace_owner"],
     permissions: [
-      "user_user_view",
-      "user_user_view_other",
-      "user_user_update",
-      "user_user_delete",
-      "user_user_service_account",
-      "user_group_create",
-      "user_group_list",
       "user_group_view",
       "user_group_update",
       "user_group_delete",
