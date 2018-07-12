@@ -13,6 +13,10 @@ class RbacService extends BaseService {
       return [];
     }
 
+    if (context.resources.deployment && !context.resources.workspace && context.resources.deployment.workspace) {
+      context.resources.workspace = context.resources.deployment.workspace;
+    }
+
     const permissions = await this.model("permission")
       .query()
       .select("permissions.id")
