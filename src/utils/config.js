@@ -46,6 +46,7 @@ class Config {
   static baseDomain() {
     return this.helmConfig()["baseDomain"];
   }
+
 }
 
 Config.defaults = {};
@@ -64,6 +65,7 @@ Config.DOCKER_ISSUER = "DOCKER_ISSUER";
 Config.HELM_GLOBAL_CONFIG = "HELM_GLOBAL_CONFIG";
 Config.HELM_ASTRO_REPO = "HELM_ASTRO_REPO";
 Config.HELM_REPO_EDGE = "HELM_REPO_EDGE";
+Config.REGISTRY_AUTH = "REGISTRY_AUTH";
 Config.AUTH_STRATEGY = "AUTH_STRATEGY";
 Config.COMMANDER_HOST = "COMMANDER_HOST";
 Config.COMMANDER_PORT = "COMMANDER_PORT";
