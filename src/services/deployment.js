@@ -113,6 +113,9 @@ class DeploymentService extends BaseService {
     switch(deployment.type) {
       case this.model("deployment").MODULE_AIRFLOW:
         let config = deployment.getConfigCopy();
+        if (config.images === undefined) {
+          config.images = {};
+        }
         config.images.airflow = {
           name: image,
           tag: tag
