@@ -65,12 +65,13 @@ class RegistryEvents extends BaseRoute {
       }
 
       // decompose the repository
-      let [deploymentId, componentId] = event.target.repository.split("/");
-      let image = `${event.request.host}/${event.target.repository}:${event.target.tag}`;
+      const [deploymentId, componentId] = event.target.repository.split("/");
+      const image = `${event.request.host}/${event.target.repository}`;
+      const tag = event.target.tag;
 
       // Using raw promises so these can run in parallel
       let promise = this.service("deployment").fetchDeploymentByReleaseName(deploymentId).then((deployment) => {
-        return this.service("deployment").updateDeploymentImage(deployment, image);
+        return this.service("deployment").updateDeploymentImage(deployment, image, tag);
       }).then((deployment) => {
         return this.service("commander").updateDeployment(deployment);
       });

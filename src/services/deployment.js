@@ -109,11 +109,14 @@ class DeploymentService extends BaseService {
     return deployment;
   }
 
-  async updateDeploymentImage(deployment, image) {
+  async updateDeploymentImage(deployment, image, tag) {
     switch(deployment.type) {
       case this.model("deployment").MODULE_AIRFLOW:
         let config = deployment.getConfigCopy();
-        config.images.airflow = image;
+        config.images.airflow = {
+          name: image,
+          tag: tag
+        };
         return await this.updateDeployment(deployment, {
           config: config
         });
