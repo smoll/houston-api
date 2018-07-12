@@ -151,9 +151,16 @@ class UserService extends BaseService {
       await this.service("group").addUser(usersnGroup, user);
 
       // create default workspace for user
+      let workspaceLabel = "Default Workspace";
+      if (user.fullName) {
+        workspaceLabel = `${user.fullName}'s Workspace`;
+      } else if (user.username) {
+        workspaceLabel = `${user.username}'s Workspace`;
+      }
+
       await this.service("workspace").createWorkspaceWithDefaultGroups(user, {
-        label: "Personal",
-        description: `Personal workspace for ${user.username}`
+        label: workspaceLabel,
+        description: `Default workspace for ${user.username}`
       });
 
       return user;
