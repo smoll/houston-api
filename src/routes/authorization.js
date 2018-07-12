@@ -13,7 +13,15 @@ class AuthorizationRoute extends BaseRoute {
 
   async action(req, res) {
     try {
-      const context = await this.service("auth").authenticateRequest(req.headers.authorization);
+      let authorization = req.headers.authorization;
+      if (!authorization) {
+        authorization = this.getCookie(req.headers.cookie, "astronomer_auth")
+      }
+      if (!authorization) {
+        return this.denied(res);
+      }
+
+      const context = await this.service("auth").authenticateRequest(authorization);
       context.req = null;
       context.res = null;
 
@@ -24,7 +32,7 @@ class AuthorizationRoute extends BaseRoute {
 
       let subdomain = subdomains[0];
 
-      if (["grafana", "prometheus"].indexOf(subdomain) === -1) {
+      if (["grafana"].indexOf(subdomain) === -1) {
         const matches = subdomain.match(/^([\w]+-[\w]+-[\d]+)-(airflow|flower)/);
         if (matches) {
           const releaseName = matches[1];
@@ -61,6 +69,21 @@ class AuthorizationRoute extends BaseRoute {
       this.error(err.message);
       this.denied(res);
     }
+  }
+
+  getCookie(cookies, name) {
+    if (!cookies) {
+      return null;
+    }
+    for(let cookie of cookies.split(";")) {
+      const kv = cookie.trim().split("=");
+      const key = kv[0];
+      const value = kv[1];
+      if (key === name) {
+        return value
+      }
+    }
+    return null;
   }
 
   denied(res) {
