@@ -2,6 +2,7 @@ const { SchemaBuilder } = require("../operations.js");
 
 const AuthConfig = require("./auth_config.js");
 const AuthUser = require("./auth_user.js");
+const DeployInfo = require("./deploy_info.js");
 const Deployment = require("./deployment.js");
 const DeploymentUrls = require("./deployment_urls.js");
 const Email = require("./email.js");
@@ -80,6 +81,7 @@ SchemaBuilder.addTypeDef(`
 module.exports = [
   AuthConfig,
   AuthUser,
+  DeployInfo,
   Deployment,
   DeploymentUrls,
   Email,

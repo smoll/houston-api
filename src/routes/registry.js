@@ -65,8 +65,6 @@ class RegistryRoute extends BaseRoute {
         const requestPayload = URL.parse(req.headers["x-original-uri"]);
 
         const queryArgs = this.parseQuery(requestPayload.query);
-        // TODO: Will this ever not be set?
-        const service = queryArgs.service;
 
         if (queryArgs.scope) {
           let data;
@@ -102,7 +100,7 @@ class RegistryRoute extends BaseRoute {
           })
         }
 
-        const token = await dockerJWT.generate(context.userUuid(), service, payload);
+        const token = await dockerJWT.generate(context.userUuid(), payload);
 
         const json = JSON.stringify({
           token: token,

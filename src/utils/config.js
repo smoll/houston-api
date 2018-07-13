@@ -17,9 +17,9 @@ class Config {
     Config.defaults[Config.HELM_ASTRO_REPO] = "http://helm.astronomer.io/";
     Config.defaults[Config.HELM_REPO_EDGE] = "false";
 
-
-    Config.defaults[Config.DOCKER_CERT_PATH] = "/tmp/houston/";
-    Config.defaults[Config.DOCKER_ISSUER] = "houston";
+    Config.defaults[Config.REGISTRY_CERT_PATH] = "/tmp/houston/";
+    Config.defaults[Config.REGISTRY_ISSUER] = "houston";
+    Config.defaults[Config.REGISTRY_SERVICE] = "docker-registry";
   }
 
   static get(key) {
@@ -60,12 +60,13 @@ Config.HOUSTON_POSTGRES_URI = "HOUSTON_POSTGRES_URI";
 Config.AIRFLOW_POSTGRES_URI = "AIRFLOW_POSTGRES_URI";
 Config.DEBUG_DB = "DEBUG_DB";
 Config.JWT_PASSPHRASE = "JWT_PASSPHRASE";
-Config.DOCKER_CERT_PATH = "DOCKER_CERT_PATH";
-Config.DOCKER_ISSUER = "DOCKER_ISSUER";
+Config.REGISTRY_CERT_PATH = "REGISTRY_CERT_PATH";
+Config.REGISTRY_ISSUER = "REGISTRY_ISSUER";
+Config.REGISTRY_AUTH = "REGISTRY_AUTH";
+Config.REGISTRY_SERVICE = "REGISTRY_SERVICE";
 Config.HELM_GLOBAL_CONFIG = "HELM_GLOBAL_CONFIG";
 Config.HELM_ASTRO_REPO = "HELM_ASTRO_REPO";
 Config.HELM_REPO_EDGE = "HELM_REPO_EDGE";
-Config.REGISTRY_AUTH = "REGISTRY_AUTH";
 Config.AUTH_STRATEGY = "AUTH_STRATEGY";
 Config.COMMANDER_HOST = "COMMANDER_HOST";
 Config.COMMANDER_PORT = "COMMANDER_PORT";

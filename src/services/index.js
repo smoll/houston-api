@@ -3,6 +3,7 @@ module.exports = [
   require("./commander.js"),
   require("./common.js"),
   require("./deployment.js"),
+  require("./docker.js"),
   require("./group.js"),
   require("./invite_token.js"),
   require("./local_user.js"),

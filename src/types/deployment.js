@@ -14,6 +14,7 @@ class Deployment extends BaseType {
       version: String
       workspace: Workspace
       urls: [DeploymentUrls]
+      deployInfo: DeployInfo
       createdAt: String
       updatedAt: String
     }`;
@@ -53,6 +54,9 @@ class Deployment extends BaseType {
             }
           ];
         }
+      },
+      deployInfo(value) {
+        return this.service("docker").fetchImagesByDeployment(value);
       },
       createdAt(value) {
         return value.createdAt || null;
