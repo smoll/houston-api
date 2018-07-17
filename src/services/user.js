@@ -142,6 +142,7 @@ class UserService extends BaseService {
         const adminGroupUuid = await this.service("system_setting").getSetting(adminGroupKey);
         const adminGroup = await this.service("group").fetchGroupByUuid(adminGroupUuid);
         await this.service("group").addUser(adminGroup, user);
+        USER_COUNT = null;
       }
 
       // Add all users to the system level users group
