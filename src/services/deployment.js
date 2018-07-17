@@ -133,7 +133,26 @@ class DeploymentService extends BaseService {
     }
   }
 
-  async deleteDeployment(deployment) {
+  async queueDeploymentDeletion(deployment) {
+    await this.service("deployment").updateDeployment(deployment, {
+      "status": this.model("deployment").STATUS_DELETING
+    });
+
+    deleteQueue[deployment.uuid] = this.service("commander").deleteDeployment(deployment).then(async (response) => {
+      await this.service("deployment").deleteDeploymentMetadata(deployment);
+      this.info(`Deployment "${deployment.uuid} deleted successfully`);
+      delete deleteQueue[deployment.uuid];
+      return response;
+    });
+    return deployment;
+  }
+
+  async deleteDelpoyment(deployment) {
+    await this.service("commander").deleteDeployment(deployment);
+    return await this.deleteDeploymentMetadata(deployment);
+  }
+
+  async deleteDeploymentMetadata(deployment) {
     return await deployment.$query().delete();
   }
 

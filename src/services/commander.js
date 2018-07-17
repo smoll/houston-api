@@ -6,6 +6,7 @@ const CommanderClient = require("../clients/commander.js");
 const Config = require("../utils/config.js");
 const HelmMetadata = require("../utils/helm_metadata");
 const PostgresUtil = require("../utils/postgres.js");
+const HelmConfig = require("../utils/helm_config.js");
 
 class CommanderService extends BaseService {
   constructor() {
@@ -27,7 +28,7 @@ class CommanderService extends BaseService {
   async createDeployment(deployment, config) {
     if (!config) {
       // TODO: maybe always merge the input args with the helm config (but maybe not)
-      config = await this.fetchHelmConfig(deployment.type, deployment.version);
+      config = {}
     }
 
     if (!Config.isProd()) {
@@ -47,10 +48,9 @@ class CommanderService extends BaseService {
   }
 
   async deleteDeployment(deployment) {
-    return this.commander.deleteDeployment(deployment).then(async (response) => {
-      await this.deleteModule(deployment);
-      await this.service("deployment").deleteDeployment(deployment);
-      return response;
+    // initialize delete with commander
+    return this.commander.deleteDeployment(deployment).then(() => {
+      return this.deleteModule(deployment);
     });
   }
 
@@ -87,6 +87,8 @@ class CommanderService extends BaseService {
     //    2) Safety:      prevent one app from accidentally modifying data for another
     //    3) Security:    should there be a vulnerability in one app, compromised connection URI cannot be used for other db's/schema's
 
+    const helmConfig = new HelmConfig(config);
+
     const deployId = deployment.releaseName.replace(/-/g, "_");
     const deployDB    = `${deployId}_airflow`;
     const airflowId   = `${deployId}_airflow`;
@@ -106,17 +108,17 @@ class CommanderService extends BaseService {
     await userDB.destroy();
 
     // overwrite the secret names to add the deployment release name
-    config["data"]["airflowMetadataSecret"] = `${deployment.releaseName}-airflow-metadata`;
-    config["data"]["airflowResultBackendSecret"] = `${deployment.releaseName}-airflow-result-backend`;
+    helmConfig.setKey("data.airflowMetadataSecret", `${deployment.releaseName}-airflow-metadata`);
+    helmConfig.setKey("data.airflowResultBackendSecret", `${deployment.releaseName}-airflow-result-backend`);
 
     const secrets = [
       {
-        name: config["data"]["airflowMetadataSecret"],
+        name: helmConfig.getKey("data.airflowMetadataSecret"),
         key: "connection",
         value: airflowUri
       },
       {
-        name: config["data"]["airflowResultBackendSecret"],
+        name: helmConfig.getKey("data.airflowResultBackendSecret"),
         key: "connection",
         value: PostgresUtil.uriReplace(celeryUri, {
           protocol: "db+postgresql"
@@ -130,7 +132,7 @@ class CommanderService extends BaseService {
 
     return {
       "secrets": secrets,
-      "config": _.merge(config, deployConfigs)
+      "config": _.merge(helmConfig.get(), deployConfigs)
     }
   }
 
@@ -179,6 +181,10 @@ class CommanderService extends BaseService {
   }
 
   async fetchHelmConfig(chart, version = null) {
+    // Temporarily disabled, functionality needs to be moved to Commander
+    // with the added
+    return {};
+
     if (!version) {
       version = await this.latestHelmChartVersion(chart)
     }

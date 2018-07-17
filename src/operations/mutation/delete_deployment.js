@@ -20,8 +20,7 @@ class DeleteDeployment extends BaseOperation {
         throw new Error("Deployment not found");
       }
 
-      await this.service("deployment").deleteDeployment(deployment);
-      await this.service("commander").deleteDeployment(deployment);
+      await this.service("deployment").queueDeploymentDeletion(deployment);
 
       return {
         uuid: deployment.uuid
