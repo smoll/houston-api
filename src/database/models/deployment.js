@@ -23,6 +23,7 @@ class Deployment extends BaseModel {
         release_name: { type: "string", minLength: 1, maxLength: 128 },
         version: { type: "string" },
         workspace_uuid: { type: ["string"] },
+        status: { type: "string" },
         config: { type: "object" },
         created_at: { type: "string" },
         updated_at: { type: "string" },
@@ -61,8 +62,18 @@ class Deployment extends BaseModel {
   getConfigCopy() {
     return Object.assign({}, _.cloneDeep(this.config));
   }
+
+  $beforeInsert(context) {
+    if (!this.status) {
+      this.status = Deployment.STATUS_ACTIVE;
+    }
+    return super.$beforeInsert(context);
+  }
+
 }
 
 Deployment.MODULE_AIRFLOW = "airflow";
+Deployment.STATUS_ACTIVE = "active";
+Deployment.STATUS_DELETING = "deleting";
 
 module.exports = Deployment;
