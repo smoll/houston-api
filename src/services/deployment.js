@@ -1,6 +1,8 @@
 const BaseService = require("./base.js");
 const ReleaseNamerUtil = require("../utils/releases_namer.js");
 
+const deleteQueue = {};
+
 class DeploymentService extends BaseService {
 
   async fetchDeploymentByUuid(deploymentUuid, throwError = true) {
@@ -23,7 +25,8 @@ class DeploymentService extends BaseService {
       .query()
       .where({
         "workspace_uuid": workspaceUuid,
-      });
+      })
+      .whereNot("status", this.model("deployment").STATUS_DELETING);
 
     if (deployments && deployments.length > 0) {
       return deployments;
@@ -38,6 +41,7 @@ class DeploymentService extends BaseService {
     const deployment = await this.model("deployment")
       .query()
       .joinEager("workspace")
+      .whereNot("status", this.model("deployment").STATUS_DELETING)
       .findOne({
         "release_name": releaseName,
       });
@@ -87,6 +91,9 @@ class DeploymentService extends BaseService {
     }
     if (payload["label"] !== undefined && payload.label !== deployment.label) {
       changes.label = payload.label;
+    }
+    if (payload["status"] !== undefined && payload.status !== deployment.status) {
+      changes.status = payload.status;
     }
     // if (payload["workspace"] !== undefined && payload.workspace && payload.workspace.uuid !== deployment.workspaceUuid) {
     //   changes.workspace_uuid = payload.workspace.uuid;
