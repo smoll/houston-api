@@ -93,7 +93,18 @@ class CommanderClient {
   }
 
   deleteDeployment(deployment) {
+    const payload = {
+      release_name: deployment.releaseName,
+    };
 
+    return new Promise((resolve, reject) => {
+      this.client.deleteDeployment(payload, function (err, response) {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(response);
+      });
+    });
   }
 }
 

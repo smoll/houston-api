@@ -21,6 +21,7 @@ class DeleteDeployment extends BaseOperation {
       }
 
       await this.service("deployment").deleteDeployment(deployment);
+      await this.service("commander").deleteDeployment(deployment);
 
       return {
         uuid: deployment.uuid

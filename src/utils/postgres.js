@@ -20,6 +20,20 @@ class PostgresFunctions {
     });
   }
 
+  static deleteUser(knexConn, user) {
+    try {
+      this.validNames(user);
+    } catch (err) {
+      return Promise.reject(err);
+    }
+
+    return knexConn.raw(`DROP USER ${user};`).then(() => {
+      return Promise.resolve(true);
+    }).catch((err) => {
+      return Promise.resolve(false);
+    });
+  }
+
   static createDatabase(knexConn, database) {
     try {
       this.validNames(database);
@@ -28,6 +42,20 @@ class PostgresFunctions {
     }
 
     return knexConn.raw(`CREATE DATABASE ${database};`).then(() => {
+      return Promise.resolve(true);
+    }).catch((err) => {
+      return Promise.resolve(false);
+    });
+  }
+
+  static deleteDatabase(knexConn, database) {
+    try {
+      this.validNames(database);
+    } catch (err) {
+      return Promise.reject(err);
+    }
+
+    return knexConn.raw(`DROP DATABASE ${database};`).then(() => {
       return Promise.resolve(true);
     }).catch((err) => {
       return Promise.resolve(false);

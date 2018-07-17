@@ -46,11 +46,30 @@ class CommanderService extends BaseService {
     return this.commander.updateDeployment(deployment);
   }
 
+  async deleteDeployment(deployment) {
+    return this.commander.deleteDeployment(deployment).then(async (response) => {
+      await this.deleteModule(deployment);
+      await this.service("deployment").deleteDeployment(deployment);
+      return response;
+    });
+  }
+
   // helper functions
   async createModuleRequest(deployment, config) {
     switch (deployment.type) {
       case "airflow":
         return this.airflowConfig(deployment, config);
+      default:
+        this.debug("Unknown module to config");
+        return Promise.reject("Unknown module to config");
+    }
+  }
+
+  // helper functions
+  async deleteModule(deployment) {
+    switch (deployment.type) {
+      case "airflow":
+        return this.airflowDelete(deployment);
       default:
         this.debug("Unknown module to config");
         return Promise.reject("Unknown module to config");
@@ -113,6 +132,17 @@ class CommanderService extends BaseService {
       "secrets": secrets,
       "config": _.merge(config, deployConfigs)
     }
+  }
+
+  async airflowDelete(deployment) {
+    const deployId = deployment.releaseName.replace(/-/g, "_");
+    const deployDB    = `${deployId}_airflow`;
+    const airflowId   = `${deployId}_airflow`;
+    const celeryId    = `${deployId}_celery`;
+
+    await PostgresUtil.deleteDatabase(this.conn("airflow"), deployDB);
+    await PostgresUtil.deleteUser(this.conn("airflow"), airflowId);
+    await PostgresUtil.deleteUser(this.conn("airflow"), celeryId);
   }
 
   async createDeploySchema(userDB, database, schema, user) {
