@@ -153,8 +153,13 @@ class CommanderService extends BaseService {
         length: 32, numbers: true
       });
 
+      const connUser = PostgresUtil.connectionUser(Config.get(Config.AIRFLOW_POSTGRES_URI));
+
       // create user
       await PostgresUtil.createUser(this.conn("airflow"), user, password);
+
+      // add grants to do stuff for user role
+      await PostgresUtil.creatorGrantRole(this.conn("airflow"), connUser, user);
 
       // create schema
       await PostgresUtil.createSchema(userDB, schema, user);
@@ -164,6 +169,9 @@ class CommanderService extends BaseService {
 
       // set schema to be users default
       await PostgresUtil.setUserDefaultSchema(userDB, user, schema);
+
+      // revoke user role grant as airflow conn user won't need it anymore
+      await PostgresUtil.creatorRevokeRole(this.conn("airflow"), connUser, user);
 
       return Promise.resolve(PostgresUtil.uriReplace(Config.get(Config.AIRFLOW_POSTGRES_URI), {
         database: database,

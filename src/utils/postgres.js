@@ -62,6 +62,38 @@ class PostgresFunctions {
     });
   }
 
+  static creatorGrantRole(knexConn, creator, user) {
+    try {
+      this.validNames(creator, user);
+    } catch (err) {
+      return Promise.reject(err);
+    }
+
+    const query = `GRANT ${creator} TO ${user}`;
+
+    return knexConn.raw(`${query};`).then(() => {
+      return Promise.resolve(true);
+    }).catch((err) => {
+      return Promise.resolve(false);
+    });
+  }
+
+  static creatorRevokeRole(knexConn, creator, user) {
+    try {
+      this.validNames(creator, user);
+    } catch (err) {
+      return Promise.reject(err);
+    }
+
+    const query = `REVOKE ${creator} FROM ${user}`;
+
+    return knexConn.raw(`${query};`).then(() => {
+      return Promise.resolve(true);
+    }).catch((err) => {
+      return Promise.resolve(false);
+    });
+  }
+
   static createSchema(knexConn, schema, user = null) {
     try {
       this.validNames(schema, user);
@@ -78,7 +110,6 @@ class PostgresFunctions {
     }).catch((err) => {
       return Promise.resolve(false);
     });
-
   }
 
   static setUserDefaultSchema(knexConn, user, schema) {
@@ -128,6 +159,8 @@ class PostgresFunctions {
       // `GRANT ${user} TO ${database};` +
       `ALTER DEFAULT PRIVILEGES              IN SCHEMA ${schema} GRANT ALL PRIVILEGES ON TABLES TO ${user};` +
       `ALTER DEFAULT PRIVILEGES              IN SCHEMA ${schema} GRANT USAGE          ON SEQUENCES TO ${user};` +
+      `GRANT USAGE          ON                  SCHEMA ${schema} TO ${user};` +
+      `GRANT CREATE         ON                  SCHEMA ${schema} TO ${user};` +
       `GRANT ALL PRIVILEGES ON                  SCHEMA ${schema} TO ${user};` +
       `GRANT ALL PRIVILEGES ON ALL TABLES    IN SCHEMA ${schema} TO ${user};` +
       `GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA ${schema} TO ${user};`
@@ -175,6 +208,11 @@ class PostgresFunctions {
       parts.protocol = options.protocol;
     }
     return Url.format(parts);
+  }
+
+  static connectionUser(uri) {
+    const parts = Url.parse(uri);
+    return parts.auth.substr(0, parts.auth.indexOf(":"));
   }
 }
 
