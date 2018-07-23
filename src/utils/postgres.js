@@ -3,6 +3,8 @@ const Url = require("url");
 
 const Config = require("./config.js");
 
+const DEBUG = false;
+
 class PostgresFunctions {
   // Airflow Postgres functions
 
@@ -13,9 +15,13 @@ class PostgresFunctions {
       return Promise.reject(err);
     }
 
-    return knexConn.raw(`CREATE USER ${user} WITH LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION CONNECTION LIMIT -1 ENCRYPTED PASSWORD '${password}';`).then(() => {
+    PostgresFunctions.debug(`Create user ${user}`);
+    return knexConn.raw(`CREATE USER ${user} WITH LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE ` +
+      `NOINHERIT NOREPLICATION CONNECTION LIMIT -1 ENCRYPTED PASSWORD '${password}';`).then((result) => {
+        PostgresFunctions.debug(result);
       return Promise.resolve(true);
     }).catch((err) => {
+      PostgresFunctions.debug(err);
       return Promise.resolve(false);
     });
   }
@@ -27,9 +33,12 @@ class PostgresFunctions {
       return Promise.reject(err);
     }
 
-    return knexConn.raw(`DROP USER ${user};`).then(() => {
+    PostgresFunctions.debug(`Delete user ${user}`);
+    return knexConn.raw(`DROP USER ${user};`).then((result) => {
+      PostgresFunctions.debug(result);
       return Promise.resolve(true);
     }).catch((err) => {
+      PostgresFunctions.debug(err);
       return Promise.resolve(false);
     });
   }
@@ -41,9 +50,12 @@ class PostgresFunctions {
       return Promise.reject(err);
     }
 
-    return knexConn.raw(`CREATE DATABASE ${database};`).then(() => {
+    PostgresFunctions.debug(`Create database ${database}`);
+    return knexConn.raw(`CREATE DATABASE ${database};`).then((result) => {
+      PostgresFunctions.debug(result);
       return Promise.resolve(true);
     }).catch((err) => {
+      PostgresFunctions.debug(err);
       return Promise.resolve(false);
     });
   }
@@ -55,9 +67,34 @@ class PostgresFunctions {
       return Promise.reject(err);
     }
 
-    return knexConn.raw(`DROP DATABASE ${database};`).then(() => {
+    PostgresFunctions.debug(`Drop database ${database}`);
+    return knexConn.raw(`DROP DATABASE ${database};`).then((result) => {
+      PostgresFunctions.debug(result);
       return Promise.resolve(true);
     }).catch((err) => {
+      PostgresFunctions.debug(err);
+      return Promise.resolve(false);
+    });
+  }
+
+  static forceDisconnectSessions(knexConn, database) {
+    try {
+      this.validNames(database);
+    } catch (err) {
+      return Promise.reject(err);
+    }
+
+    PostgresFunctions.debug(`Force disconnect database session on ${database}`);
+    return knexConn.raw(`
+      SELECT pg_terminate_backend(pg_stat_activity.pid)
+      FROM pg_stat_activity
+      WHERE pg_stat_activity.datname = '${database}'
+      AND pid <> pg_backend_pid();
+    `).then((result) => {
+      PostgresFunctions.debug(result);
+      return Promise.resolve(true);
+    }).catch((err) => {
+      PostgresFunctions.debug(err);
       return Promise.resolve(false);
     });
   }
@@ -69,11 +106,14 @@ class PostgresFunctions {
       return Promise.reject(err);
     }
 
-    const query = `GRANT ${creator} TO ${user}`;
+    const query = `GRANT ${user} TO ${creator}`;
 
-    return knexConn.raw(`${query};`).then(() => {
+    PostgresFunctions.debug(`Grant ${creator} to ${user}`);
+    return knexConn.raw(`${query};`).then((result) => {
+      PostgresFunctions.debug(result);
       return Promise.resolve(true);
     }).catch((err) => {
+      PostgresFunctions.debug(err);
       return Promise.resolve(false);
     });
   }
@@ -85,11 +125,14 @@ class PostgresFunctions {
       return Promise.reject(err);
     }
 
-    const query = `REVOKE ${creator} FROM ${user}`;
+    const query = `REVOKE ${user} FROM ${creator}`;
 
-    return knexConn.raw(`${query};`).then(() => {
+    PostgresFunctions.debug(`Revoke ${creator} from ${user}`);
+    return knexConn.raw(`${query};`).then((result) => {
+      PostgresFunctions.debug(result);
       return Promise.resolve(true);
     }).catch((err) => {
+      PostgresFunctions.debug(err);
       return Promise.resolve(false);
     });
   }
@@ -105,9 +148,12 @@ class PostgresFunctions {
     if (user) {
       query = `${query} AUTHORIZATION ${user}`;
     }
-    return knexConn.raw(`${query};`).then(() => {
+    PostgresFunctions.debug(`Create schema ${schema}, authorize ${user}`);
+    return knexConn.raw(`${query};`).then((result) => {
+      PostgresFunctions.debug(result);
       return Promise.resolve(true);
     }).catch((err) => {
+      PostgresFunctions.debug(err);
       return Promise.resolve(false);
     });
   }
@@ -119,9 +165,12 @@ class PostgresFunctions {
       return Promise.reject(err);
     }
 
-    return knexConn.raw(`ALTER ROLE ${user} SET search_path = ${schema};`).then(() => {
+    PostgresFunctions.debug(`Set default schema ${schema} for ${user}`);
+    return knexConn.raw(`ALTER ROLE ${user} SET search_path = ${schema};`).then((result) => {
+      PostgresFunctions.debug(result);
       return Promise.resolve(true);
     }).catch((err) => {
+      PostgresFunctions.debug(err);
       return Promise.resolve(false);
     });
   }
@@ -132,7 +181,9 @@ class PostgresFunctions {
     } catch (err) {
       return Promise.reject(err);
     }
+    PostgresFunctions.debug(`Check ${user} exists`);
     return knexConn.raw(`SELECT 1 FROM pg_roles WHERE rolname='${user}';`).then((result) => {
+      PostgresFunctions.debug(result);
       return (result.rows.length === 1);
     });
   }
@@ -143,7 +194,9 @@ class PostgresFunctions {
     } catch (err) {
       return Promise.reject(err);
     }
+    PostgresFunctions.debug(`Check ${database} exists`);
     return knexConn.raw(`SELECT 1 FROM pg_database WHERE datname='${database}';`).then((result) => {
+      PostgresFunctions.debug(result);
       return (result.rows.length === 1);
     });
   }
@@ -155,6 +208,7 @@ class PostgresFunctions {
       return Promise.reject(err);
     }
 
+    PostgresFunctions.debug(`Update access grants in db "${database}" to user "${user}" for schema "${schema}"`);
     return knexConn.raw(
       // `GRANT ${user} TO ${database};` +
       `ALTER DEFAULT PRIVILEGES              IN SCHEMA ${schema} GRANT ALL PRIVILEGES ON TABLES TO ${user};` +
@@ -164,9 +218,11 @@ class PostgresFunctions {
       `GRANT ALL PRIVILEGES ON                  SCHEMA ${schema} TO ${user};` +
       `GRANT ALL PRIVILEGES ON ALL TABLES    IN SCHEMA ${schema} TO ${user};` +
       `GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA ${schema} TO ${user};`
-    ).then(() => {
+    ).then((result) => {
+      PostgresFunctions.debug(result);
       return Promise.resolve(true);
     }).catch((err) => {
+      PostgresFunctions.debug(err);
       return Promise.resolve(false);
     });
   }
@@ -213,6 +269,13 @@ class PostgresFunctions {
   static connectionUser(uri) {
     const parts = Url.parse(uri);
     return parts.auth.substr(0, parts.auth.indexOf(":"));
+  }
+
+  static debug(message) {
+    if(!DEBUG) {
+      return;
+    }
+    console.log(message);
   }
 }
 

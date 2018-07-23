@@ -115,7 +115,9 @@ class CommanderService extends BaseService {
       {
         name: helmConfig.getKey("data.airflowMetadataSecret"),
         key: "connection",
-        value: airflowUri
+        value: PostgresUtil.uriReplace(airflowUri, {
+          protocol: "postgresql"
+        })
       },
       {
         name: helmConfig.getKey("data.airflowResultBackendSecret"),
@@ -142,6 +144,7 @@ class CommanderService extends BaseService {
     const airflowId   = `${deployId}_airflow`;
     const celeryId    = `${deployId}_celery`;
 
+    await PostgresUtil.forceDisconnectSessions(this.conn("airflow"), deployDB);
     await PostgresUtil.deleteDatabase(this.conn("airflow"), deployDB);
     await PostgresUtil.deleteUser(this.conn("airflow"), airflowId);
     await PostgresUtil.deleteUser(this.conn("airflow"), celeryId);
