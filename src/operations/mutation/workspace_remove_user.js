@@ -28,6 +28,13 @@ class WorkspaceRemoveUser extends BaseOperation {
 
       await this.service("workspace").removeUser(context.resources.workspace, user);
 
+      const groups = await this.service("group").fetchGroupsByWorkspaceUuid(context.resources.workspace.uuid);
+      const promises = [];
+      for (let group of groups) {
+        promises.push(this.service("group").removeUser(group, user));
+      }
+      await Promise.all(promises);
+
       // refetch workspace
       return await this.service("workspace").fetchWorkspaceByUuid(context.resources.workspace.uuid, { relation: "users, groups, groups.users]" });
     } catch (err) {
