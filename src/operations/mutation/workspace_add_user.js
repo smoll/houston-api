@@ -40,6 +40,15 @@ class WorkspaceAddUser extends BaseOperation {
       } else {
         await this.service("workspace").addUser(workspace, user);
 
+        // TODO: Remove: temporary until RBAC is fully exposed
+        //   add user to all workspace groups
+        const groups = await this.service("group").fetchGroupsByWorkspaceUuid(workspace.uuid);
+        const promises = [];
+        for (let group of groups) {
+          promises.push(this.service("group").addUser(group, user));
+        }
+        await Promise.all(promises);
+
         return await this.service("workspace").fetchWorkspaceByUuid(workspace.uuid, { relation: "users, groups, groups.users]" });
       }
     } catch (err) {

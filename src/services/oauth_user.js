@@ -28,7 +28,7 @@ class OauthUserService extends BaseService {
 
     if (user) {
       if (!user.oauthCredentials || user.oauthCredentials.length === 0) {
-        await this.createOAuthCredential(user, data);
+        user.oauthCredentials = [await this.createOAuthCredential(user, data)];
       }
       return await this.service("user").updateUser(user, userData);
     }
@@ -61,7 +61,7 @@ class OauthUserService extends BaseService {
   }
 
   async createOAuthCredential(user, OAuthData) {
-    user.oauthCredentials.push(await this.model("oauth_credential")
+    return await this.model("oauth_credential")
       .query()
       .insert({
         oauth_provider: OAuthData.providerType,
@@ -70,8 +70,7 @@ class OauthUserService extends BaseService {
         refresh_token: OAuthData.refreshToken,
         access_token: OAuthData.accessToken,
         expires_at: new Date(OAuthData.expires).toISOString()
-      }).returning("*"));
-
+      }).returning("*");
   }
 
   async fetchUserByOAuthData(data) {

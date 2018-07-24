@@ -48,6 +48,21 @@ class GroupService extends BaseService {
     return [];
   }
 
+  async fetchGroupsByWorkspaceUuid(workspaceUuid) {
+    const groups = await this.model("group")
+      .query()
+      .joinEager("users.emails")
+      .where({
+        "groups.entity_type": this.model("group").ENTITY_WORKSPACE,
+        "groups.entity_uuid": workspaceUuid,
+      });
+
+    if (groups && groups.length) {
+      return groups;
+    }
+    return [];
+  }
+
   async createGroup(payload, roles = [], options = {}) {
     payload = Object.assign({
       entity_uuid: null,
