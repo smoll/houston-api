@@ -87,6 +87,15 @@ class DeploymentService extends BaseService {
 
     // TODO: Do this check in a more extendable way
     if (payload["config"] !== undefined && payload.config !== deployment.config) {
+      // TODO: This is specific to airflow deploys. We need a way to set config values in the request that
+      // won't get persisted so it never ends up here
+      if (payload.config.fernetKey) {
+        delete payload.config.fernetKey;
+      }
+      if (payload.config.redis && payload.config.redis.password) {
+        delete payload.config.redis.password;
+      }
+
       changes.config = payload.config;
     }
     if (payload["label"] !== undefined && payload.label !== deployment.label) {

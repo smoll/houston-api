@@ -111,6 +111,12 @@ class CommanderService extends BaseService {
     helmConfig.setKey("data.airflowMetadataSecret", `${deployment.releaseName}-airflow-metadata`);
     helmConfig.setKey("data.airflowResultBackendSecret", `${deployment.releaseName}-airflow-result-backend`);
 
+    // generate and redis password
+    helmConfig.setKey("redis.password", PasswordGen.generate({ length: 32, numbers: true }));
+
+    // generate and set fernet key (fernet keys have to be base64 encoded)
+    helmConfig.setKey("fernetKey", new Buffer(PasswordGen.generate({ length: 32, numbers: true })).toString('base64'));
+
     const secrets = [
       {
         name: helmConfig.getKey("data.airflowMetadataSecret"),
