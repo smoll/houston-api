@@ -12,6 +12,7 @@ module.exports = [
   require("./query/workspaces.js"),
   require("./query/users.js"),
   require("./query/service_accounts.js"),
+  require("./query/log.js"),
 
   // =========
   // Mutations

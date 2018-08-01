@@ -15,6 +15,7 @@ const Token = require("./token.js");
 const TokenPayload = require("./token_payload.js");
 const User = require("./user.js");
 const UserProperty = require("./user_property.js");
+const Log = require("./log.js");
 
 // TypeDefs that are not GQL types (resolvable objects)
 
@@ -93,4 +94,5 @@ module.exports = [
   ServiceAccount,
   User,
   UserProperty,
+  Log,
 ];

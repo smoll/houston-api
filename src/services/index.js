@@ -12,5 +12,6 @@ module.exports = [
   require("./system_setting.js"),
   require("./service_account.js"),
   require("./workspace.js"),
-  require("./user.js")
+  require("./user.js"),
+  require("./log.js")
 ];
