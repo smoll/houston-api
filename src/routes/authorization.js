@@ -1,6 +1,6 @@
 const URL = require("url");
 
-const BaseRoute = require("./base.js");
+const { BaseRoute } = require("sealab");
 
 class AuthorizationRoute extends BaseRoute {
   route() {

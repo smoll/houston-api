@@ -1,6 +1,6 @@
-const { SchemaBuilderGuard } = require("@moilandtoil/sealab-schema-builder");
+const { BaseGuard } = require("sealab");
 
-class ConfigGuard extends SchemaBuilderGuard {
+class ConfigGuard extends BaseGuard {
   id() {
     return "config_equals";
   }

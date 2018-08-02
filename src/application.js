@@ -1,4 +1,4 @@
-const { Application } = require("@moilandtoil/sealab-application");
+const { Application } = require("sealab");
 
 const services = require("./services/index.js");
 const models = require("./database/models/index.js");

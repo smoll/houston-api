@@ -1,4 +1,4 @@
-const { BaseService } = require("@moilandtoil/sealab-application");
+const { BaseService } = require("sealab");
 
 const Errors = require("../errors/index.js");
 

@@ -1,7 +1,7 @@
 const URL = require("url");
 const _ = require("lodash");
+const { BaseRoute } = require("sealab");
 
-const BaseRoute = require("./base.js");
 const DockerJWT = require("../utils/docker_jwt.js");
 const Config = require("../utils/config.js");
 

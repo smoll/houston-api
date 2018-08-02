@@ -1,6 +1,6 @@
-const { SchemaBuilderGuard } = require("@moilandtoil/sealab-schema-builder");
+const { BaseGuard } = require("sealab");
 
-class AuthenticatedGuard extends SchemaBuilderGuard {
+class AuthenticatedGuard extends BaseGuard {
   id() {
     return "authenticated";
   }

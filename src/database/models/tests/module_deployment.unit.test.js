@@ -1,4 +1,4 @@
-const { Application, DefaultLogger } = require("@moilandtoil/sealab-application");
+const { Application, DefaultLogger } = require("sealab");
 const Faker = require("faker");
 
 const Postgres = require("../../postgres.js");

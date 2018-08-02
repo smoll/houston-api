@@ -1,4 +1,4 @@
-const { BaseOperation } = require("@moilandtoil/sealab-operation");
+const { BaseOperation } = require("sealab");
 
 const Errors = require("../errors/index.js");
 
@@ -35,10 +35,6 @@ class HoustonOperation extends BaseOperation {
 
   errors() {
     return Errors;
-  }
-
-  model(modelName) {
-    return this.application.model(modelName);
   }
 }
 module.exports = HoustonOperation;

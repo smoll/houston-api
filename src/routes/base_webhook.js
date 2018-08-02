@@ -1,4 +1,4 @@
-const BaseRoute = require("./base.js");
+const { BaseRoute } = require("sealab");
 
 class BaseWebhook extends BaseRoute {
   method() {

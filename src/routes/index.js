@@ -1,20 +1,20 @@
-const RouterBuilder = require("../utils/route_builder.js");
+const { RoutesManager } = require("sealab");
 
 module.exports = (express, application) => {
-  const routerBuilder = new RouterBuilder(express, application);
+  const routesManager = new RoutesManager(express, application);
 
   // root routes
-  routerBuilder.registerRoute(require("./healthz.js"));
-  routerBuilder.registerRoute(require("./authorization.js"));
-  routerBuilder.registerRoute(require("./registry.js"));
+  routesManager.registerRoute(require("./healthz.js"));
+  routesManager.registerRoute(require("./authorization.js"));
+  routesManager.registerRoute(require("./registry.js"));
 
   // webhook routes
-  routerBuilder.group("v1", () => {
+  routesManager.group("v1", () => {
 
     // webhook routes
-    routerBuilder.group("webhooks", () => {
+    routesManager.group("webhooks", () => {
 
-      routerBuilder.registerRoute(require("./v1/webhooks/registry_events.js"));
+      routesManager.registerRoute(require("./v1/webhooks/registry_events.js"));
 
     });
 
