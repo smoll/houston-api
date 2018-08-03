@@ -1,19 +1,19 @@
 const BaseService = require("./base.js");
 class RbacService extends BaseService {
 
-  async fetchPermissionsForSession(context) {
+  async fetchPermissionsForSession(session) {
     // currently handling use case of only users (no service account) that are:
     // - just in the global user group
     // - in a workspace admin group
     // - in a workspace admin group and a deployment group
     // - no in a workspace admin group, but in a deployment group
     // - in global admin group
-    if (!context.session.userUuid()) {
+    if (!session.userUuid()) {
       return [];
     }
 
-    if (context.session.resources.deployment && !context.session.resources.workspace && context.session.resources.deployment.workspace) {
-      context.session.resources.workspace = context.session.resources.deployment.workspace;
+    if (session.resources.deployment && !session.resources.workspace && session.resources.deployment.workspace) {
+      session.resources.workspace = session.resources.deployment.workspace;
     }
 
     const permissions = await this.model("permission")
@@ -23,21 +23,21 @@ class RbacService extends BaseService {
       .rightJoin("group_role_map", "group_role_map.role_uuid", "role_permission_map.role_uuid")
       .rightJoin("user_group_map", "user_group_map.group_uuid", "group_role_map.group_uuid")
       .leftJoin("groups", "user_group_map.group_uuid", "groups.uuid")
-      .where("user_group_map.user_uuid", context.session.userUuid())
+      .where("user_group_map.user_uuid", session.userUuid())
       .where((qb) => {
         qb.orWhere({
           "groups.entity_uuid": null,
           "groups.entity_type": "system"
         });
-        if(context.session.resources.workspace) {
+        if(session.resources.workspace) {
           qb.orWhere({
-            "groups.entity_uuid": context.session.resources.workspace.uuid,
+            "groups.entity_uuid": session.resources.workspace.uuid,
             "groups.entity_type": "workspace"
           });
         }
-        if(context.session.resources.deployment) {
+        if(session.resources.deployment) {
           qb.orWhere({
-            "groups.entity_uuid": context.session.resources.deployment.uuid,
+            "groups.entity_uuid": session.resources.deployment.uuid,
             "groups.entity_type": "deployment"
           });
         }
