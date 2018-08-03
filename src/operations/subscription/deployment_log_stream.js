@@ -1,11 +1,11 @@
 const { BaseSubscriptionOperation } = require("sealab");
-class DeploymentLogs extends BaseSubscriptionOperation {
+class DeploymentLogStream extends BaseSubscriptionOperation {
   constructor() {
     super();
-    this.name = "deploymentLogs";
+    this.name = "deploymentLogStream";
     this.typeDef = `
-      # Fetches info about the authenticated requesting user
-      deploymentLogs : [DeploymentLog]
+      # Streams deployment logs from a start time, at specified interval, optionally scoped to a component
+      deploymentLogStream(deploymentUuid: String!, component: String, interval: Int) : [DeploymentLog]
     `;
   }
 
@@ -39,4 +39,4 @@ class DeploymentLogs extends BaseSubscriptionOperation {
   }
 }
 
-module.exports = DeploymentLogs;
+module.exports = DeploymentLogStream;
