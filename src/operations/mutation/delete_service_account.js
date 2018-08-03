@@ -13,9 +13,9 @@ class DeleteServiceAccount extends BaseOperation {
 
   async resolver(root, args, context) {
     try {
-      const DeletedServiceAccount = await this.service("service_account").deleteServiceAccountByUuid(context.resources.serviceAccount.uuid);
+      const DeletedServiceAccount = await this.service("service_account").deleteServiceAccountByUuid(context.session.resources.serviceAccount.uuid);
       if (!!DeletedServiceAccount) {
-        return {uuid:context.resources.serviceAccount.uuid};
+        return {uuid:context.session.resources.serviceAccount.uuid};
       } else {
         throw new Error("No Service Accounts were deleted.")
       }

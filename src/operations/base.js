@@ -19,10 +19,10 @@ class HoustonOperation extends BaseOperation {
     throw Errors.UserNotFound(criteria);
   }
 
-  guardError(error, context) {
+  guardError(error, session) {
     switch(error.guardId) {
       case "authenticated":
-        if (context.token.expired) {
+        if (session.token.expired) {
           throw Errors.AuthExpired();
         }
         throw Errors.Unauthorized(this.name);

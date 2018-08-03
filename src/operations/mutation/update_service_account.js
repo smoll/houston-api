@@ -13,7 +13,7 @@ class UpdateServiceAccount extends BaseOperation {
 
   async resolver(root, args, context) {
     try {
-      const updatedServiceAccount = await this.service("service_account").updateServiceAccount(context.resources.serviceAccount, args.payload); // expects args (serviceAccount, payload)
+      const updatedServiceAccount = await this.service("service_account").updateServiceAccount(context.session.resources.serviceAccount, args.payload); // expects args (serviceAccount, payload)
       return updatedServiceAccount;
     } catch(err) {
       this.error(err.message);

@@ -2,8 +2,8 @@ const _ = require("lodash");
 
 // Note: Copied from astronomerio/houston, commented out resources houston-api doesn't have yet
 
-class Context {
-  constructor(authorization = null, requester = Context.REQUESTER_USER) {
+class Session {
+  constructor(authorization = null, requester = Session.REQUESTER_USER) {
     this.requester = requester;
     this.authorization = authorization;
     this.token = {
@@ -225,8 +225,8 @@ class Context {
   // }
 }
 
-Context.REQUESTER_USER = "user";
-Context.REQUESTER_SERVICE = "service";
-Context.REQUESTER_SYSTEM = "system";
+Session.REQUESTER_USER = "user";
+Session.REQUESTER_SERVICE = "service";
+Session.REQUESTER_SYSTEM = "system";
 
-module.exports = Context;
+module.exports = Session;

@@ -26,14 +26,14 @@ class RegistryRoute extends BaseRoute {
         return this.unauthorized(res, "No authorization credentials specified");
       }
 
-      let context = null;
+      let session = null;
       let isRegistry = false;
 
       if (authorization.substr(0, 5) === "Basic") {
         authorization = authorization.substr(6);
 
         if (this.isRegistryAuth(authorization)) {
-          context = { userUuid: function() { return "registry" } };
+          session = { userUuid: function() { return "registry" } };
           isRegistry = true;
         } else {
 
@@ -46,13 +46,13 @@ class RegistryRoute extends BaseRoute {
             token = creds[1];
           }
 
-          context = await this.service("auth").authenticateRequest(token);
+          session = await this.service("auth").authenticateRequest(token);
 
-          if (!context.userUuid()) {
-            if (context.token.expired) {
+          if (!session.userUuid()) {
+            if (session.token.expired) {
               return this.unauthorized(res, "Authorization token expired, please login again");
             }
-            if (!context.token.valid) {
+            if (!session.token.valid) {
               return this.unauthorized(res, "Authorization token invalid, please login again");
             }
           }
@@ -84,11 +84,11 @@ class RegistryRoute extends BaseRoute {
 
           // if registry, skip permission checks
           if(!isRegistry) {
-            context.resources.deployment = await this.service("deployment").fetchDeploymentByReleaseName(data.release);
+            session.resources.deployment = await this.service("deployment").fetchDeploymentByReleaseName(data.release);
 
-            await this.service("common").resolveRequesterPermissions(context);
+            await this.service("common").resolveRequesterPermissions(session);
 
-            if (!context.hasPermissions("user_deployment_images")) {
+            if (!session.hasPermissions("user_deployment_images")) {
               return this.denied(res, "You do not have authorization to manage deployment images");
             }
           }
@@ -100,7 +100,7 @@ class RegistryRoute extends BaseRoute {
           })
         }
 
-        const token = await dockerJWT.generate(context.userUuid(), payload);
+        const token = await dockerJWT.generate(session.userUuid(), payload);
 
         const json = JSON.stringify({
           token: token,

@@ -21,7 +21,7 @@ class Users extends BaseOperation {
       return [this.service("user").fetchUserByEmail(args.email)];
     } else {
       try {
-        let user = context.resources.user;
+        let user = context.session.resources.user;
         return [user];
       } catch (err) {
         this.error(err.message);

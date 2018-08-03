@@ -21,9 +21,7 @@ class AuthorizationRoute extends BaseRoute {
         return this.denied(res);
       }
 
-      const context = await this.service("auth").authenticateRequest(authorization);
-      context.req = null;
-      context.res = null;
+      const session = await this.service("auth").authenticateRequest(authorization);
 
       const requestPayload = URL.parse(req.headers["x-original-url"]);
 
@@ -41,22 +39,22 @@ class AuthorizationRoute extends BaseRoute {
 
           const deployment = await this.service("deployment").fetchDeploymentByReleaseName(releaseName);
 
-          context.resources.deployment = deployment;
-          context.resources.workspace = deployment.workspace;
+          session.resources.deployment = deployment;
+          session.resources.workspace = deployment.workspace;
         }
       }
 
-      await this.service("common").resolveRequesterPermissions(context);
+      await this.service("common").resolveRequesterPermissions(session);
 
       switch (subdomain) {
         case "grafana":
-          if (context.hasPermissions("global_deployment_external")) {
+          if (session.hasPermissions("global_deployment_external")) {
             return this.granted(res);
           }
           break;
         case "airflow":
         case "flower":
-          if (context.hasPermissions("user_deployment_external") || context.hasPermissions("global_deployment_external")) {
+          if (session.hasPermissions("user_deployment_external") || session.hasPermissions("global_deployment_external")) {
             return this.granted(res);
           }
           break;

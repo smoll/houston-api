@@ -7,7 +7,7 @@ class PermissionGuard extends BaseGuard {
 
   validate(context, extras) {
     for(let permission of extras) {
-      if (!context.permissions[permission]) {
+      if (!context.session.permissions[permission]) {
         return false;
       }
     }

@@ -17,7 +17,7 @@ class WorkspaceAddUser extends BaseOperation {
   async resolver(root, args, context) {
     try {
       let user = await this.service("user").fetchUserByEmail(args.email, false);
-      let workspace = context.resources.workspace;
+      let workspace = context.session.resources.workspace;
 
       let groupUuids = "";
       if (args.groupUuids) {

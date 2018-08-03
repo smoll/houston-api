@@ -14,7 +14,7 @@ class DeleteWorkspace extends BaseOperation {
 
   async resolver(root, args, context) {
     try {
-      const workspace = context.resources.workspace;
+      const workspace = context.session.resources.workspace;
 
       await this.service("workspace").deleteWorkspace(workspace);
 

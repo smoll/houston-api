@@ -19,7 +19,7 @@ class UpdateDeployment extends BaseOperation {
 
   async resolver(root, args, context) {
     try {
-      let deployment = context.resources.deployment;
+      let deployment = context.session.resources.deployment;
 
       deployment = await this.service("deployment").updateDeployment(deployment, args.payload);
 

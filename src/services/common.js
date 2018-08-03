@@ -44,11 +44,11 @@ class CommonService extends BaseService {
     }
   }
 
-  async resolveRequesterPermissions(context) {
-    const permissions = await this.service("rbac").fetchPermissionsForContext(context);
+  async resolveRequesterPermissions(session) {
+    const permissions = await this.service("rbac").fetchPermissionsForSession(session);
     if (permissions.length > 0) {
       for(let permission of permissions) {
-        context.permissions[permission] = true;
+        session.permissions[permission] = true;
       }
     }
   }

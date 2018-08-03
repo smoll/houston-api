@@ -14,7 +14,7 @@ class UpdateWorkspace extends BaseOperation {
 
   async resolver(root, args, context) {
     try {
-      return await this.service("workspace").updateWorkspace(context.resources.workspace, args.payload);
+      return await this.service("workspace").updateWorkspace(context.session.resources.workspace, args.payload);
     } catch (err) {
       this.error(err.message);
       throw err;

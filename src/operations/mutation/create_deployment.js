@@ -28,7 +28,7 @@ class CreateDeployment extends BaseOperation {
       }
 
       let deployment = await this.service("deployment").createDeployment(
-        context.resources.workspace,
+        context.session.resources.workspace,
         args.type,
         args.version,
         args.label,

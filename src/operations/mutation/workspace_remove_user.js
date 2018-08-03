@@ -21,14 +21,14 @@ class WorkspaceRemoveUser extends BaseOperation {
         this.invalidInput("Cannot process request with both a userUuid & email");
       }
 
-      let user = context.resources.user;
+      let user = context.session.resources.user;
       if (args.email) {
         user = this.service("user").fetchUserByEmail(args.email);
       }
 
-      await this.service("workspace").removeUser(context.resources.workspace, user);
+      await this.service("workspace").removeUser(context.session.resources.workspace, user);
 
-      const groups = await this.service("group").fetchGroupsByWorkspaceUuid(context.resources.workspace.uuid);
+      const groups = await this.service("group").fetchGroupsByWorkspaceUuid(context.session.resources.workspace.uuid);
       const promises = [];
       for (let group of groups) {
         promises.push(this.service("group").removeUser(group, user));
@@ -36,7 +36,7 @@ class WorkspaceRemoveUser extends BaseOperation {
       await Promise.all(promises);
 
       // refetch workspace
-      return await this.service("workspace").fetchWorkspaceByUuid(context.resources.workspace.uuid, { relation: "users, groups, groups.users]" });
+      return await this.service("workspace").fetchWorkspaceByUuid(context.session.resources.workspace.uuid, { relation: "users, groups, groups.users]" });
     } catch (err) {
       this.error(err);
       throw err;

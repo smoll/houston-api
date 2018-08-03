@@ -14,9 +14,9 @@ class UpdateUser extends BaseOperation {
 
   async resolver(root, args, context) {
     try {
-      let user = context.authUser;
+      let user = context.session.authUser;
       if (args.userUuid) {
-        user = context.resources.user;
+        user = context.session.resources.user;
       }
       await this.service("user").updateUser(user, args.payload);
 

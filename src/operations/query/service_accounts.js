@@ -16,7 +16,7 @@ class ServiceAccounts extends BaseOperation {
     try {
       return [];
       if (args.serviceAccountUuid) {
-        return [context.resources.serviceAccount];
+        return [context.session.resources.serviceAccount];
       } else if (args.apiKey) {
         return this.service("service_account").fetchServiceAccountByKey(args.apiKey);
       } else if (args.entityType && args.entityUuid) {

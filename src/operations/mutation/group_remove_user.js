@@ -17,7 +17,7 @@ class GroupAddUser extends BaseOperation {
       let user = await this.service("user").fetchUserByUuid(args.userUuid);
       let group = await this.service("group").fetchGroupByUuid(args.groupUuid);
 
-      if (group.workspace_uuid === null && !context.hasPermission("global_group_user_add")) {
+      if (group.workspace_uuid === null && !context.session.hasPermission("global_group_user_add")) {
         this.unauthorized("add_global_user");
       }
 

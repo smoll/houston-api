@@ -14,7 +14,7 @@ class Self extends BaseOperation {
 
   async resolver(root, args, context) {
     try {
-      let user = context.authUser;
+      let user = context.session.authUser;
       return user;
     } catch (err) {
       this.error(err.message);

@@ -15,13 +15,13 @@ class Workspaces extends BaseOperation {
   async resolver(root, args, context) {
     try {
       if (args.workspaceUuid) {
-        return [context.resources.workspace];
+        return [context.session.resources.workspace];
       } else if  (args.label) {
         return await [this.service("workspace").fetchWorkspaceByLabel(args.label)];
       }
       else {
         if (!args.userUuid) {
-          args.userUuid = context.authUser.uuid;
+          args.userUuid = context.session.authUser.uuid;
         }
         return await this.service("workspace").fetchWorkspacesByUserUuid(args.userUuid);
       }
