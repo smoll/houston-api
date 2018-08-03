@@ -6,7 +6,7 @@ class CreateDeployment extends BaseOperation {
     this.name = "createDeployment";
     this.typeDef = `
       # Creates a new deployment
-      createDeployment(type: String!, label: String!, workspaceUuid: Uuid, version: String) : Deployment
+      createDeployment(type: String!, label: String!, description: String, workspaceUuid: Uuid, version: String) : Deployment
     `;
     this.entrypoint = "mutation";
     this.guards = ["authenticated", "permission:user_deployment_create"];
@@ -32,6 +32,7 @@ class CreateDeployment extends BaseOperation {
         args.type,
         args.version,
         args.label,
+        args.description,
       );
 
       // On duplicate error will be;  duplicate key value violates unique constraint \"unique_workspace_uuid_label\"",

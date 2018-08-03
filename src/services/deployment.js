@@ -54,7 +54,7 @@ class DeploymentService extends BaseService {
     return null;
   }
 
-  async createDeployment(workspace, type, version, label) {
+  async createDeployment(workspace, type, version, label, description) {
     try {
       const DeploymentModel = this.model("deployment");
 
