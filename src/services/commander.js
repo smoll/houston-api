@@ -6,12 +6,16 @@ const CommanderClient = require("../clients/commander.js");
 const Config = require("../utils/config.js");
 const HelmMetadata = require("../utils/helm_metadata");
 const PostgresUtil = require("../utils/postgres.js");
+const HelmConfig = require("../utils/helm_config.js");
 
 class CommanderService extends BaseService {
   constructor() {
     super(...arguments);
     this.commander = new CommanderClient(Config.get(Config.COMMANDER_HOST), Config.get(Config.COMMANDER_PORT));
-    this.helmMetadata = new HelmMetadata(Config.get(Config.HELM_ASTRO_REPO));
+    this.helmMetadata = new HelmMetadata(
+      Config.get(Config.HELM_ASTRO_REPO),
+      Config.get(Config.HELM_REPO_EDGE) === "true"
+    );
   }
 
   // grpc wrappers
@@ -24,7 +28,11 @@ class CommanderService extends BaseService {
   async createDeployment(deployment, config) {
     if (!config) {
       // TODO: maybe always merge the input args with the helm config (but maybe not)
-      config = await this.fetchHelmConfig(deployment.type, deployment.version);
+      config = {}
+    }
+
+    if (!Config.isProd()) {
+      return Promise.resolve(deployment);
     }
 
     let request = await this.createModuleRequest(deployment, config);
@@ -39,11 +47,29 @@ class CommanderService extends BaseService {
     return this.commander.updateDeployment(deployment);
   }
 
+  async deleteDeployment(deployment) {
+    // initialize delete with commander
+    return this.commander.deleteDeployment(deployment).then(() => {
+      return this.deleteModule(deployment);
+    });
+  }
+
   // helper functions
   async createModuleRequest(deployment, config) {
     switch (deployment.type) {
       case "airflow":
         return this.airflowConfig(deployment, config);
+      default:
+        this.debug("Unknown module to config");
+        return Promise.reject("Unknown module to config");
+    }
+  }
+
+  // helper functions
+  async deleteModule(deployment) {
+    switch (deployment.type) {
+      case "airflow":
+        return this.airflowDelete(deployment);
       default:
         this.debug("Unknown module to config");
         return Promise.reject("Unknown module to config");
@@ -61,11 +87,12 @@ class CommanderService extends BaseService {
     //    2) Safety:      prevent one app from accidentally modifying data for another
     //    3) Security:    should there be a vulnerability in one app, compromised connection URI cannot be used for other db's/schema's
 
+    const helmConfig = new HelmConfig(config);
+
     const deployId = deployment.releaseName.replace(/-/g, "_");
     const deployDB    = `${deployId}_airflow`;
     const airflowId   = `${deployId}_airflow`;
     const celeryId    = `${deployId}_celery`;
-    const grafanaId   = `${deployId}_grafana`;
 
     // create db
     await PostgresUtil.createDatabase(this.conn("airflow"), deployDB);
@@ -76,57 +103,57 @@ class CommanderService extends BaseService {
     // Create user, schema, assign privs for user in schema, set schema as user default
     let airflowUri = await this.createDeploySchema(userDB, deployDB, "airflow", airflowId);
     let celeryUri = await this.createDeploySchema(userDB, deployDB, "celery", celeryId);
-    let grafanaUri = await this.createDeploySchema(userDB, deployDB, "grafana", grafanaId);
 
     // Close user db connection
     await userDB.destroy();
 
     // overwrite the secret names to add the deployment release name
-    config["data"]["airflowMetadataSecret"] = `${deployment.releaseName}-airflow-metadata`;
-    config["data"]["airflowResultBackendSecret"] = `${deployment.releaseName}-airflow-result-backend`;
-    config["data"]["grafanaBackendSecret"] = `${deployment.releaseName}-grafana-backend`;
-    config["data"]["airflowBrokerSecret"] = `${deployment.releaseName}-airflow-broker`;
+    helmConfig.setKey("data.airflowMetadataSecret", `${deployment.releaseName}-airflow-metadata`);
+    helmConfig.setKey("data.airflowResultBackendSecret", `${deployment.releaseName}-airflow-result-backend`);
+
+    // generate and redis password
+    helmConfig.setKey("redis.password", PasswordGen.generate({ length: 32, numbers: true }));
+
+    // generate and set fernet key (fernet keys have to be base64 encoded)
+    helmConfig.setKey("fernetKey", new Buffer(PasswordGen.generate({ length: 32, numbers: true })).toString('base64'));
 
     const secrets = [
       {
-        name: config["data"]["airflowMetadataSecret"],
+        name: helmConfig.getKey("data.airflowMetadataSecret"),
         key: "connection",
-        value: airflowUri
+        value: PostgresUtil.uriReplace(airflowUri, {
+          protocol: "postgresql"
+        })
       },
       {
-        name: config["data"]["airflowResultBackendSecret"],
+        name: helmConfig.getKey("data.airflowResultBackendSecret"),
         key: "connection",
         value: PostgresUtil.uriReplace(celeryUri, {
           protocol: "db+postgresql"
         })
-      },
-      {
-        name: config["data"]["grafanaBackendSecret"],
-        key: "connection",
-        value: PostgresUtil.uriReplace(grafanaUri, {
-          protocol: "postgres"
-        })
-      },
-      {
-        name: config["data"]["airflowBrokerSecret"],
-        key: "connection",
-        value: Config.get(Config.AIRFLOW_REDIS_URI)
       }
     ];
 
     const deployConfigs = {
-      "env": [
-        {
-          name: "AIRFLOW__CELERY__DEFAULT_QUEUE",
-          value: `${deployId}_queue`
-        }
-      ]
+      "env": []
     };
 
     return {
       "secrets": secrets,
-      "config": _.merge(config, deployConfigs)
+      "config": _.merge(helmConfig.get(), deployConfigs)
     }
+  }
+
+  async airflowDelete(deployment) {
+    const deployId = deployment.releaseName.replace(/-/g, "_");
+    const deployDB    = `${deployId}_airflow`;
+    const airflowId   = `${deployId}_airflow`;
+    const celeryId    = `${deployId}_celery`;
+
+    await PostgresUtil.forceDisconnectSessions(this.conn("airflow"), deployDB);
+    await PostgresUtil.deleteDatabase(this.conn("airflow"), deployDB);
+    await PostgresUtil.deleteUser(this.conn("airflow"), airflowId);
+    await PostgresUtil.deleteUser(this.conn("airflow"), celeryId);
   }
 
   async createDeploySchema(userDB, database, schema, user) {
@@ -135,8 +162,13 @@ class CommanderService extends BaseService {
         length: 32, numbers: true
       });
 
+      const connUser = PostgresUtil.connectionUser(Config.get(Config.AIRFLOW_POSTGRES_URI));
+
       // create user
       await PostgresUtil.createUser(this.conn("airflow"), user, password);
+
+      // add grants to do stuff for user role
+      await PostgresUtil.creatorGrantRole(this.conn("airflow"), connUser, user);
 
       // create schema
       await PostgresUtil.createSchema(userDB, schema, user);
@@ -146,6 +178,9 @@ class CommanderService extends BaseService {
 
       // set schema to be users default
       await PostgresUtil.setUserDefaultSchema(userDB, user, schema);
+
+      // revoke user role grant as airflow conn user won't need it anymore
+      await PostgresUtil.creatorRevokeRole(this.conn("airflow"), connUser, user);
 
       return Promise.resolve(PostgresUtil.uriReplace(Config.get(Config.AIRFLOW_POSTGRES_URI), {
         database: database,
@@ -163,6 +198,10 @@ class CommanderService extends BaseService {
   }
 
   async fetchHelmConfig(chart, version = null) {
+    // Temporarily disabled, functionality needs to be moved to Commander
+    // with the added
+    return {};
+
     if (!version) {
       version = await this.latestHelmChartVersion(chart)
     }

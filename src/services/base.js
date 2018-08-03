@@ -1,3 +1,10 @@
-const { BaseService } = require("@moilandtoil/sealab-application");
+const { BaseService } = require("sealab");
 
-module.exports = BaseService;
+const Errors = require("../errors/index.js");
+
+class HoustonService extends BaseService {
+  notFound(resource, criteria) {
+    throw Errors.ResourceNotFound(resource, criteria);
+  }
+}
+module.exports = HoustonService;

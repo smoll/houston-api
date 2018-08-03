@@ -6,9 +6,10 @@ class CreateDeployment extends BaseOperation {
     this.name = "createDeployment";
     this.typeDef = `
       # Creates a new deployment
-      createDeployment(type: String!, label: String!, teamUuid: Uuid, version: String) : Deployment
+      createDeployment(type: String!, label: String!, workspaceUuid: Uuid, version: String) : Deployment
     `;
     this.entrypoint = "mutation";
+    this.guards = ["authenticated", "permission:user_deployment_create"];
   }
 
   async resolver(root, args, context) {
@@ -22,23 +23,18 @@ class CreateDeployment extends BaseOperation {
         }
       }
 
-      if (!args.teamUuid) {
-        throw new Error("Team uuid is required to create a deployment");
+      if (!args.workspaceUuid) {
+        throw new Error("Workspace uuid is required to create a deployment");
       }
 
-      // TODO: Remove in place of context.resource.team
-      let team = await this.service("team").fetchTeamByUuid(args.teamUuid);
-
       let deployment = await this.service("deployment").createDeployment(
-        team,
+        context.session.resources.workspace,
         args.type,
         args.version,
         args.label,
-        context.resources.user,
-        context.resources.team,
-        context.resources.team,
       );
-      return deployment;
+
+      // On duplicate error will be;  duplicate key value violates unique constraint \"unique_workspace_uuid_label\"",
       await this.service("commander").createDeployment(deployment, args.config);
 
       return deployment;

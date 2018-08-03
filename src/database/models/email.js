@@ -21,8 +21,8 @@ class Email extends BaseModel {
         address: { type: "string", minLength: 1, maxLength: 255 },
         user_uuid: { type: "uuid" },
         token: { type: "string" },
-        main: { type: "true" },
-        verified: { type: "string" },
+        main: { type: "boolean" },
+        verified: { type: "boolean" },
       }
     };
   }

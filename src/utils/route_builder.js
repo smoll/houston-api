@@ -1,3 +1,4 @@
+const _ = require("lodash");
 const CommonUtil = require("./common.js");
 
 class RouteBuilder {
@@ -28,14 +29,22 @@ class RouteBuilder {
 
   registerRoute(routeClass) {
     let routeInstance = new routeClass(this.application);
-    this.express[routeInstance.method()](this.buildPrefix(routeInstance), (req, res) => {
-      return Promise.resolve().then(() => {
-        return routeInstance.action(req, res);
-      }).catch((err) => {
-        this.application.logger().error(JSON.stringify(err));
-        res.status(500).send("An error occurred while processing the webhook.");
+
+    let methods = routeInstance.method();
+    if (!_.isArray(methods)) {
+      methods = [methods];
+    }
+
+    for(const method of methods) {
+      this.express[method](this.buildPrefix(routeInstance), (req, res) => {
+        return Promise.resolve().then(() => {
+          return routeInstance.action(req, res);
+        }).catch((err) => {
+          this.application.logger().error(JSON.stringify(err));
+          res.status(500).send("An error occurred while processing the webhook.");
+        });
       });
-    });
+    }
   }
 
   registerRoutes(routeClasses) {

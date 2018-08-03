@@ -1,8 +1,11 @@
 const BaseService = require("./base.js");
+const _ = require("lodash");
+
+let USER_COUNT = null;
 
 class UserService extends BaseService {
 
-  async fetchUserByEmail(email) {
+  async fetchUserByEmail(email, throwError = true) {
     let user = await this.model("user")
         .query()
         .joinEager("emails")
@@ -11,56 +14,159 @@ class UserService extends BaseService {
     if (user) {
       return user;
     }
+    if (throwError) {
+      this.notFound("user", email);
+    }
     return null;
   }
 
-  async fetchUserByUsername(username) {
+  async fetchUserByUsername(username, throwError = true) {
     let user = await this.model("user")
         .query()
         .joinEager("emails")
         .findOne("username", username);
+
     if (user) {
       return user;
     }
+    if (throwError) {
+      this.notFound("user", username);
+    }
+
     return null;
   }
 
-  async fetchUserByUuid(uuid) {
+  async fetchUserByUuid(uuid, throwError = true) {
     let user = await this.model("user")
         .query()
         .joinEager("emails")
         .findById(uuid);
+
     if (user) {
       return user;
     }
+    if (throwError) {
+      this.notFound("user", uuid);
+    }
+
     return null;
   }
 
-  async createUser(email, password, username) {
+  async fetchUsersByWorkspaceUuid(workspaceUuid) {
+    let users = await this.model("user")
+      .query()
+      .joinEager("emails")
+      .leftJoin("user_workspace_map", "users.uuid", "user_workspace_map.user_uuid")
+      .where("user_workspace_map.workspace_uuid", workspaceUuid);
+
+    if (users && users.length > 0) {
+      return users;
+    }
+
+    return [];
+  }
+
+  async fetchUserPropertiesByUser(user) {
+    let properties = await user.$relatedQuery("properties");
+    if (properties && properties.length > 0) {
+      return properties;
+    }
+    return [];
+  }
+
+  async fetchUsersByGroupUuid(groupUuid) {
+    let users = await this.model("user")
+      .query()
+      .joinEager("emails")
+      .leftJoin("user_group_map", "users.uuid", "user_group_map.user_uuid")
+      .where("user_group_map.group_uuid", groupUuid);
+
+    if (users && users.length > 0) {
+      return users;
+    }
+
+    return null;
+
+  }
+
+  async fetchUserCount() {
+    if (USER_COUNT === null) {
+      let result = await this.model("user")
+        .query()
+        .count()
+        .first();
+      USER_COUNT = parseInt(result.count);
+    }
+    return USER_COUNT;
+  }
+
+  async createUser(userData) {
     try {
-      if (!username) {
-        username = email;
+      const email = userData.email;
+      const username = userData.username || email;
+      const fullName = userData.fullName || "";
+      const status = userData.status || "pending";
+      const emailVerified = userData.emailVerfied || false;
+      const properties = [];
+
+      // get current user count, will use later to see if user should be a system admin
+      const userCount = await this.fetchUserCount();
+
+      const AVATAR_URL = this.model("user_property").KEY_AVATAR_URL;
+
+      if (userData.hasOwnProperty(AVATAR_URL)) {
+        properties.push({
+          key: AVATAR_URL,
+          value: userData.avatarUrl,
+          category: this.model("user_property").CATEGORY_PROFILE
+        });
       }
 
-      // TODO: Move this step outside of createUser, ideally to a service with a base credential in util
-      let credential = await this.model("local_credential")
-          .query()
-          .insert({
-            password: password
-          }).returning("*");
-
-      return await this.model("user")
+      let user = await this.model("user")
         .query()
         .insertGraph({
           username: username,
-          provider_uuid: credential.uuid,
-          provider_type: this.model("user").PROVIDER_LOCAL,
+          full_name: fullName,
+          status: status,
           emails: [{
             address: email,
             main: true,
-          }]
+            verified: emailVerified,
+          }],
+          properties: properties
         }).returning("*");
+
+      if (userCount === 0) {
+        // this is the first user, lets make them a system owner
+        const adminGroupKey = this.model("system_setting").KEY_ADMIN_GROUP_UUID;
+        const adminGroupUuid = await this.service("system_setting").getSetting(adminGroupKey);
+        const adminGroup = await this.service("group").fetchGroupByUuid(adminGroupUuid);
+        await this.service("group").addUser(adminGroup, user);
+        USER_COUNT = null;
+      }
+
+      // Add all users to the system level users group
+      const usersGroupKey = this.model("system_setting").KEY_USERS_GROUP_UUID;
+      const usersGroupUuid = await this.service("system_setting").getSetting(usersGroupKey);
+      const usersGroup = await this.service("group").fetchGroupByUuid(usersGroupUuid);
+      await this.service("group").addUser(usersGroup, user);
+
+      // create default workspace for user
+      let workspaceLabel = "Default Workspace";
+      if (user.fullName) {
+        workspaceLabel = `${user.fullName}'s Workspace`;
+      } else if (user.username) {
+        workspaceLabel = `${user.username}'s Workspace`;
+      }
+
+      await this.service("workspace").createWorkspaceWithDefaultGroups(user, {
+        label: workspaceLabel,
+        description: `Default workspace for ${user.username}`
+      });
+
+      return user;
     } catch (err) {
+      // TODO: Verify errors
       if(err.message.indexOf("unique constraint") !== -1 && err.message.indexOf("users_username_unique") !== -1) {
         throw new Error("Email already in use by existing account");
       }
@@ -71,18 +177,52 @@ class UserService extends BaseService {
 
   // return false if nothing to update, user on success, throw error on failure
   async updateUser(user, payload) {
-    let changes = {};
+    if (!user.properties) {
+      user.properties = await this.fetchUserPropertiesByUser(user);
+    }
+    const properties = _.keyBy(user.properties, "key");
+
+    let userChanges = {};
+    let propChanges =  [];
 
     // TODO: Do this check in a more extendable way
-    if (payload["full_name"] !== undefined && payload.full_name !== user.fullName) {
-      changes.fullName = payload.full_name;
+    if (payload["fullName"] !== undefined && payload.fullName !== user.fullName) {
+      userChanges.fullName = payload.fullName;
     }
 
-    if(Object.keys(changes).length === 0) {
-      return false;
+    const KEY_AVATAR = this.model("user_property").KEY_AVATAR_URL;
+
+    if (payload[KEY_AVATAR] !== undefined) {
+      if (!properties[KEY_AVATAR]) {
+        propChanges.push(this.model("user_property").query().insertGraphAndFetch({
+          user_uuid: user.uuid,
+          key: KEY_AVATAR,
+          value: payload[KEY_AVATAR],
+          category: this.model("user_property").CATEGORY_PROFILE
+        }).then((property) => {
+          user.properties.push(property);
+        }));
+      } else if(payload[KEY_AVATAR] !== properties[KEY_AVATAR].value) {
+        // TODO: figure out updating the specific model
+        propChanges.push(this.model("user_property").query().where({
+          user_uuid: user.uuid,
+          key: KEY_AVATAR
+        }).patch({ value: payload[KEY_AVATAR] }));
+      }
     }
 
-    await user.$query().patch(changes).returning("*");
+    if(Object.keys(userChanges).length === 0 && Object.keys(propChanges).length === 0) {
+      return user;
+    }
+
+    if(Object.keys(userChanges).length !== 0) {
+      await user.$query().patch(userChanges).returning("*");
+    }
+
+    if(propChanges.length > 0) {
+      await Promise.all(propChanges);
+    }
+
     return user;
   }
 

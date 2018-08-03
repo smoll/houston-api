@@ -35,4 +35,24 @@ class SystemSetting extends BaseModel {
   }
 }
 
+SystemSetting.KEY_USERS_GROUP_UUID = "users_group_uuid";
+SystemSetting.KEY_ADMIN_GROUP_UUID = "admin_group_uuid";
+SystemSetting.KEY_DEFAULT_WORKSPACE_GROUPS = "default_workspace_groups";
+SystemSetting.KEY_DEFAULT_DEPLOYMENT_GROUPS = "default_deployment_groups";
+
+SystemSetting.KEY_GOOGLE_CLIENT_ID = "google_oauth_client_id";
+SystemSetting.KEY_GOOGLE_CLIENT_SECRET = "google_oauth_client_secret";
+
+SystemSetting.ALL_KEYS = [
+  SystemSetting.KEY_USERS_GROUP_UUID,
+  SystemSetting.KEY_ADMIN_GROUP_UUID,
+  SystemSetting.KEY_DEFAULT_WORKSPACE_GROUPS,
+  SystemSetting.KEY_DEFAULT_DEPLOYMENT_GROUPS,
+  SystemSetting.KEY_GOOGLE_CLIENT_ID,
+  SystemSetting.KEY_GOOGLE_CLIENT_SECRET,
+];
+
+SystemSetting.CATEGORY_AUTH = "auth";
+SystemSetting.CATEGORY_INTERNAL = "internal";
+
 module.exports = SystemSetting;

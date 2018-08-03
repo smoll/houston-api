@@ -1,13 +1,22 @@
 const BaseModel = require("./base.js");
 
-class OAuthCredential extends BaseModel {
+class OauthCredential extends BaseModel {
+
+  // used to get the provider_type for the users table
+  providerType() {
+    return OauthCredential.PROVIDER_TYPE;
+  }
 
   static get tableName() {
     return "oauth_credentials";
   }
 
   static get idColumn() {
-    return "uuid";
+    return ["oauth_provider", "oauth_user_id"];
+  }
+
+  static get uuidFields() {
+    return [];
   }
 
   static get jsonSchema () {
@@ -16,9 +25,9 @@ class OAuthCredential extends BaseModel {
       required: ["oauth_provider", "access_token", "expires_at"],
 
       properties: {
-        uuid: { type: "uuid" },
         oauth_provider: { type: "string" },
         oauth_user_id: { type: "string" },
+        user_uuid: { type: "uuid" },
         refresh_token: { type: "string" },
         access_token: { type: "string" },
         expires_at: { type: "string" },
@@ -29,7 +38,7 @@ class OAuthCredential extends BaseModel {
   }
 
   static get jsonAttributes() {
-    return ["uuid", "oauth_provider", "refresh_token", "access_token", "expires_at", "created_at", "updated_at"];
+    return ["oauth_provider", "refresh_token", "user_uuid", "access_token", "expires_at", "created_at", "updated_at"];
   }
 
   static get relationMappings() {
@@ -37,19 +46,15 @@ class OAuthCredential extends BaseModel {
       user: {
         relation: BaseModel.BelongsToOneRelation,
         modelClass: `${__dirname}/user.js`,
-        filter: {
-          provider: "oauth"
-        },
-        beforeInsert(model) {
-          model.provider = 'oauth';
-        },
         join: {
-          from: 'oauth_credentials.uuid',
-          to: 'users.provider_uuid'
+          from: 'oauth_credentials.user_uuid',
+          to: 'users.uuid'
         }
       }
     };
   }
 }
 
-module.exports = OAuthCredential;
+OauthCredential.PROVIDER_TYPE = "oauth";
+
+module.exports = OauthCredential;

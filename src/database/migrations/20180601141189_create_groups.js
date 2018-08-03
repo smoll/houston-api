@@ -12,11 +12,14 @@ exports.up = function(knex) {
       table.uuid("uuid").primary();
       table.string("label");
       table.string("description");
-      table.uuid("team_uuid").nullable().references("uuid").inTable("teams").onDelete("CASCADE").index();
+      table.string("entity_type");
+      table.uuid("entity_uuid");
+      table.boolean("custom");
       table.boolean("active");
       table.timestamps();
 
-      table.unique(["label", "team_uuid"]);
+      table.index(["entity_type", "entity_uuid"]);
+      table.unique(["label", "entity_type", "entity_uuid"]);
     });
   });
 };

@@ -8,6 +8,7 @@ class DeploymentConfig extends BaseOperation {
       deploymentConfig(type: String!, version: String): JSON
     `;
     this.entrypoint = "query";
+    this.guards = ["authenticated"];
   }
 
   async resolver(root, args, context) {

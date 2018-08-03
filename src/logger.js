@@ -1,4 +1,4 @@
-const { DefaultLogger } = require("@moilandtoil/sealab-application");
+const { DefaultLogger } = require("sealab");
 
 const logger = new DefaultLogger(DefaultLogger.DEBUG);
 

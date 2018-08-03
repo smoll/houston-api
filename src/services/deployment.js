@@ -1,55 +1,72 @@
 const BaseService = require("./base.js");
 const ReleaseNamerUtil = require("../utils/releases_namer.js");
 
+const deleteQueue = {};
+
 class DeploymentService extends BaseService {
 
-  async fetchByUuid(deploymentUuid) {
-    let deployment = await this.model("module_deployment")
+  async fetchDeploymentByUuid(deploymentUuid, throwError = true) {
+    let deployment = await this.model("deployment")
       .query()
-      .findOne("module_deployments.uuid", deploymentUuid);
+      .joinEager("workspace")
+      .findOne("deployments.uuid", deploymentUuid);
+
     if (deployment) {
       return deployment;
+    }
+    if (throwError) {
+      this.notFound("deployment", deploymentUuid);
     }
     return null;
   }
 
-  async fetchByTeamUuid(teamUuid) {
-    return await this.model("module_deployment")
+  async fetchDeploymentByWorkspaceUuid(workspaceUuid, throwError = true) {
+    const deployments = await this.model("deployment")
       .query()
       .where({
-        "team_uuid": teamUuid,
-      });
+        "workspace_uuid": workspaceUuid,
+      })
+      .whereNot("status", this.model("deployment").STATUS_DELETING);
+
+    if (deployments && deployments.length > 0) {
+      return deployments;
+    }
+    if (throwError) {
+      this.notFound("deployment", workspaceUuid);
+    }
+    return [];
   }
 
-  async fetchByUserUuid(userUuid) {
-    // TODO: Once teams are fully implemented, Query for any deployment in any org user is apart of
-    const deployments = await this.model("module_deployment")
+  async fetchDeploymentByReleaseName(releaseName, throwError = true) {
+    const deployment = await this.model("deployment")
       .query()
-    return deployments;
+      .joinEager("workspace")
+      .whereNot("status", this.model("deployment").STATUS_DELETING)
+      .findOne({
+        "release_name": releaseName,
+      });
+    if (deployment) {
+      return deployment;
+    }
+    if (throwError) {
+      this.notFound("deployment", releaseName);
+    }
+    return null;
   }
 
-  async fetchByReleaseName(releaseName) {
-    // TODO: Once teams are fully implemented, Query for any deployment in any org user is apart of
-    const deployments = await this.model("module_deployment")
-        .query()
-        .findOne({
-          "release_name": releaseName,
-        });
-    return deployments;
-  }
-
-  async createDeployment(team, type, version, label) {
+  async createDeployment(workspace, type, version, label) {
     try {
-      const DeploymentModel = this.model("module_deployment");
+      const DeploymentModel = this.model("deployment");
 
       const releaseName = ReleaseNamerUtil.generate();
 
       const payload = {
         type: type,
         label: label,
+        description: description,
         release_name: releaseName,
         version: version,
-        team_uuid: team.uuid,
+        workspace_uuid: workspace.uuid,
       };
 
       return await DeploymentModel
@@ -58,8 +75,8 @@ class DeploymentService extends BaseService {
     } catch (err) {
 
       if(err.message.indexOf("unique constraint") !== -1 &&
-         err.message.indexOf("module_deployments_team_uuid_label_unique") !== -1) {
-        throw new Error(`Team already has a deployment named ${label}`);
+         err.message.indexOf("deployments_workspace_uuid_label_unique") !== -1) {
+        throw new Error(`Workspace already has a deployment named ${label}`);
       }
       throw err;
     }
@@ -71,14 +88,29 @@ class DeploymentService extends BaseService {
 
     // TODO: Do this check in a more extendable way
     if (payload["config"] !== undefined && payload.config !== deployment.config) {
+      // TODO: This is specific to airflow deploys. We need a way to set config values in the request that
+      // won't get persisted so it never ends up here
+      if (payload.config.fernetKey) {
+        delete payload.config.fernetKey;
+      }
+      if (payload.config.redis && payload.config.redis.password) {
+        delete payload.config.redis.password;
+      }
+
       changes.config = payload.config;
     }
     if (payload["label"] !== undefined && payload.label !== deployment.label) {
       changes.label = payload.label;
     }
-    if (payload["team"] !== undefined && payload.team && payload.team.uuid !== deployment.teamUuid) {
-      changes.team_uuid = payload.team.uuid;
+    if (payload["description"] !== undefined && payload.description !== deployment.description) {
+      changes.description = payload.description;
     }
+    if (payload["status"] !== undefined && payload.status !== deployment.status) {
+      changes.status = payload.status;
+    }
+    // if (payload["workspace"] !== undefined && payload.workspace && payload.workspace.uuid !== deployment.workspaceUuid) {
+    //   changes.workspace_uuid = payload.workspace.uuid;
+    // }
 
     // TODO: Currently mutually exclusive to payload.config (will overwrite)
     if (payload["images"] !== undefined) {
@@ -97,18 +129,43 @@ class DeploymentService extends BaseService {
     return deployment;
   }
 
-  async updateDeploymentImage(deployment, image) {
+  async updateDeploymentImage(deployment, image, tag) {
     switch(deployment.type) {
-      case this.model("module_deployment").MODULE_AIRFLOW:
+      case this.model("deployment").MODULE_AIRFLOW:
         let config = deployment.getConfigCopy();
-        config.images.airflow = image;
+        if (config.images === undefined) {
+          config.images = {};
+        }
+        config.images.airflow = {
+          name: image,
+          tag: tag
+        };
         return await this.updateDeployment(deployment, {
           config: config
         });
     }
   }
 
-  async deleteDeployment(deployment) {
+  async queueDeploymentDeletion(deployment) {
+    await this.service("deployment").updateDeployment(deployment, {
+      "status": this.model("deployment").STATUS_DELETING
+    });
+
+    deleteQueue[deployment.uuid] = this.service("commander").deleteDeployment(deployment).then(async (response) => {
+      await this.service("deployment").deleteDeploymentMetadata(deployment);
+      this.info(`Deployment "${deployment.uuid} deleted successfully`);
+      delete deleteQueue[deployment.uuid];
+      return response;
+    });
+    return deployment;
+  }
+
+  async deleteDelpoyment(deployment) {
+    await this.service("commander").deleteDeployment(deployment);
+    return await this.deleteDeploymentMetadata(deployment);
+  }
+
+  async deleteDeploymentMetadata(deployment) {
     return await deployment.$query().delete();
   }
 

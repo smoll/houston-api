@@ -48,4 +48,8 @@ class UserProperty extends BaseModel {
   }
 }
 
+UserProperty.KEY_AVATAR_URL = "avatarUrl";
+
+UserProperty.CATEGORY_PROFILE = "profile";
+
 module.exports = UserProperty;

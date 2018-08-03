@@ -1,4 +1,4 @@
-const { BaseType } = require("@moilandtoil/sealab-type");
+const { BaseType } = require("sealab");
 
 module.exports = BaseType;
 

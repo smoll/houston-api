@@ -6,27 +6,27 @@ class Deployments extends BaseOperation {
     this.name = "deployments";
     this.typeDef = `
       # Fetches one or more deployments based on input. If a deploymentUuid is return, it will return at most one deployment
-      deployments(deploymentUuid: Uuid, teamUuid: Uuid, releaseName: String): [Deployment]
+      deployments(deploymentUuid: Uuid, workspaceUuid: Uuid, releaseName: String): [Deployment]
     `;
     this.entrypoint = "query";
+    this.guards = ["authenticated"];
   }
 
   async resolver(root, args, context) {
     try {
       if (args.deploymentUuid) {
-        return [this.service("deployment").fetchByUuid(args.deploymentUuid)];
-      } else if (args.teamUuid) {
-        return this.service("deployment").fetchByTeamUuid(args.teamUuid);
+        return [this.service("deployment").fetchDeploymentByUuid(args.deploymentUuid)];
+      } else if (args.workspaceUuid) {
+        return this.service("deployment").fetchDeploymentByWorkspaceUuid(args.workspaceUuid, false);
       } else if (args.releaseName) {
-        return [this.service("deployment").fetchByReleaseName(args.releaseName)];
+        return [this.service("deployment").fetchDeploymentByReleaseName(args.releaseName)];
       } else {
-        return this.service("deployment").fetchByUserUuid(context.userUuid());
+        throw new Error("Deployments can only be listed by deploymentUuid, releaseName, or workspaceUuid");
       }
 
     } catch (err) {
       this.error(err.message);
-      // TODO: Should throw error
-      return [];
+      throw err;
     }
   }
 }

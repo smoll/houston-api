@@ -1,4 +1,5 @@
 const BaseType = require("./base.js");
+const _ = require("lodash");
 
 class User extends BaseType {
   constructor(application) {
@@ -8,11 +9,12 @@ class User extends BaseType {
     type User {
       uuid: Uuid
       emails: [Email]
-      profile: JSON
+      fullName: String
       username: String
+      profile: [UserProperty]
       status: String
-      created_at: String
-      updated_at: String
+      createdAt: String
+      updatedAt: String
     }`;
   }
 
@@ -24,19 +26,25 @@ class User extends BaseType {
       emails(value) {
         return value.emails || [];
       },
-      profile(value) {
-        return value.profile || {};
+      fullName(value) {
+        return value.fullName || null;
       },
       username(value) {
         return value.username || null;
       },
+      profile(value) {
+        if (!value.properties) {
+          return this.service("user").fetchUserPropertiesByUser(value);
+        }
+        return value.properties || [];
+      },
       status(value) {
         return value.status || "unknown";
       },
-      created_at(value) {
+      createdAt(value) {
         return value.createdAt || null;
       },
-      updated_at(value) {
+      updatedAt(value) {
         return value.updatedAt || null;
       }
     };

@@ -9,8 +9,8 @@ class Email extends BaseType {
       address: String
       verified: Boolean
       primary: Boolean
-      created_at: String
-      updated_at: String
+      createdAt: String
+      updatedAt: String
     }`;
   }
 
@@ -25,10 +25,10 @@ class Email extends BaseType {
       primary(value) {
         return value.main;
       },
-      created_at(value) {
+      createdAt(value) {
         return value.createdAt || null;
       },
-      updated_at(value) {
+      updatedAt(value) {
         return value.updatedAt || null;
       },
     };

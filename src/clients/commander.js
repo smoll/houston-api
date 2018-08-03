@@ -39,7 +39,7 @@ class CommanderClient {
 
   createDeployment(deployment, options = {}) {
     // add static global config to options.config
-    options.config["global"] = JSON.parse(Config.get(Config.HELM_GLOBAL_CONFIG));
+    options.config["global"] = Config.helmConfig();
 
     const payload = {
       release_name: deployment.releaseName,
@@ -47,7 +47,9 @@ class CommanderClient {
         name: deployment.type,
         version: deployment.version,
       },
-      team_uuid: deployment.teamUuid,
+      organization_uuid: {
+        value: deployment.workspaceUuid
+      },
       raw_config: JSON.stringify(options.config),
       secrets: options.secrets
     };
@@ -65,7 +67,7 @@ class CommanderClient {
   updateDeployment(deployment) {
     // add static global config
     let config = deployment.getConfigCopy();
-    config["global"] = JSON.parse(Config.get(Config.HELM_GLOBAL_CONFIG));
+    config["global"] = Config.helmConfig();
 
     const payload = {
       release_name: deployment.releaseName,
@@ -91,7 +93,18 @@ class CommanderClient {
   }
 
   deleteDeployment(deployment) {
+    const payload = {
+      release_name: deployment.releaseName,
+    };
 
+    return new Promise((resolve, reject) => {
+      this.client.deleteDeployment(payload, function (err, response) {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(response);
+      });
+    });
   }
 }
 

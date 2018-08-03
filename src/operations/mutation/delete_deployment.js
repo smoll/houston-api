@@ -9,17 +9,18 @@ class DeleteDeployment extends BaseOperation {
       deleteDeployment(deploymentUuid: Uuid) : Deployment
     `;
     this.entrypoint = "mutation";
+    this.guards = ["authenticated", "permission:user_deployment_delete"];
   }
 
   async resolver(root, args, context) {
     try {
-      const deployment = await this.service("deployment").fetchByUuid(args.deploymentUuid);
+      const deployment = await this.service("deployment").fetchDeploymentByUuid(args.deploymentUuid);
 
       if (!deployment) {
         throw new Error("Deployment not found");
       }
 
-      await this.service("deployment").deleteDeployment(deployment);
+      await this.service("deployment").queueDeploymentDeletion(deployment);
 
       return {
         uuid: deployment.uuid

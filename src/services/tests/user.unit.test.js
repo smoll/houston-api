@@ -51,7 +51,7 @@ describe("When testing user service", () => {
     });
 
     test("fails with email that does not exist", async (done) => {
-      let fetchUser = await userService.fetchUserByEmail(Faker.internet.email());
+      let fetchUser = await userService.fetchUserByEmail(Faker.internet.email(), false);
       expect(fetchUser).toBeNull();
       done();
     });
@@ -67,7 +67,7 @@ describe("When testing user service", () => {
     });
 
     test("fails with username that does not exist", async (done) => {
-      let fetchUser = await userService.fetchUserByUsername(Faker.internet.userName());
+      let fetchUser = await userService.fetchUserByUsername(Faker.internet.userName(), false);
       expect(fetchUser).toBeNull();
       done();
     });
