@@ -63,6 +63,7 @@ class DeploymentService extends BaseService {
       const payload = {
         type: type,
         label: label,
+        description: description,
         release_name: releaseName,
         version: version,
         workspace_uuid: workspace.uuid,
@@ -100,6 +101,9 @@ class DeploymentService extends BaseService {
     }
     if (payload["label"] !== undefined && payload.label !== deployment.label) {
       changes.label = payload.label;
+    }
+    if (payload["description"] !== undefined && payload.description !== deployment.description) {
+      changes.description = payload.description;
     }
     if (payload["status"] !== undefined && payload.status !== deployment.status) {
       changes.status = payload.status;

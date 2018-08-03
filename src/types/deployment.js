@@ -10,6 +10,7 @@ class Deployment extends BaseType {
       uuid: Uuid
       type: String
       label: String
+      description: String
       releaseName: String
       version: String
       workspace: Workspace
@@ -30,6 +31,9 @@ class Deployment extends BaseType {
       },
       label(value) {
         return value.label || null;
+      },
+      description(value) {
+        return value.description || null;
       },
       releaseName(value) {
         return value.releaseName || null;

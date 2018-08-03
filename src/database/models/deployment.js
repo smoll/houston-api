@@ -20,6 +20,7 @@ class Deployment extends BaseModel {
         uuid: { type: "uuid" },
         type: { type: "string"},
         label: { type: "string", minLength: 1, maxLength: 255 },
+        description: { type: "string", minLength: 1, maxLength: 255 },
         release_name: { type: "string", minLength: 1, maxLength: 128 },
         version: { type: "string" },
         workspace_uuid: { type: ["string"] },
@@ -32,7 +33,7 @@ class Deployment extends BaseModel {
   }
 
   static get jsonAttributes() {
-    return ["uuid", "type", "label", "release_name", "version", "workspace_uuid", "config", "created_at", "updated_at"];
+    return ["uuid", "type", "label", "description", "release_name", "version", "workspace_uuid", "config", "created_at", "updated_at"];
   }
 
   static get relationMappings() {
