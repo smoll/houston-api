@@ -17,7 +17,7 @@ RUN apk update
 
 WORKDIR ${HOUSTON_DIR}
 
-COPY . .
+COPY package.json package.json
 
 RUN apk add --no-cache --virtual .build-deps \
 		build-base \
@@ -29,6 +29,8 @@ RUN apk add --no-cache --virtual .build-deps \
 	&& npm install \
 	&& npm rebuild bcrypt --build-from-source \
 	&& apk del .build-deps
+
+COPY . .
 
 EXPOSE 8870
 
