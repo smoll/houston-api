@@ -4,6 +4,7 @@ const AuthConfig = require("./auth_config.js");
 const AuthUser = require("./auth_user.js");
 const DeployInfo = require("./deploy_info.js");
 const Deployment = require("./deployment.js");
+const DeploymentLog = require("./deployment_log.js");
 const DeploymentUrls = require("./deployment_urls.js");
 const Email = require("./email.js");
 const Group = require("./group.js");
@@ -34,7 +35,7 @@ SchemaBuilder.addTypeDef(`
   schema {
     query: Query
     mutation: Mutation
-    #subscription: Subscription
+    subscription: Subscription
   }
 `);
 
@@ -83,6 +84,7 @@ module.exports = [
   AuthUser,
   DeployInfo,
   Deployment,
+  DeploymentLog,
   DeploymentUrls,
   Email,
   Invite,

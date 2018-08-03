@@ -46,5 +46,6 @@ module.exports = [
   // =========
   // Subscriptions
   // =========
+  require("./subscription/deployment_logs.js"),
 
 ];
