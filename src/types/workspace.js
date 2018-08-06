@@ -13,6 +13,7 @@ class Workspace extends BaseType {
       users: [User]
       groups: [Group]
       invites: [Invite]
+      deploymentCount: Int
       createdAt: String
       updatedAt: String
     }`;
@@ -49,6 +50,10 @@ class Workspace extends BaseType {
           return value.groups
         }
         return this.service("group").fetchGroupsByEntityUuid(this.model("group").ENTITY_WORKSPACE,value.uuid);
+      },
+      deploymentCount(value) {
+        return this.service("deployment").fetchDeploymentByWorkspaceUuid(value.uuid, false)
+          .then(deployments => deployments.length)
       },
       createdAt(value) {
         return value.createdAt || null;
