@@ -15,10 +15,10 @@ class Users extends BaseOperation {
   async resolver(root, args, context) {
     if (args.userUuid) {
       return [this.service("user").fetchUserByUuid(args.userUuid)];
-    } else if (args.username) {
-      return [this.service("user").fetchUserByUsername(args.username)];
     } else if (args.email) {
       return [this.service("user").fetchUserByEmail(args.email)];
+    } else if (args.username) {
+      return [this.service("user").fetchUserByUsername(args.username)];
     } else {
       try {
         let user = context.session.resources.user;
