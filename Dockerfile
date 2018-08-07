@@ -27,7 +27,6 @@ RUN apk add --no-cache --virtual .build-deps \
 		nodejs \
 		openssl \
 	&& npm install \
-	&& npm rebuild bcrypt --build-from-source \
 	&& apk del .build-deps
 
 COPY . .
