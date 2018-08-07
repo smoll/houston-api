@@ -1,6 +1,6 @@
 const BaseModel = require("./base.js");
 
-const Password = require('objection-password')({
+const Password = require('objection-password-bcryptjs')({
   allowEmptyPassword: true,
   rounds: 10
 });
