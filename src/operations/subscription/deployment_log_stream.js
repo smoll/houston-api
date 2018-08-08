@@ -1,11 +1,14 @@
 const { BaseSubscriptionOperation } = require("sealab");
+
+const PubSubPoller = require("../../utils/pubsub_poller.js");
+
 class DeploymentLogStream extends BaseSubscriptionOperation {
   constructor() {
     super();
     this.name = "deploymentLogStream";
     this.typeDef = `
       # Streams deployment logs from a start time, at specified interval, optionally scoped to a component
-      deploymentLogStream(deploymentUuid: String!, component: String, interval: Int) : [DeploymentLog]
+      deploymentLogStream(deploymentUuid: String, component: String, interval: Int) : [DeploymentLog]
     `;
   }
 
@@ -21,21 +24,20 @@ class DeploymentLogStream extends BaseSubscriptionOperation {
 
   subscribe(root, args, context, info) {
     console.log("Not implemented");
-    const channel = "deployment_logs"; // Math.random().toString(36).substring(2, 15); // random channel name
-    setInterval(() => {
-      console.log("Sending");
-      // this.pubsub().publish(channel, { deploymentLogs: 'Not implemented' });
-      this.pubsub().publish(channel, [{
-        timestamp: "now",
-        level: "error",
-        message: 'Not implemented'
+
+    const channel = "deployment_logs";
+    return PubSubPoller.subscribe(this.pubsub(), channel, (currentDate, interval) => {
+      console.log("Fake search...");
+      return [{
+        timestamp: currentDate.getTime().toString(),
+        level: interval.toString(),
+        message: 'Output test'
       },{
         timestamp: "now",
         level: "error",
         message: 'Still not implemented'
-      }]);
-    }, 1000);
-    return this.pubsub().asyncIterator(channel)
+      }];
+    });
   }
 }
 
