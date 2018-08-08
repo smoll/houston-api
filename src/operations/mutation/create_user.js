@@ -6,7 +6,7 @@ class CreateUser extends BaseOperation {
     this.name = "createUser";
     this.typeDef = `
       # Creates a new user
-      createUser(email: String!, password: String!, username: String, profile: JSON, inviteToken: String) : AuthUser
+      createUser(email: String!, password: String!, username: String, profile: JSON, inviteToken: String, duration: Int) : AuthUser
     `;
     this.entrypoint = "mutation";
   }
