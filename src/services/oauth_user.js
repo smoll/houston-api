@@ -67,7 +67,6 @@ class OauthUserService extends BaseService {
         oauth_provider: OAuthData.providerType,
         oauth_user_id: OAuthData.providerUserId,
         user_uuid: user.uuid,
-        refresh_token: OAuthData.refreshToken,
         access_token: OAuthData.accessToken,
         expires_at: new Date(OAuthData.expires).toISOString()
       }).returning("*");

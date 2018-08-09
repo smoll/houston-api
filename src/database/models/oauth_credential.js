@@ -28,7 +28,6 @@ class OauthCredential extends BaseModel {
         oauth_provider: { type: "string" },
         oauth_user_id: { type: "string" },
         user_uuid: { type: "uuid" },
-        refresh_token: { type: "string" },
         access_token: { type: "string" },
         expires_at: { type: "string" },
         created_at: { type: "string" },
@@ -38,7 +37,7 @@ class OauthCredential extends BaseModel {
   }
 
   static get jsonAttributes() {
-    return ["oauth_provider", "refresh_token", "user_uuid", "access_token", "expires_at", "created_at", "updated_at"];
+    return ["oauth_provider", "user_uuid", "access_token", "expires_at", "created_at", "updated_at"];
   }
 
   static get relationMappings() {
