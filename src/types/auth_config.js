@@ -8,7 +8,11 @@ class AuthConfig extends BaseType {
     type AuthConfig {
       localEnabled: Boolean
       googleEnabled: Boolean
+      githubEnabled: Boolean
+      auth0Enabled: Boolean
       googleOAuthUrl: String
+      githubOAuthUrl: String
+      auth0OAuthUrl: String
     }`;
   }
 
@@ -20,8 +24,20 @@ class AuthConfig extends BaseType {
       googleEnabled(value) {
         return value.googleEnabled || false;
       },
+      githubEnabled(value) {
+        return value.githubEnabled || false;
+      },
+      auth0Enabled(value) {
+        return value.auth0Enabled || false;
+      },
       googleOAuthUrl(value) {
         return value.googleOAuthUrl || null;
+      },
+      githubOAuthUrl(value) {
+        return value.githubOAuthUrl || null;
+      },
+      auth0OAuthUrl(value) {
+        return value.auth0OAuthUrl || null;
       }
     };
   }
