@@ -17,12 +17,11 @@ class AuthorizationRoute extends BaseRoute {
       const body = req.body;
 
       const idToken = body.id_token;
-      const accessToken = body.access_token;
       const expiration = body.expires_in;
       const state = JSON.parse(decodeURIComponent(body.state));
       const strategy = `${state.provider}_oauth`;
 
-      const user = await this.service("auth").authenticateOAuth(strategy, idToken, accessToken, expiration);
+      const user = await this.service("auth").authenticateOAuth(strategy, idToken, expiration);
 
       let tokenPayload = await this.service("auth").generateTokenPayload(user);
       let token = await this.service("auth").createJWT(tokenPayload, state.duration);
@@ -48,6 +47,7 @@ class AuthorizationRoute extends BaseRoute {
     } catch (err) {
       this.application.output("Failed to finalize OAuth flow");
       this.application.output(err);
+      return res.status(500).end("An error occurred while finalizing your login");
     }
   }
 

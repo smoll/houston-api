@@ -55,12 +55,12 @@ class AuthService extends BaseService {
       }
     }
 
-    if (payload.githubOAuthUrl) {
-      if (Config.get(Config.GITHUB_CLIENT_ID)) {
-        payload.githubOAuthUrl = this.strategyUtil.getOAuthUrl(AuthStrategies.GITHUB, state);
-      } else {
+    if (payload.githubEnabled) {
+      //if (Config.get(Config.GITHUB_CLIENT_ID)) {
+      //  payload.githubOAuthUrl = this.strategyUtil.getOAuthUrl(AuthStrategies.GITHUB, state);
+      //} else {
         payload.githubOAuthUrl = this.strategyUtil.getOAuthUrl(AuthStrategies.AUTH0, state, AuthStrategies.GITHUB);
-      }
+      //}
     }
 
     if (payload.auth0Enabled) {
@@ -70,8 +70,8 @@ class AuthService extends BaseService {
     return payload;
   }
 
-  async authenticateOAuth(strategy, jwt, accessToken, expiration) {
-    const data = await this.strategyUtil.getUserData(strategy, jwt, accessToken, expiration);
+  async authenticateOAuth(strategy, jwt, expiration) {
+    const data = await this.strategyUtil.getUserData(strategy, jwt, expiration);
     return await this.service("oauth_user").authenticateUser(data);
   }
 

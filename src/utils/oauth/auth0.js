@@ -47,7 +47,7 @@ class Auth0PrivateOAuth extends BaseOAuth {
       response_type: "token id_token",
       redirect_uri: this.redirectUrl,
       scope: 'openid profile email',
-      audience: `${this.auth0Base()}/userinfo`,
+      audience: `astronomer-ee`,
       nonce: ShortId.generate(),
       state: this.generateState(state, integration),
     };

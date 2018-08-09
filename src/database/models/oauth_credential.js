@@ -22,14 +22,12 @@ class OauthCredential extends BaseModel {
   static get jsonSchema () {
     return {
       type: "object",
-      required: ["oauth_provider", "access_token", "expires_at"],
+      required: ["oauth_provider", "oauth_user_id"],
 
       properties: {
         oauth_provider: { type: "string" },
         oauth_user_id: { type: "string" },
         user_uuid: { type: "uuid" },
-        access_token: { type: "string" },
-        expires_at: { type: "string" },
         created_at: { type: "string" },
         updated_at: { type: "string" },
       }
@@ -37,7 +35,7 @@ class OauthCredential extends BaseModel {
   }
 
   static get jsonAttributes() {
-    return ["oauth_provider", "user_uuid", "access_token", "expires_at", "created_at", "updated_at"];
+    return ["oauth_provider", "user_uuid", "created_at", "updated_at"];
   }
 
   static get relationMappings() {

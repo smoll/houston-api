@@ -8,7 +8,6 @@ class OAuthData {
     this.providerType = strategy.replace("_oauth", "");
     this.providerUserId = null;
     this.expires = null;
-    this.accessToken = null;
     this.encodedJWT = null;
     this.decodedJWT = null;
     this.profile = {
@@ -31,6 +30,7 @@ class AuthStrategies {
     this.initLocal(enabledStrategies.indexOf(AuthStrategies.LOCAL) >= 0);
     this.initAuth0(enabledStrategies.indexOf(AuthStrategies.AUTH0) >= 0);
     this.initGoogle(enabledStrategies.indexOf(AuthStrategies.GOOGLE) >= 0);
+    this.initGithub(enabledStrategies.indexOf(AuthStrategies.GITHUB) >= 0);
   }
 
   initLocal(enabled) {
@@ -50,6 +50,19 @@ class AuthStrategies {
     } else {
       this.oauthUtil[AuthStrategies.GOOGLE] = new GoogleOAuth(Config.get(Config.GOOGLE_CLIENT_ID), this.redirectUrl());
     }
+    return true;
+  }
+
+  initGithub(enabled) {
+    this.strategies[AuthStrategies.GITHUB] = enabled;
+
+    if (!enabled) {
+      this.oauthUtil[AuthStrategies.GITHUB] = null;
+      return false;
+    }
+
+    this.oauthUtil[AuthStrategies.GITHUB] = this.oauthUtil[AuthStrategies.AUTH0];
+
     return true;
   }
 
@@ -127,13 +140,12 @@ class AuthStrategies {
     return `http://${baseDomain}oauth_redirect`;
   }
 
-  async getUserData(strategy, jwt, accessToken, expire) {
+  async getUserData(strategy, jwt, expire) {
     const data = new OAuthData(strategy);
     const oauth = this.getOAuthUtil(strategy);
 
     data.encodedJWT = jwt;
     data.expires = oauth.normalizeExpire(expire);
-    data.accessToken = accessToken;
 
     await oauth.validateToken(data);
     return await oauth.getUserData(data);
