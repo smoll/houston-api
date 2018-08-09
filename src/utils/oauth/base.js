@@ -1,31 +1,42 @@
 class BaseOAuth {
-  constructor(clientId, clientSecret, redirectUrl) {
+  constructor(clientId, redirectUrl) {
+    this.provider = "unknown";
     this.client = null;
     this.clientId = clientId;
-    this.clientSecret = clientSecret;
     this.redirectUrl = redirectUrl;
 
     if (!this.clientId) {
       throw new Error("OAuth requires a clientId");
-    }
-    if (!this.clientSecret) {
-      throw new Error("OAuth requires a clientSecret");
     }
     if (!this.redirectUrl) {
       throw new Error("OAuth requires a redirectUrl");
     }
   }
 
-  generateAuthUrl(){
-    throw new Error("Not implemented");
+  generateState(state, integration = "self") {
+    return JSON.stringify({
+      ...{
+        provider: this.provider,
+        integration: integration,
+      },
+      ...state
+    });
   }
 
-  exchangeToken() {
-    throw new Error("Not implemented");
+  generateAuthUrl(){
+    throw new Error("#generateAuthUrl not implemented");
+  }
+
+  validateToken() {
+    throw new Error("#validateToken not implemented");
   }
 
   getUserData() {
-    throw new Error("Not implemented");
+    throw new Error("#getUserData not implemented");
+  }
+
+  normalizeExpire(expire) {
+    return expire;
   }
 }
 

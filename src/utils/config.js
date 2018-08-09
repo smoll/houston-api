@@ -47,6 +47,22 @@ class Config {
     return this.helmConfig()["baseDomain"];
   }
 
+  static auth0Base() {
+    const base = Config.get(Config.AUTH0_BASE_DOMAIN);
+    if (base[base.length - 1] === "/") {
+      return base.substr(0, base.length - 1);
+    }
+    return base;
+  }
+
+  static orbitDomain() {
+    const base = Config.get(Config.ORBIT_BASE_URL);
+    if (base[base.length - 1] === "/") {
+      return base.substr(0, base.length - 1);
+    }
+    return base;
+  }
+
 }
 
 Config.defaults = {};
@@ -67,11 +83,14 @@ Config.REGISTRY_SERVICE = "REGISTRY_SERVICE";
 Config.HELM_GLOBAL_CONFIG = "HELM_GLOBAL_CONFIG";
 Config.HELM_ASTRO_REPO = "HELM_ASTRO_REPO";
 Config.HELM_REPO_EDGE = "HELM_REPO_EDGE";
-Config.AUTH_STRATEGY = "AUTH_STRATEGY";
 Config.COMMANDER_HOST = "COMMANDER_HOST";
 Config.COMMANDER_PORT = "COMMANDER_PORT";
-Config.GOOGLE_OAUTH_REDIRECT_URL = "GOOGLE_OAUTH_REDIRECT_URL";
+Config.ORBIT_BASE_URL = "ORBIT_BASE_URL";
+Config.AUTH_STRATEGY = "AUTH_STRATEGY"; // local, auth0_oauth, google_oauth
 Config.GOOGLE_CLIENT_ID = "GOOGLE_CLIENT_ID";
-Config.GOOGLE_CLIENT_SECRET = "GOOGLE_CLIENT_SECRET";
+Config.GITHUB_CLIENT_ID = "GITHUB_CLIENT_ID";
+Config.AUTH0_CLIENT_ID = "AUTH0_CLIENT_ID";
+Config.AUTH0_BASE_DOMAIN = "AUTH0_BASE_DOMAIN";
+Config.AUTH0_EXTERNAL_LOGIN = "AUTH0_EXTERNAL_LOGIN";
 
 module.exports = Config;

@@ -36,15 +36,42 @@ class AuthService extends BaseService {
   }
 
   getStrategyInfo(state) {
-    return {
-      localEnabled: this.isStrategyEnabled(AuthStrategies.LOCAL),
-      googleEnabled: this.isStrategyEnabled(AuthStrategies.GOOGLE),
-      googleOAuthUrl: this.strategyUtil.getOAuthUrl(AuthStrategies.GOOGLE, state),
+    const payload = {
+      localEnabled: this.strategyUtil.isEnabled(AuthStrategies.LOCAL),
+      auth0Enabled: this.strategyUtil.isEnabled(AuthStrategies.AUTH0) && Config.get(Config.AUTH0_EXTERNAL_LOGIN) === "true",
+      googleEnabled: this.strategyUtil.isEnabled(AuthStrategies.GOOGLE),
+      githubEnabled: this.strategyUtil.isEnabled(AuthStrategies.GITHUB),
+      googleOAuthUrl: null,
+      githubOAuthUrl: null,
+      auth0OAuthUrl: null,
+    };
+
+    // if google enabled, add the auth url
+    if (payload.googleEnabled) {
+      if (Config.get(Config.GOOGLE_CLIENT_ID)) {
+        payload.googleOAuthUrl = this.strategyUtil.getOAuthUrl(AuthStrategies.GOOGLE, state);
+      } else {
+        payload.googleOAuthUrl = this.strategyUtil.getOAuthUrl(AuthStrategies.AUTH0, state, AuthStrategies.GOOGLE);
+      }
     }
+
+    if (payload.githubOAuthUrl) {
+      if (Config.get(Config.GITHUB_CLIENT_ID)) {
+        payload.githubOAuthUrl = this.strategyUtil.getOAuthUrl(AuthStrategies.GITHUB, state);
+      } else {
+        payload.githubOAuthUrl = this.strategyUtil.getOAuthUrl(AuthStrategies.AUTH0, state, AuthStrategies.GITHUB);
+      }
+    }
+
+    if (payload.auth0Enabled) {
+      payload.auth0OAuthUrl = this.strategyUtil.getOAuthUrl(AuthStrategies.AUTH0, state);
+    }
+
+    return payload;
   }
 
-  async authenticateOAuth(strategy, token) {
-    const data = await this.strategyUtil.getUserData(strategy, token);
+  async authenticateOAuth(strategy, jwt, accessToken, expiration) {
+    const data = await this.strategyUtil.getUserData(strategy, jwt, accessToken, expiration);
     return await this.service("oauth_user").authenticateUser(data);
   }
 

@@ -1,5 +1,6 @@
 const Google = require("googleapis").google;
-const JWT = require("jsonwebtoken");
+const { OAuth2Client } = require('google-auth-library');
+const ShortId = require("shortid");
 
 const BaseOAuth = require("./base.js");
 
@@ -7,52 +8,57 @@ class GoogleOAuth extends BaseOAuth {
   constructor() {
     super(...arguments);
 
-    this.client = this.newClient();
-  }
+    this.provider = "google";
 
-  newClient() {
-    return new Google.auth.OAuth2(
+    this.client = new Google.auth.OAuth2(
       this.clientId,
-      this.clientSecret,
+      null,
       this.redirectUrl
     );
+    this.verifier = new OAuth2Client(this.clientId);
   }
 
-  generateAuthUrl(state = "") {
-    const scopes = [
-      'profile',
-      'email'
-    ];
-
+  generateAuthUrl(state = {}) {
     return this.client.generateAuthUrl({
-      // 'online' (default) or 'offline' (gets refresh_token)
-      access_type: 'offline',
       include_granted_scopes: true,
-      response_type: "code",
-      scope: scopes,
-      state: state
+      response_type: "token id_token",
+      scope: [
+        'profile',
+        'email'
+      ],
+      nonce: ShortId.generate(),
+      state: this.generateState(state),
     });
   }
 
-  async exchangeToken(code, data) {
-    const response = await this.client.getToken(code);
+  async validateToken(data) {
+    const ticket = await this.verifier.verifyIdToken({
+      idToken: data.encodedJWT,
+      audience: this.clientId,
+    });
 
-    data.accessToken = response.tokens.access_token;
-    data.refreshToken = response.tokens.refresh_token;
-    data.expires = response.tokens.expiry_date;
-    data.jwtPayload = response.tokens.id_token;
+    data.decodedJWT = ticket.getPayload();
+
+    if (data.decodedJWT.exp < Math.floor(new Date().getTime() / 1000)) {
+      throw new Error("JWT invalid: expired");
+    }
+
+    if (data.decodedJWT.iss !== `https://accounts.google.com`) {
+      throw new Error("JWT invalid: 'iss' mismatch");
+    }
+
+    if (data.decodedJWT.aud !== this.clientId) {
+      throw new Error("JWT invalid: 'aud' mismatch");
+    }
   }
 
   async getUserData(data) {
-    // TODO: Verify using matching token from https://www.googleapis.com/oauth2/v3/certs
-    const decoded = JWT.decode(data.jwtPayload);
-
-    data.providerUserId = decoded.sub;
-    data.profile.email = decoded.email;
-    data.profile.firstName = decoded.given_name;
-    data.profile.lastName = decoded.family_name;
-    data.profile.fullName = decoded.name;
-    data.profile.pictureUrl = decoded.picture;
+    data.providerUserId = data.decodedJWT.sub;
+    data.profile.email = data.decodedJWT.email;
+    data.profile.firstName = data.decodedJWT.given_name;
+    data.profile.lastName = data.decodedJWT.family_name;
+    data.profile.fullName = data.decodedJWT.name;
+    data.profile.pictureUrl = data.decodedJWT.picture;
 
     return data;
   }

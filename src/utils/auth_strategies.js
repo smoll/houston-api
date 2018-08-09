@@ -1,15 +1,16 @@
 
 const Config = require("./config.js");
 const GoogleOAuth = require("./oauth/google.js");
+const Auth0OAuth = require("./oauth/auth0.js");
 
 class OAuthData {
   constructor(strategy) {
     this.providerType = strategy.replace("_oauth", "");
     this.providerUserId = null;
-    this.accessToken = null;
-    this.refreshToken = null;
     this.expires = null;
-    this.jwtPayload = null;
+    this.accessToken = null;
+    this.encodedJWT = null;
+    this.decodedJWT = null;
     this.profile = {
       email: null,
       firstName: null,
@@ -28,6 +29,7 @@ class AuthStrategies {
     const enabledStrategies = Config.get(Config.AUTH_STRATEGY).split(",");
 
     this.initLocal(enabledStrategies.indexOf(AuthStrategies.LOCAL) >= 0);
+    this.initAuth0(enabledStrategies.indexOf(AuthStrategies.AUTH0) >= 0);
     this.initGoogle(enabledStrategies.indexOf(AuthStrategies.GOOGLE) >= 0);
   }
 
@@ -43,10 +45,26 @@ class AuthStrategies {
       return false;
     }
 
-    this.oauthUtil[AuthStrategies.GOOGLE] = new GoogleOAuth(
-      Config.get(Config.GOOGLE_CLIENT_ID),
-      Config.get(Config.GOOGLE_CLIENT_SECRET),
-      Config.get(Config.GOOGLE_OAUTH_REDIRECT_URL)
+    if (!Config.get(Config.GOOGLE_CLIENT_ID)) {
+      this.oauthUtil[AuthStrategies.GOOGLE] = this.oauthUtil[AuthStrategies.AUTH0];
+    } else {
+      this.oauthUtil[AuthStrategies.GOOGLE] = new GoogleOAuth(Config.get(Config.GOOGLE_CLIENT_ID), this.redirectUrl());
+    }
+    return true;
+  }
+
+  initAuth0(enabled) {
+    this.strategies[AuthStrategies.AUTH0] = enabled;
+
+    if (!enabled) {
+      this.oauthUtil[AuthStrategies.AUTH0] = null;
+      return false;
+    }
+
+    this.oauthUtil[AuthStrategies.AUTH0] = new Auth0OAuth(
+      Config.get(Config.AUTH0_CLIENT_ID),
+      this.redirectUrl(),
+      Config.auth0Base(),
     );
     return true;
   }
@@ -74,28 +92,64 @@ class AuthStrategies {
     return this.oauthUtil[strategy];
   }
 
-  getOAuthUrl(strategy, state) {
-    return this.getOAuthUtil(strategy).generateAuthUrl(state);
+  getOAuthUrl(strategy, state, integration) {
+    if (!this.isEnabled(strategy)) {
+      return null;
+    }
+
+    if (strategy === AuthStrategies.AUTH0) {
+      integration = this.mapStrategyToAuth0Provider(integration);
+      return this.getOAuthUtil(AuthStrategies.AUTH0).generateAuthUrl(state, integration);
+    } else {
+      return this.getOAuthUtil(strategy).generateAuthUrl(state);
+    }
   }
 
-  async getUserData(strategy, token) {
+  mapStrategyToAuth0Provider(strategy) {
+    switch (strategy) {
+      case AuthStrategies.GOOGLE:
+        return "google-oauth2";
+      case AuthStrategies.GITHUB:
+        return "github";
+      default:
+        return strategy;
+    }
+  }
+
+  redirectUrl() {
+    let baseDomain = `${Config.baseDomain()}`;
+    if (baseDomain[baseDomain.length - 1] !== "/") {
+      baseDomain = `${baseDomain}/`;
+    }
+    if (Config.isProd()) {
+      return `https://${baseDomain}oauth_redirect`;
+    }
+    return `http://${baseDomain}oauth_redirect`;
+  }
+
+  async getUserData(strategy, jwt, accessToken, expire) {
     const data = new OAuthData(strategy);
+    const oauth = this.getOAuthUtil(strategy);
 
-    // exchange code for access_token and possibly refresh_token.
-    // depending on the oauth provider, might also contain meta data
-    await this.getOAuthUtil(strategy).exchangeToken(token, data);
+    data.encodedJWT = jwt;
+    data.expires = oauth.normalizeExpire(expire);
+    data.accessToken = accessToken;
 
-    // parse or fetch user/profile data
-    return await this.getOAuthUtil(strategy).getUserData(data);
+    await oauth.validateToken(data);
+    return await oauth.getUserData(data);
   }
 }
 
 AuthStrategies.LOCAL = "local";
 AuthStrategies.GOOGLE = "google_oauth";
+AuthStrategies.GITHUB = "github_oauth";
+AuthStrategies.AUTH0 = "auth0_oauth";
 
 AuthStrategies.ALL = [
   AuthStrategies.LOCAL,
   AuthStrategies.GOOGLE,
+  AuthStrategies.GITHUB,
+  AuthStrategies.AUTH0,
 ];
 
 module.exports = AuthStrategies;

@@ -81,7 +81,7 @@ const schema = makeExecutableSchema({
 // Build REST routes
   server.express.use(BodyParser.json({
     type: ["application/json", "application/vnd.docker.distribution.events.v1+json"]
-  }));
+  }), BodyParser.urlencoded({ extended: false }));
   require("./routes/index.js")(server.express, Application);
 
 
