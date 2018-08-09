@@ -47,13 +47,6 @@ SchemaBuilder.addTypeDef(`
 `);
 
 SchemaBuilder.addTypeDef(`
-  enum AuthStrategy {
-    LOCAL
-    GOOGLE_OAUTH
-  }
-`);
-
-SchemaBuilder.addTypeDef(`
   enum ServiceAccountEntityType {
     SYSTEM
     WORKSPACE
