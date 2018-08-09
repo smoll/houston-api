@@ -30,24 +30,24 @@ class AuthorizationRoute extends BaseRoute {
 
       let subdomain = subdomains[0];
 
-      if (["grafana"].indexOf(subdomain) === -1) {
-        const matches = subdomain.match(/^([\w]+-[\w]+-[\d]+)-(airflow|flower)/);
-        if (matches) {
-          const releaseName = matches[1];
-          // override subdomain for simplicity when checking authorization
-          subdomain = matches[2];
+      const matches = subdomain.match(/^([\w]+-[\w]+-[\d]+)-(airflow|flower)/);
+      if (matches) {
+        const releaseName = matches[1];
 
-          const deployment = await this.service("deployment").fetchDeploymentByReleaseName(releaseName);
+        // override subdomain for simplicity when checking authorization
+        subdomain = matches[2];
 
-          session.resources.deployment = deployment;
-          session.resources.workspace = deployment.workspace;
-        }
+        const deployment = await this.service("deployment").fetchDeploymentByReleaseName(releaseName);
+
+        session.resources.deployment = deployment;
+        session.resources.workspace = deployment.workspace;
       }
 
       await this.service("common").resolveRequesterPermissions(session);
 
       switch (subdomain) {
         case "grafana":
+        case "kibana":
           if (session.hasPermissions("global_deployment_external")) {
             return this.granted(res);
           }
