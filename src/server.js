@@ -67,7 +67,7 @@ const schema = makeExecutableSchema({
 
       return next();
     }).catch((err) => {
-      console.log(`Error determining request authorization: ${err.message}`);
+      Application.output(`Error determining request authorization: ${err.message}`);
       return res.status(500).send('Unable to process request');
     })
   });
@@ -112,8 +112,8 @@ const schema = makeExecutableSchema({
     },
     formatError: ApolloError
   });
-}).catch((error) => {
+}).catch((err) => {
   Application.logger().error("Migrations failed, abort starting server");
-  console.log(error);
-  Application.logger().error(error);
+  Application.output(err);
+  Application.logger().error(err);
 });

@@ -8,4 +8,7 @@ const application = new Application({}, logger);
 
 application.registerServices(services);
 application.registerModels(models);
+application.output = function() {
+  console.log(arguments);
+};
 module.exports = application;

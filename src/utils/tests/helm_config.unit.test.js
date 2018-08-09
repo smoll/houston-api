@@ -15,7 +15,6 @@ describe("Testing HelmConfig", () => {
 
     test("set value", () => {
       config.setKey("foo.bar", "test");
-      console.log(config);
       expect(config.config["foo"]["bar"]).toEqual("test");
     });
   });
