@@ -37,12 +37,14 @@ class AuthorizationRoute extends BaseRoute {
       }
 
       const params = {
-        extras: state.extras,
+        extras: JSON.stringify(state.extras),
+        provider: state.provider,
         token: token,
       };
 
       const url = `${state.redirect}?${QueryString.stringify(params)}`;
 
+      return res.end(url);
       return res.redirect(url);
     } catch (err) {
       this.application.output("Failed to finalize OAuth flow");
