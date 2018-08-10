@@ -37,7 +37,7 @@ class AuthorizationRoute extends BaseRoute {
       }
 
       const params = {
-        source: state.source,
+        extras: state.extras,
         token: token,
       };
 

@@ -7,7 +7,7 @@ class AuthConfig extends BaseOperation {
     this.name = "authConfig";
     this.typeDef = `
       # Fetch configuration information about available authentication methods
-      authConfig(source: String!, redirect: String!, duration: Int, extras: JSON) : AuthConfig
+      authConfig(redirect: String!, duration: Int, extras: JSON) : AuthConfig
     `;
     this.entrypoint = "query";
   }
@@ -15,7 +15,6 @@ class AuthConfig extends BaseOperation {
   async resolver(root, args, context) {
     try {
       const state = {
-        source: args.source,
         redirect: args.redirect,
         duration: args.duration ? args.duration : 1,
         extras: args.extras ? args.extras : {}
