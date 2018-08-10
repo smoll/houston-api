@@ -48,6 +48,7 @@ class AuthService extends BaseService {
 
     // if google enabled, add the auth url
     if (payload.googleEnabled) {
+      state.strategy = AuthStrategies.GOOGLE;
       if (Config.get(Config.GOOGLE_CLIENT_ID)) {
         payload.googleOAuthUrl = this.strategyUtil.getOAuthUrl(AuthStrategies.GOOGLE, state);
       } else {
@@ -56,6 +57,8 @@ class AuthService extends BaseService {
     }
 
     if (payload.githubEnabled) {
+      state.strategy = AuthStrategies.GITHUB;
+
       //if (Config.get(Config.GITHUB_CLIENT_ID)) {
       //  payload.githubOAuthUrl = this.strategyUtil.getOAuthUrl(AuthStrategies.GITHUB, state);
       //} else {
@@ -64,6 +67,7 @@ class AuthService extends BaseService {
     }
 
     if (payload.auth0Enabled) {
+      state.strategy = AuthStrategies.AUTH0;
       payload.auth0OAuthUrl = this.strategyUtil.getOAuthUrl(AuthStrategies.AUTH0, state);
     }
 
