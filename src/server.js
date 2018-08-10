@@ -88,7 +88,7 @@ const schema = makeExecutableSchema({
   return server.start({
     // cors config options https://github.com/expressjs/cors#configuration-options
     cors: {
-      origin: [new RegExp(`.${Config.baseDomain()}$`)],
+      origin: [new RegExp(`.${Config.baseDomain()}$`), 'http://localhost:5000'],
       methods: "GET,PUT,POST,DELETE,OPTIONS",
       allowedHeaders: "Content-Type, Authorization, Content-Length, X-Requested-With",
       credentials: true,
