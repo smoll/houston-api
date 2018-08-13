@@ -1,5 +1,7 @@
 const BaseOperation = require("../base.js");
 
+const ApolloError = require("apollo-errors");
+
 class CreateToken extends BaseOperation {
   constructor() {
     super();
@@ -14,10 +16,17 @@ class CreateToken extends BaseOperation {
 
   async resolver(root, args, context) {
     try {
-      let user = await this.service("auth").authenticateUser(args.identity, args.credentials);
-
-      if (!user) {
-        throw new Error("Unable to find user");
+      let user;
+      try {
+        user = await this.service("auth").authenticateUser(args.identity, args.credentials);
+        if (!user) {
+          throw new Error("Unable to find user");
+        }
+      } catch (err) {
+        if (ApolloError.isInstance(err)) {
+          return err;
+        }
+        return this.invalidInput([err.message]);
       }
 
       let tokenPayload = await this.service("auth").generateTokenPayload(user);

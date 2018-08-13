@@ -14,6 +14,11 @@ class LocalUserService extends BaseService {
     }
 
     let credentials = await this.fetchCredentialsForUser(user);
+
+    if (!credentials) {
+      throw new Error("No password credentials found for this user, did you mean to sign in with OAuth?");
+    }
+    
     if (!await credentials.verifyPassword(password)) {
       throw new Error("User password incorrect");
     }
