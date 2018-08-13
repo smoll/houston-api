@@ -4,9 +4,9 @@ const BaseService = require("./base.js");
 class LocalUserService extends BaseService {
 
   async authenticateUser(emailOrUsername, password) {
-    let user = await this.service("user").fetchUserByUsername(emailOrUsername, false);
+    let user = await this.service("user").fetchUserByEmail(emailOrUsername, false);
     if (!user) {
-      user = await this.service("user").fetchUserByEmail(emailOrUsername, false);
+      user = await this.service("user").fetchUserByUsername(emailOrUsername, false);
     }
 
     if (!user) {

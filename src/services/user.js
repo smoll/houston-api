@@ -158,16 +158,25 @@ class UserService extends BaseService {
       } else if (user.username) {
         workspaceLabel = `${user.username}'s Workspace`;
       }
+      
+      let workspaceDesc = "Default Workspace"
+      if (user.fullName) {
+        workspaceDesc = `Default workspace for ${user.fullName}`
+      } else if (user.email) {
+        workspaceDesc = `Default workspace for ${user.email}`
+      } else if (user.username) {
+        workspaceDesc = `Default workspace for ${user.username}`
+      }
 
       await this.service("workspace").createWorkspaceWithDefaultGroups(user, {
         label: workspaceLabel,
-        description: `Default workspace for ${user.username}`
+        description: workspaceDesc
       });
 
       return user;
     } catch (err) {
       // TODO: Verify errors
-      if(err.message.indexOf("unique constraint") !== -1 && err.message.indexOf("users_username_unique") !== -1) {
+      if(err.message.indexOf("unique constraint") !== -1) {
         throw new Error("Email already in use by existing account");
       }
       throw err;

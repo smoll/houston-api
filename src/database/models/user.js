@@ -17,7 +17,6 @@ class User extends BaseModel {
   static get jsonSchema () {
     return {
       type: "object",
-      required: ["username"],
 
       properties: {
         uuid: { type: "uuid" },

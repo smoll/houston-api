@@ -10,7 +10,7 @@ exports.up = function(knex) {
 
     return knex.schema.createTable(TABLE_NAME, function (table) {
       table.uuid("uuid").primary();
-      table.string("username").unique();
+      table.string("username");
       table.string("full_name");
       table.string("status");
       table.timestamps();
