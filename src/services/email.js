@@ -21,6 +21,7 @@ class EmailService extends BaseService {
 
   async updateVerification(email, verified = true) {
     return await email.$query().patch({
+      token: "",
       verified: verified
     }).returning("*");
   }

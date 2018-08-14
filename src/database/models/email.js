@@ -45,7 +45,9 @@ class Email extends BaseModel {
   }
 
   $beforeInsert(context) {
-    this.token = this.generateShortId();
+    if (!this.token) {
+      this.token = this.generateShortId();
+    }
     this.main = false;
     this.verified = false;
     return super.$beforeInsert(context);

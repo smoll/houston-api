@@ -8,7 +8,7 @@ class ConfirmEmail extends BaseOperation {
     this.name = "confirmEmail";
     this.typeDef = `
       # Confirm email added on signup or from the user profile page
-      confirmEmail(email: String!, token: String!) : User
+      confirmEmail(email: String!, token: String!, duration: Int) : AuthUser
     `;
     this.entrypoint = "mutation";
     this.guards = [];
@@ -27,7 +27,20 @@ class ConfirmEmail extends BaseOperation {
         await this.service("email").updateVerification(email);
       }
 
-      return await this.service("user").fetchUserByUuid(email.userUuid);
+      let user = await this.service("user").fetchUserByUuid(email.userUuid);
+
+      let tokenPayload = await this.service("auth").generateTokenPayload(user);
+      let token = await this.service("auth").createJWT(tokenPayload, args.duration);
+
+      this.service("auth").setAuthCookie(context.res, token, tokenPayload.exp);
+
+      return {
+        user: user,
+        token: {
+          value: token,
+          payload: tokenPayload
+        }
+      }
     } catch (err) {
       this.error(err);
       throw err;

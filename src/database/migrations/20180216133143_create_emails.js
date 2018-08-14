@@ -12,7 +12,7 @@ exports.up = function(knex) {
       table.uuid("uuid").primary();
       table.string("address").unique();
       table.uuid("user_uuid").references("uuid").inTable("users").notNullable().onDelete("CASCADE").index();
-      table.string("token").unique().index();
+      table.string("token").nullable().unique().index();
       table.boolean("main"); // primary, but "primary" is reserved
       table.boolean("verified");
       table.timestamps();
