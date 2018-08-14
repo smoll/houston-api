@@ -1,14 +1,12 @@
 const BaseOperation = require("../base.js");
 
-const ApolloError = require("apollo-errors");
-
 class ConfirmEmail extends BaseOperation {
   constructor() {
     super();
     this.name = "confirmEmail";
     this.typeDef = `
       # Confirm email added on signup or from the user profile page
-      confirmEmail(email: String!, token: String!, duration: Int) : AuthUser
+      confirmEmail(token: String!, duration: Int) : AuthUser
     `;
     this.entrypoint = "mutation";
     this.guards = [];
@@ -16,16 +14,21 @@ class ConfirmEmail extends BaseOperation {
 
   async resolver(root, args, context) {
     try {
-      const email = await this.service("email").fetchEmailByAddress(args.email);
+      const email = await this.service("email").fetchEmailByToken(args.token);
 
-      if (!email.verified) {
-        if (email.token !== args.token) {
-          ApolloError.GenericError("Email confirmation token invalid", {
-            token: args.token
-          });
-        }
-        await this.service("email").updateVerification(email);
+      if (!email) {
+        return this.errors().GenericError("Email confirmation token invalid", {
+          token: args.token
+        });
       }
+
+      if (email.verified) {
+        return this.errors().GenericError("Email already confirmed", {
+          token: args.token
+        });
+      }
+
+      await this.service("email").updateVerification(email);
 
       let user = await this.service("user").fetchUserByUuid(email.userUuid);
 

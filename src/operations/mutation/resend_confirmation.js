@@ -1,7 +1,5 @@
 const BaseOperation = require("../base.js");
 
-const ApolloError = require("apollo-errors");
-
 class ResendConfirmationEmail extends BaseOperation {
   constructor() {
     super();
@@ -19,7 +17,7 @@ class ResendConfirmationEmail extends BaseOperation {
       const email = await this.service("email").fetchEmailByAddress(args.email);
 
       if (email.verified) {
-        ApolloError.GenericError("Email already confirmed", {
+        return this.errors().GenericError("Email already confirmed", {
           token: args.token
         });
       }

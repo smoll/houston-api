@@ -19,9 +19,22 @@ class EmailService extends BaseService {
     return null;
   }
 
+  async fetchEmailByToken(token, throwError = true) {
+    let email = await this.model("email")
+      .query()
+      .findOne("token", token);
+    if (email) {
+      return email;
+    }
+    if (throwError) {
+      this.notFound("email", token);
+    }
+    return null;
+  }
+
+
   async updateVerification(email, verified = true) {
     return await email.$query().patch({
-      token: "",
       verified: verified
     }).returning("*");
   }

@@ -1,7 +1,5 @@
 const BaseOperation = require("../base.js");
 
-const ApolloError = require("apollo-errors");
-
 class ResetPassword extends BaseOperation {
   constructor() {
     super();
