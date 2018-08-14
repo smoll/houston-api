@@ -43,8 +43,15 @@ class Config {
     return HelmConfig;
   }
 
-  static baseDomain() {
-    return this.helmConfig()["baseDomain"];
+  static baseDomain(includeProtocol = false) {
+    const base = this.helmConfig()["baseDomain"];
+    if (!includeProtocol) {
+      return base;
+    }
+    if (this.isProd()) {
+      return `https://${base}`;
+    }
+    return `http://${base}`;
   }
 
   static auth0Base() {
@@ -55,12 +62,18 @@ class Config {
     return base;
   }
 
-  static orbitDomain() {
+  static orbitDomain(includeProtocol = false) {
     const base = Config.get(Config.ORBIT_BASE_URL);
     if (base[base.length - 1] === "/") {
       return base.substr(0, base.length - 1);
     }
-    return base;
+    if (!includeProtocol) {
+      return base;
+    }
+    if (this.isProd()) {
+      return `https://${base}`;
+    }
+    return `http://${base}`;
   }
 
 }
@@ -74,6 +87,8 @@ Config.WEBSOCKET_ENDPOINT_URL = "WEBSOCKET_ENDPOINT_URL";
 Config.PLAYGROUND_ENDPOINT_URL = "PLAYGROUND_ENDPOINT_URL";
 Config.HOUSTON_POSTGRES_URI = "HOUSTON_POSTGRES_URI";
 Config.AIRFLOW_POSTGRES_URI = "AIRFLOW_POSTGRES_URI";
+Config.SMTP_URI = "SMTP_URI";
+Config.SMTP_FROM = "SMTP_FROM";
 Config.DEBUG_DB = "DEBUG_DB";
 Config.JWT_PASSPHRASE = "JWT_PASSPHRASE";
 Config.REGISTRY_CERT_PATH = "REGISTRY_CERT_PATH";

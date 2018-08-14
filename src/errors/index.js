@@ -21,6 +21,10 @@ const UserNotFound = createError('UserNotFoundError', {
   message: 'User was not found'
 });
 
+const GenericError = createError('GenericError', {
+  message: 'An error occurred'
+});
+
 module.exports = {
   AuthExpired: () =>{
     return new AuthExpiredError({
@@ -37,6 +41,13 @@ module.exports = {
       },
       internalData: {
         error: `User not authorized to complete action`
+      }
+    });
+  },
+  UnauthorizedMessage: (message) => {
+    return new UnauthorizedError({
+      internalData: {
+        error: `Cannot authenticate, invalid password`
       }
     });
   },
@@ -72,4 +83,12 @@ module.exports = {
       }
     });
   },
+  GenericError: (message, data = {}) => {
+    return new GenericError({
+      data: data,
+      internalData: {
+        error: message
+      }
+    });
+  }
 };

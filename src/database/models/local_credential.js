@@ -17,7 +17,7 @@ class LocalCredential extends Password(BaseModel) {
   }
 
   static get idColumn() {
-    return "user_uuid";
+    return "userUuid";
   }
 
   static get uuidFields() {
@@ -32,6 +32,7 @@ class LocalCredential extends Password(BaseModel) {
       properties: {
         user_uuid: { type: "uuid" },
         password: { type: "string", minLength: 1, maxLength: 255 },
+        reset_token: { type: "string", minLength: 1, maxLength: 255 },
         created_at: { type: "string" },
         updated_at: { type: "string" },
       }

@@ -11,6 +11,7 @@ exports.up = function(knex) {
     return knex.schema.createTable(TABLE_NAME, function (table) {
       table.uuid("user_uuid").primary();
       table.string("password").unique();
+      table.string("reset_token").index();
       table.timestamps();
     });
   });

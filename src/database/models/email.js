@@ -45,12 +45,10 @@ class Email extends BaseModel {
   }
 
   $beforeInsert(context) {
-    return CommonUtil.randomToken(20).then((token) => {
-      this.token = token;
-      this.main = false;
-      this.verified = false;
-      return super.$beforeInsert(context);
-    });
+    this.token = this.generateShortId();
+    this.main = false;
+    this.verified = false;
+    return super.$beforeInsert(context);
   }
 }
 

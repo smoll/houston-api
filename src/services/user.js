@@ -1,5 +1,6 @@
 const BaseService = require("./base.js");
 const _ = require("lodash");
+const Transaction = require('objection').transaction;
 
 let USER_COUNT = null;
 
@@ -237,6 +238,24 @@ class UserService extends BaseService {
 
   async deleteUser(user) {
     return await user.$query().delete();
+  }
+
+  async forgotPassword(email, user) {
+    let credentials = await this.service("local_user").fetchCredentialsForUser(user);
+
+    if (!credentials) {
+      throw new Error("No password credentials found for this user, did you mean to sign in with OAuth?");
+    }
+
+
+    return await Transaction(this.conn("postgres"), async (trx) => {
+      await credentials.$query(trx).patch({
+        resetToken: credentials.generateShortId()
+      }).returning("*");
+
+      await this.service("mailer").sendPasswordReset(email, user, credentials.resetToken);
+      return true;
+    });
   }
 }
 

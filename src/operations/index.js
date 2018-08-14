@@ -18,8 +18,12 @@ module.exports = [
   // =========
 
   // User Operations
+  require("./mutation/confirm_email.js"),
   require("./mutation/create_token.js"),
   require("./mutation/create_user.js"),
+  require("./mutation/forgot_password.js"),
+  require("./mutation/resend_confirmation.js"),
+  require("./mutation/reset_password.js"),
   require("./mutation/update_user.js"),
 
   // Deployment Operations
