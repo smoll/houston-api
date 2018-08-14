@@ -48,8 +48,12 @@ class Email extends BaseModel {
     if (!this.token) {
       this.token = this.generateShortId();
     }
-    this.main = false;
-    this.verified = false;
+    if (this.main !== true) {
+      this.main = false;
+    }
+    if (this.verified !== true) {
+      this.verified = false;
+    }
     return super.$beforeInsert(context);
   }
 }

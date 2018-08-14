@@ -46,10 +46,8 @@ class InviteToken extends BaseModel {
   }
 
   $beforeInsert(context) {
-    return CommonUtil.randomToken(16).then((token) => {
-      this.token = token;
-      return super.$beforeInsert(context);
-    });
+    this.token = this.generateShortId()
+    return super.$beforeInsert(context);
   }
 }
 

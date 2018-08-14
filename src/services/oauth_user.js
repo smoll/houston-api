@@ -18,7 +18,7 @@ class OauthUserService extends BaseService {
     }
 
     const userData = {
-      status: "active",
+      status: this.model("user").STATUS_ACTIVE,
       email: data.profile.email,
       emailVerified: true,
       username: data.profile.email,

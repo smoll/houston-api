@@ -21,18 +21,23 @@ class CreateUser extends BaseOperation {
       const profile = Object.assign({}, args.profile);
 
       let user = await this.service("local_user").createUser(args.email, args.password, args.username, profile);
-      
-      let tokenPayload = await this.service("auth").generateTokenPayload(user);
-      let token = await this.service("auth").createJWT(tokenPayload, args.duration);
 
-      this.service("auth").setAuthCookie(context.res, token, tokenPayload.exp);
+      let tokenInfo = null;
+      if (user.isActive()) {
+        let tokenPayload = await this.service("auth").generateTokenPayload(user);
+        let token = await this.service("auth").createJWT(tokenPayload, args.duration);
+
+        this.service("auth").setAuthCookie(context.res, token, tokenPayload.exp);
+
+        tokenInfo = {
+          value: token,
+          payload: tokenPayload
+        };
+      }
 
       return {
         user: user,
-        token: {
-          value: token,
-          payload: tokenPayload
-        }
+        token: tokenInfo
       }
     } catch (err) {
       this.error(err.message);

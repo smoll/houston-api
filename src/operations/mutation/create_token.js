@@ -1,5 +1,5 @@
 const BaseOperation = require("../base.js");
-
+const _ = require("lodash");
 const ApolloError = require("apollo-errors");
 
 class CreateToken extends BaseOperation {
@@ -27,6 +27,10 @@ class CreateToken extends BaseOperation {
           return err;
         }
         return this.invalidInput([err.message]);
+      }
+
+      if (!user.isActive()) {
+        throw new Error(user.statusMessage());
       }
 
       let tokenPayload = await this.service("auth").generateTokenPayload(user);

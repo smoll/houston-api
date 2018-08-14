@@ -34,7 +34,8 @@ class SystemSettingService extends BaseService {
     await this.ensureFetched();
 
     const value = this.settings.get(key);
-    if (!value) {
+
+    if (value === undefined) {
       throw Error("Unknown setting");
     }
     return value;

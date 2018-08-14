@@ -32,6 +32,10 @@ class ConfirmEmail extends BaseOperation {
 
       let user = await this.service("user").fetchUserByUuid(email.userUuid);
 
+      if (user.isPending()) {
+        user = this.service("user").markActive(user);
+      }
+
       let tokenPayload = await this.service("auth").generateTokenPayload(user);
       let token = await this.service("auth").createJWT(tokenPayload, args.duration);
 

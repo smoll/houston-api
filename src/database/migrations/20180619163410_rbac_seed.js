@@ -160,7 +160,7 @@ const scopedPermissions = {
 
 const groupDesc = {
   "default_user": "Permissions all users in the system should have by default",
-  "default_admin": "Permissions all users in the system should have by default",
+  "default_admin": "Permissions all admins in the system should have",
   "template_workspace_owner": "Template for the default workspace owner group",
 };
 

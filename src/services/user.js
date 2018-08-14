@@ -1,5 +1,6 @@
 const BaseService = require("./base.js");
 const _ = require("lodash");
+const ShortId = require("shortid");
 const Transaction = require('objection').transaction;
 
 let USER_COUNT = null;
@@ -46,6 +47,7 @@ class UserService extends BaseService {
     if (user) {
       return user;
     }
+
     if (throwError) {
       this.notFound("user", uuid);
     }
@@ -106,7 +108,7 @@ class UserService extends BaseService {
       const email = userData.email;
       const username = userData.username || email;
       const fullName = userData.fullName || "";
-      const status = userData.status || "pending";
+      const status = userData.status || await this.determineDefaultStatus();
       const emailVerified = userData.emailVerfied || false;
       const properties = [];
 
@@ -123,6 +125,8 @@ class UserService extends BaseService {
         });
       }
 
+      const emailToken = ShortId.generate();
+
       let user = await this.model("user")
         .query()
         .insertGraph({
@@ -133,9 +137,12 @@ class UserService extends BaseService {
             address: email,
             main: true,
             verified: emailVerified,
+            token: emailToken,
           }],
           properties: properties
         }).returning("*");
+
+      await this.service("mailer").sendConfirmation(email, emailToken);
 
       if (userCount === 0) {
         // this is the first user, lets make them a system owner
@@ -159,8 +166,8 @@ class UserService extends BaseService {
       } else if (user.username) {
         workspaceLabel = `${user.username}'s Workspace`;
       }
-      
-      let workspaceDesc = "Default Workspace"
+
+      let workspaceDesc = "Default Workspace";
       if (user.fullName) {
         workspaceDesc = `Default workspace for ${user.fullName}`
       } else if (user.email) {
@@ -236,6 +243,12 @@ class UserService extends BaseService {
     return user;
   }
 
+  async markActive(user) {
+    return user.$query().patch({
+      status: this.model("user").STATUS_ACTIVE,
+    }).returning("*");
+  }
+
   async deleteUser(user) {
     return await user.$query().delete();
   }
@@ -247,7 +260,6 @@ class UserService extends BaseService {
       throw new Error("No password credentials found for this user, did you mean to sign in with OAuth?");
     }
 
-
     return await Transaction(this.conn("postgres"), async (trx) => {
       await credentials.$query(trx).patch({
         resetToken: credentials.generateShortId()
@@ -256,6 +268,15 @@ class UserService extends BaseService {
       await this.service("mailer").sendPasswordReset(email, user, credentials.resetToken);
       return true;
     });
+  }
+
+  async determineDefaultStatus() {
+    const requireConfirmKey = this.model("system_setting").KEYS_USER_CONFIRMATION;
+    const requireConfirm    = await this.service("system_setting").getSetting(requireConfirmKey);
+    if (requireConfirm === true) {
+      return this.model("user").STATUS_PENDING;
+    }
+    return this.model("user").STATUS_ACTIVE;
   }
 }
 

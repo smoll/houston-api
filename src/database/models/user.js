@@ -29,6 +29,27 @@ class User extends BaseModel {
     };
   }
 
+  statusMessage() {
+    switch(this.status) {
+      case User.STATUS_ACTIVE:
+        return "Your account is active";
+      case User.STATUS_PENDING:
+        return "Your account is awaiting email confirmation";
+      case User.STATUS_BANNED:
+        return "Your account has been banned";
+      case User.STATUS_INACTIVE:
+        return "Your account is inactive";
+    }
+  }
+
+  isActive() {
+    return this.status === User.STATUS_ACTIVE;
+  }
+
+  isPending() {
+    return this.status === User.STATUS_PENDING;
+  }
+
   static get jsonAttributes() {
     return ["uuid", "username", "full_name", "status", "created_at", "updated_at"];
   }
@@ -104,8 +125,13 @@ class User extends BaseModel {
   }
 }
 
-User.PROVIDER_LOCAL = "local";
-User.PROVIDER_OAUTH = "oauth";
-User.PROVIDER_LDAP  = "ldap";
+User.STATUS_PENDING  = "pending";
+User.STATUS_ACTIVE   = "active";
+User.STATUS_BANNED   = "banned";
+User.STATUS_INACTIVE = "inactive";
+
+User.PROVIDER_LOCAL  = "local";
+User.PROVIDER_OAUTH  = "oauth";
+User.PROVIDER_LDAP   = "ldap";
 
 module.exports = User;
