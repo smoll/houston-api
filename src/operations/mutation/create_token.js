@@ -9,7 +9,7 @@ class CreateToken extends BaseOperation {
     this.typeDef = `
       # Verify a User's credentials and issues a token if valid. Adding an orgId validates a User's credentials 
       # and access to that Organization, failing if a User does not have access to that Organization.
-      createToken(password: String!, identity: String, workspaceUuid: String, permission: String, duration: Int) : AuthUser
+      createToken(password: String!, identity: String, duration: Int) : AuthUser
     `;
     this.entrypoint = "mutation";
   }
@@ -18,7 +18,7 @@ class CreateToken extends BaseOperation {
     try {
       let user;
       try {
-        user = await this.service("auth").authenticateUser(args.identity, args.credentials);
+        user = await this.service("auth").authenticateUser(args.identity, args.password);
         if (!user) {
           throw new Error("Unable to find user");
         }
