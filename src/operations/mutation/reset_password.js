@@ -8,7 +8,7 @@ class ResetPassword extends BaseOperation {
     this.name = "resetPassword";
     this.typeDef = `
       # Takes a password reset token and new password, updates password credentials, and authenticates user
-      resetPassword(token: String!, password: String!) : AuthUser
+      resetPassword(token: String!, password: String!, duration: Int) : AuthUser
     `;
     this.entrypoint = "mutation";
     this.guards = [];
