@@ -41,24 +41,22 @@ class MailerService extends BaseService {
     return this.sendEmail(recipient, "Astronomer Invite", "You have been invited to the workspace");
   }
 
-  sendPasswordReset(recipient, user, code) {
+  sendPasswordReset(recipient, user, token) {
     const textMessage = `A password reset was requested for ${recipient}, please follow the link below to complete the process:
     
-    ${Config.orbitDomain(true)}/password-reset?code=${code}`;
+    ${Config.orbitDomain(true)}/reset-password?token=${token}`;
     return this.sendEmail(recipient, "Password reset", textMessage);
   }
 
-  sendConfirmation(recipient, code) {
-    const textMessage = `Your confirmation code is: ${code}
+  sendConfirmation(recipient, token) {
+    const textMessage = `Your confirmation token is: ${token}
     
-    please follow the link below to complete the process:
+    Please follow the link below to complete the process:
     
-    ${Config.orbitDomain(true)}/confirm-email?code=${code}`;
+    ${Config.orbitDomain(true)}/verify?token=${token}`;
 
     return this.sendEmail(recipient, "Email verification", textMessage);
   }
-
-
 }
 
 module.exports = MailerService;

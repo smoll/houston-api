@@ -31,9 +31,7 @@ class EmailService extends BaseService {
         token: email.generateShortId(),
       }).returning("*");
 
-      let result = await this.service("mailer").sendConfirmation(email.address, email.token);
-      console.log(result);
-      return true;
+      return await this.service("mailer").sendConfirmation(email.address, email.token);
     });
   }
 
