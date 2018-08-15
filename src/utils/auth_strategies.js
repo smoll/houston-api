@@ -135,9 +135,9 @@ class AuthStrategies {
       baseDomain = `${baseDomain}/`;
     }
     if (Config.isProd()) {
-      return `https://${baseDomain}oauth_redirect`;
+      return `https://houston.${baseDomain}oauth_redirect`;
     }
-    return `http://${baseDomain}oauth_redirect`;
+    return `http://houston.${baseDomain}oauth_redirect`;
   }
 
   async getUserData(strategy, jwt, expire) {
