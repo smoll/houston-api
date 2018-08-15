@@ -7,18 +7,29 @@ class AuthConfig extends BaseOperation {
     this.name = "authConfig";
     this.typeDef = `
       # Fetch configuration information about available authentication methods
-      authConfig(redirect: String!, duration: Int, extras: JSON) : AuthConfig
+      # 'state' is deprecated
+      authConfig(redirect: String, duration: Int, extras: JSON, state: String) : AuthConfig
     `;
     this.entrypoint = "query";
   }
 
   async resolver(root, args, context) {
     try {
-      const state = {
-        redirect: args.redirect,
-        duration: args.duration ? args.duration : 1,
-        extras: args.extras ? args.extras : {}
-      };
+      let state;
+      if (args.state) {
+        state = {
+          extras: {
+            redirect: "/token",
+            source: "cli"
+          }
+        }
+      } else {
+        state = {
+          redirect: args.redirect,
+          duration: args.duration ? args.duration : 1,
+          extras: args.extras ? args.extras : {}
+        };
+      }
       return this.service("auth").getStrategyInfo(state);
     } catch (err) {
       this.error(err.message);
