@@ -29,7 +29,8 @@ class ConfirmEmail extends BaseOperation {
       let user = await this.service("user").fetchUserByUuid(email.userUuid);
 
       if (user.isPending()) {
-        user = this.service("user").markActive(user);
+        const activeUser = this.service("user").markActive(user);
+        user.status = activeUser.status;
       }
 
       let tokenPayload = await this.service("auth").generateTokenPayload(user);

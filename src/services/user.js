@@ -246,7 +246,7 @@ class UserService extends BaseService {
   }
 
   async markActive(user) {
-    return user.$query().patch({
+    return await user.$query().patch({
       status: this.model("user").STATUS_ACTIVE,
     }).returning("*");
   }
