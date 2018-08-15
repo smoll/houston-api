@@ -142,7 +142,9 @@ class UserService extends BaseService {
           properties: properties
         }).returning("*");
 
-      await this.service("mailer").sendConfirmation(email, emailToken);
+      if (!emailVerified) {
+        await this.service("mailer").sendConfirmation(email, emailToken);
+      }
 
       if (userCount === 0) {
         // this is the first user, lets make them a system owner

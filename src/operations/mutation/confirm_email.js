@@ -22,13 +22,9 @@ class ConfirmEmail extends BaseOperation {
         });
       }
 
-      if (email.verified) {
-        return this.errors().GenericError("Email already confirmed", {
-          token: args.token
-        });
+      if (!email.verified) {
+        await this.service("email").updateVerification(email);
       }
-
-      await this.service("email").updateVerification(email);
 
       let user = await this.service("user").fetchUserByUuid(email.userUuid);
 
