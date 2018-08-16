@@ -10,34 +10,31 @@ class MailerService extends BaseService {
   constructor() {
     super(...arguments);
 
-    const templatePath = Path.join(__dirname, "../../data/emails");
-    HandlebarsLayouts.register(Handlebars);
+    const smtpUri = Config.get(Config.SMTP_URI);
 
-    Handlebars.registerPartial('layout', FS.readFileSync(`${templatePath}/layouts/main.hbs`, 'utf8'));
-    //if (Config.isProd()) {
+    this.mailer = false;
 
-    this.mailer = new Emailer({
-      views: {
-        root: templatePath,
-        options: {
-          extension: "hbs",
-        }
-      },
-      // uncomment below to send emails in development/test env:
-      // send: true
-      transport: Config.get(Config.SMTP_URI)
-    });
+    if (smtpUri) {
+      const templatePath = Path.join(__dirname, "../../data/emails");
+      HandlebarsLayouts.register(Handlebars);
 
-
-    // } else {
-    //   console.log("Using local mail transport");
-    //   this.mailer = nodemailer.createTransport({
-    //     jsonTransport: true
-    //   });
-    // }
+      Handlebars.registerPartial('layout', FS.readFileSync(`${templatePath}/layouts/main.hbs`, 'utf8'));
+      this.mailer = new Emailer({
+        views: {
+          root: templatePath,
+          options: {
+            extension: "hbs",
+          }
+        },
+        transport: smtpUri
+      });
+    }
   }
 
   async sendEmail(recipient, subject, text, html = null) {
+    if (!this.mailer) {
+      return Promise.resolve(true);
+    }
     const replyEmailKey = this.model("system_setting").KEYS_REPLY_EMAIL;
     const replyEmail = await this.service("system_setting").getSetting(replyEmailKey);
 
@@ -57,6 +54,10 @@ class MailerService extends BaseService {
   }
 
   async sendEmailFromTemplate(template, recipient, payload) {
+    if (!this.mailer) {
+      return Promise.resolve(true);
+    }
+
     const replyEmailKey = this.model("system_setting").KEYS_REPLY_EMAIL;
     const replyEmail = await this.service("system_setting").getSetting(replyEmailKey);
 
