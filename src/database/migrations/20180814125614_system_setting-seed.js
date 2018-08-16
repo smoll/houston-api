@@ -12,7 +12,7 @@ exports.up = function(knex) {
     },
     {
       key: "company_name",
-      value: `Astronomer EE`,
+      value: `Astronomer`,
       category: "system",
     },
     {
