@@ -18,8 +18,8 @@ class AuthConfig extends BaseOperation {
       let state;
       if (args.state) {
         state = {
+          redirect: "/token",
           extras: {
-            redirect: "/token",
             source: "cli"
           }
         }
