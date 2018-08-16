@@ -22,7 +22,7 @@ class OAuthRedirectRoute extends BaseRoute {
     <noscript>JavaScript must be enabled to authenticate with the system!</noscript>
     <script type="text/javascript">
       (function() {
-        var base = ${location};
+        var origin = null;
         
         function addHiddenField(form, key, value) {
           var hiddenField = document.createElement("input");
@@ -34,17 +34,23 @@ class OAuthRedirectRoute extends BaseRoute {
   
         var form = document.createElement("form");
         form.setAttribute("method", "post");
-        form.setAttribute("action", base);
         form.setAttribute("enctype", "form-data");
   
         var params = location.hash.replace('#', '').split("&");
         for(var i = 0; i < params.length; i++) {
           var parts = params[i].split("=");
+          if (parts[0] === "state") {
+            var state = JSON.parse(decodeURIComponent(parts[1]));
+            origin = state.origin;
+          }
           addHiddenField(form, parts[0], parts[1]);
         }
   
-        document.body.appendChild(form);
-        form.submit();
+        if (origin !== null) {
+          document.body.appendChild(form);
+          form.setAttribute("action", origin);
+          form.submit();
+        }
       })();
     </script>
   </body>
