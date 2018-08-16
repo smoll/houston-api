@@ -7,7 +7,7 @@ exports.up = function(knex) {
   const settings = [
     {
       key: "reply_email",
-      value: `noreply@${Config.baseDomain()}`,
+      value: `noreply@${Config.baseDomain().split(":")[0]}`,
       category: "system",
     },
     {
