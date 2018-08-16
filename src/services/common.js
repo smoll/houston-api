@@ -1,5 +1,7 @@
 const BaseService = require("./base.js");
 
+const Config = require("../utils/config.js");
+
 class CommonService extends BaseService {
 
   async healthcheckPostgres() {
@@ -51,6 +53,15 @@ class CommonService extends BaseService {
         session.permissions[permission] = true;
       }
     }
+  }
+
+  async emailConfirmationEnabled() {
+    if (!Config.get(Config.SMTP_URI)) {
+      return false;
+    }
+    const requireConfirmKey = this.model("system_setting").KEYS_USER_CONFIRMATION;
+    const requireConfirm    = await this.service("system_setting").getSetting(requireConfirmKey);
+    return (requireConfirm === true);
   }
 }
 

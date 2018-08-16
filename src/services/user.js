@@ -16,6 +16,7 @@ class UserService extends BaseService {
     if (user) {
       return user;
     }
+
     if (throwError) {
       this.notFound("user", email);
     }
@@ -105,11 +106,13 @@ class UserService extends BaseService {
 
   async createUser(userData) {
     try {
+      const emailConfirmEnabled = await this.service("common").emailConfirmationEnabled();
+
       const email = userData.email;
       const username = userData.username || email;
       const fullName = userData.fullName || "";
-      const status = userData.status || await this.determineDefaultStatus();
-      const emailVerified = userData.emailVerified || false;
+      const status = userData.status || await this.determineDefaultStatus(emailConfirmEnabled);
+      const emailVerified = userData.emailVerified || !emailConfirmEnabled;
       const properties = [];
 
       // get current user count, will use later to see if user should be a system admin
@@ -272,10 +275,11 @@ class UserService extends BaseService {
     });
   }
 
-  async determineDefaultStatus() {
-    const requireConfirmKey = this.model("system_setting").KEYS_USER_CONFIRMATION;
-    const requireConfirm    = await this.service("system_setting").getSetting(requireConfirmKey);
-    if (requireConfirm === true) {
+  async determineDefaultStatus(confirmEnabled) {
+    if (confirmEnabled === undefined) {
+      confirmEnabled = await this.service("common").emailConfirmationEnabled();
+    }
+    if (confirmEnabled) {
       return this.model("user").STATUS_PENDING;
     }
     return this.model("user").STATUS_ACTIVE;
