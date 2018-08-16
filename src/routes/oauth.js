@@ -33,7 +33,7 @@ class AuthorizationRoute extends BaseRoute {
       }
 
       if (state.redirect.substr(0, 4) !== "http") {
-        state.redirect = `${Config.orbitDomain()}/${state.redirect}`;
+        state.redirect = `${Config.orbitDomain(true)}/${state.redirect}`;
       }
 
       const params = {
