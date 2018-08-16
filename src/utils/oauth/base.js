@@ -1,3 +1,5 @@
+const Config = require("../config.js");
+
 class BaseOAuth {
   constructor(clientId, redirectUrl) {
     this.provider = "unknown";
@@ -13,11 +15,20 @@ class BaseOAuth {
     }
   }
 
+  originUrl() {
+    let baseDomain = `${Config.houstonDomain(true)}`;
+    if (baseDomain[baseDomain.length - 1] !== "/") {
+      baseDomain = `${baseDomain}/`;
+    }
+    return `${baseDomain}oauth`;
+  }
+
   generateState(state, integration = "self") {
     return JSON.stringify({
       ...{
         provider: this.provider,
         integration: integration,
+        origin: this.originUrl(),
       },
       ...state
     });

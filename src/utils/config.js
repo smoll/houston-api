@@ -63,7 +63,7 @@ class Config {
   }
 
   static orbitDomain(includeProtocol = false) {
-    const base = Config.get(Config.ORBIT_BASE_URL);
+    const base = Config.get(Config.BASE_URL_ORBIT);
     if (base[base.length - 1] === "/") {
       return base.substr(0, base.length - 1);
     }
@@ -74,6 +74,21 @@ class Config {
       return `https://${base}`;
     }
     return `http://${base}`;
+  }
+
+  static houstonDomain(includeProtocol = false) {
+    const base = Config.get(Config.BASE_URL_HOUSTON);
+    if (base[base.length - 1] === "/") {
+      return base.substr(0, base.length - 1);
+    }
+    if (!includeProtocol) {
+      return base;
+    }
+    if (this.isProd()) {
+      return `https://${base}`;
+    }
+    return `http://${base}`;
+
   }
 
 }
@@ -100,12 +115,15 @@ Config.HELM_ASTRO_REPO = "HELM_ASTRO_REPO";
 Config.HELM_REPO_EDGE = "HELM_REPO_EDGE";
 Config.COMMANDER_HOST = "COMMANDER_HOST";
 Config.COMMANDER_PORT = "COMMANDER_PORT";
-Config.ORBIT_BASE_URL = "ORBIT_BASE_URL";
 Config.AUTH_STRATEGY = "AUTH_STRATEGY"; // local, auth0_oauth, google_oauth
 Config.GOOGLE_CLIENT_ID = "GOOGLE_CLIENT_ID";
 Config.GITHUB_CLIENT_ID = "GITHUB_CLIENT_ID";
+Config.AUTH0_CUSTOM = "AUTH0_CUSTOM";
 Config.AUTH0_CLIENT_ID = "AUTH0_CLIENT_ID";
 Config.AUTH0_BASE_DOMAIN = "AUTH0_BASE_DOMAIN";
 Config.AUTH0_EXTERNAL_LOGIN = "AUTH0_EXTERNAL_LOGIN";
+Config.BASE_URL_ORBIT = "BASE_URL_ORBIT";
+Config.BASE_URL_HOUSTON = "BASE_URL_HOUSTON";
+
 
 module.exports = Config;

@@ -130,14 +130,14 @@ class AuthStrategies {
   }
 
   redirectUrl() {
-    let baseDomain = `${Config.baseDomain()}`;
+    if (Config.isProd() && Config.get(Config.AUTH0_CUSTOM) !== "true") {
+      return `https://redirect.astronomer.io`;
+    }
+    let baseDomain = `${Config.houstonDomain(true)}`;
     if (baseDomain[baseDomain.length - 1] !== "/") {
       baseDomain = `${baseDomain}/`;
     }
-    if (Config.isProd()) {
-      return `https://houston.${baseDomain}oauth_redirect`;
-    }
-    return `http://houston.${baseDomain}oauth_redirect`;
+    return `${baseDomain}oauth_redirect`;
   }
 
   async getUserData(strategy, jwt, expire) {
