@@ -19,6 +19,7 @@ services:
     volumes:
       - ./src:/srv/houston-api/src
       - ./data:/srv/houston-api/data
+      - ./.local/emails:/tmp
     environment:
       HOUSTON_POSTGRES_URI: "postgres://houston:houston@postgres-houston:5430/houston"
       AIRFLOW_POSTGRES_URI: "postgres://houston:houston@postgres-houston:5430/houston"
