@@ -64,7 +64,7 @@ class MailerService extends BaseService {
       from: replyEmail,
       to: recipient,
     };
-console.log(message);
+
     return this.mailer.send({
       template: template,
       message: message,
