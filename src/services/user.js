@@ -109,7 +109,7 @@ class UserService extends BaseService {
       const username = userData.username || email;
       const fullName = userData.fullName || "";
       const status = userData.status || await this.determineDefaultStatus();
-      const emailVerified = userData.emailVerfied || false;
+      const emailVerified = userData.emailVerified || false;
       const properties = [];
 
       // get current user count, will use later to see if user should be a system admin
