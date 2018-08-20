@@ -1,6 +1,6 @@
 {
   "name": "houston-api",
-  "version": "0.0.2",
+  "version": "0.4.1",
   "description": "Source of truth for the Astronomer Platform",
   "main": "index.js",
   "bin": {
@@ -41,9 +41,10 @@
     "generate-password": "^1.4.0",
     "googleapis": "^32.0.0",
     "graphql": "^0.13.2",
+    "graphql-constraint-directive": "^1.1.0",
     "graphql-tools": "^2.21.0",
-    "graphql-yoga": "^1.15.1",
-    "grpc": "^1.9.1",
+    "graphql-yoga": "^1.14.12",
+    "grpc": "^1.13.0",
     "grpc-caller": "^0.4.0",
     "haikunator": "^2.0.0",
     "handlebars": "^4.0.11",
@@ -69,8 +70,8 @@
   },
   "devDependencies": {
     "faker": "^4.1.0",
-    "jest-cli": "^22.3.0",
+    "jest-cli": "^23.5.0",
     "knex-cleaner": "^1.1.4",
-    "nodemon": "^1.15.0"
+    "nodemon": "^1.18.3"
   }
 }
