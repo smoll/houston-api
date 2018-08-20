@@ -55,8 +55,6 @@ class GoogleOAuth extends BaseOAuth {
   async getUserData(data) {
     data.providerUserId = data.decodedJWT.sub;
     data.profile.email = data.decodedJWT.email;
-    data.profile.firstName = data.decodedJWT.given_name;
-    data.profile.lastName = data.decodedJWT.family_name;
     data.profile.fullName = data.decodedJWT.name;
     data.profile.pictureUrl = data.decodedJWT.picture;
 

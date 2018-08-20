@@ -101,11 +101,10 @@ class Auth0PrivateOAuth extends BaseOAuth {
   }
 
   async getUserData(data) {
+    console.log(data);
     data.providerUserId = data.decodedJWT.sub;
     data.profile.email = data.decodedJWT.email;
-    data.profile.firstName = data.decodedJWT.given_name;
-    data.profile.lastName = data.decodedJWT.family_name;
-    data.profile.fullName = `${data.decodedJWT.given_name} ${data.decodedJWT.family_name}`;
+    data.profile.fullName = data.decodedJWT.name;
     data.profile.pictureUrl = data.decodedJWT.picture;
 
     return data;
