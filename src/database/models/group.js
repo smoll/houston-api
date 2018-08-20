@@ -1,5 +1,7 @@
 const BaseModel = require("./base.js");
 
+const Constants = require("../../constants.js");
+
 class Group extends BaseModel {
 
   static get tableName() {
@@ -87,8 +89,8 @@ class Group extends BaseModel {
   }
 }
 
-Group.ENTITY_SYSTEM = "system";
-Group.ENTITY_WORKSPACE = "workspace";
-Group.ENTITY_DEPLOYMENT = "deployment";
+Group.ENTITY_SYSTEM = Constants.ENTITY_SYSTEM;
+Group.ENTITY_WORKSPACE = Constants.ENTITY_WORKSPACE;
+Group.ENTITY_DEPLOYMENT = Constants.ENTITY_DEPLOYMENT;
 
 module.exports = Group;

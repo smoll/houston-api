@@ -1,5 +1,7 @@
 const BaseOperation = require("../base.js");
 
+const Constants = require("../../constants.js");
+
 class GroupAddUser extends BaseOperation {
   constructor() {
     super();
@@ -9,7 +11,7 @@ class GroupAddUser extends BaseOperation {
       groupRemoveUser(groupUuid: Uuid, userUuid: Uuid) : Group
     `;
     this.entrypoint = "mutation";
-    this.guards = ["authenticated", "permission:user_group_user_remove"];
+    this.guards = ["authenticated"];
   }
 
   async resolver(root, args, context) {
@@ -17,11 +19,17 @@ class GroupAddUser extends BaseOperation {
       let user = await this.service("user").fetchUserByUuid(args.userUuid);
       let group = await this.service("group").fetchGroupByUuid(args.groupUuid);
 
-      if (group.workspace_uuid === null && !context.session.hasPermission("global_group_user_add")) {
-        this.unauthorized("add_global_user");
+      if (group.entity_type === Constants.ENTITY_SYSTEM) {
+        if (!context.session.hasPermissions("global_group_user_remove")) {
+          return this.unauthorized("remove_global_user");
+        }
+      } else {
+        if (!context.session.hasPermissions([["global_group_user_remove", "user_group_user_remove"]])) {
+          return this.unauthorized("remove_global_user");
+        }
       }
 
-      const result = await this.service("group").removeUser(group, user);
+      await this.service("group").removeUser(group, user);
       return await this.service("group").fetchGroupByUuid(group.uuid, {
         relations: "[users.emails]",
       });

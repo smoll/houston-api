@@ -1,5 +1,7 @@
 const BaseOperation = require("../base.js");
 
+const Constants = require("../../constants.js");
+
 class GroupAddUser extends BaseOperation {
   constructor() {
     super();
@@ -9,20 +11,25 @@ class GroupAddUser extends BaseOperation {
       groupAddUser(groupUuid: Uuid, userUuid: String) : Group
     `;
     this.entrypoint = "mutation";
-    this.guards = ["authenticated", "permission:user_group_user_add"];
+    this.guards = ["authenticated"];
   }
 
   async resolver(root, args, context) {
     try {
-      let user = await this.service("user").fetchUserByEmail(args.email);
+      const user = context.session.resources.user;
+      const group = context.session.resources.group;
 
-      let group = await this.service("group").fetchGroupByUuid(args.groupUuid);
-
-      if (group.entity_uuid === null && !context.session.hasPermission("global_group_user_add")) {
-        this.unauthorized("add_global_user");
+      if (group.entity_type === Constants.ENTITY_SYSTEM) {
+        if (!context.session.hasPermissions("global_group_user_add")) {
+          return this.unauthorized("add_global_user");
+        }
+      } else {
+        if (!context.session.hasPermissions([["global_group_user_add", "user_group_user_add"]])) {
+          return this.unauthorized("add_global_user");
+        }
       }
 
-      const result = await this.service("group").addUser(group, user);
+      await this.service("group").addUser(group, user);
       return await this.service("group").fetchGroupByUuid(group.uuid, {
         relations: "[users.emails]",
       });

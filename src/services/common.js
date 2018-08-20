@@ -1,7 +1,7 @@
 const BaseService = require("./base.js");
 
 const Config = require("../utils/config.js");
-
+const Constants = require("../constants.js");
 class CommonService extends BaseService {
 
   async healthcheckPostgres() {
@@ -9,15 +9,25 @@ class CommonService extends BaseService {
     return rows.length === 1;
   }
 
-  async resourceResolver(resources) {
+  async resourceResolver(args) {
     const results = {};
     const promises = [];
-    for(let resourceKey in resources) {
-      if (!resources.hasOwnProperty(resourceKey)) {
+    for(let resourceKey in args) {
+      if (!args.hasOwnProperty(resourceKey)) {
         continue;
       }
 
-      const promise = this.resolveResource(resourceKey, resources[resourceKey]).then((result) => {
+      let type = resourceKey;
+      if (type === "entityUuid" && args.entityType) {
+        type = this.resolveEntityType(args.entityType);
+      }
+
+      // skip if type doesn't contain `Uuid`
+      if (type.indexOf("Uuid") === -1) {
+        continue;
+      }
+
+      const promise = this.resolveResource(type, args[resourceKey]).then((result) => {
         results[resourceKey.replace("Uuid", "")] = result;
       });
 
@@ -43,6 +53,21 @@ class CommonService extends BaseService {
         return this.service("workspace").fetchWorkspaceByUuid(resourceUuid);
       case "userUuid":
         return this.service("user").fetchUserByUuid(resourceUuid);
+    }
+  }
+
+  async resolveEntityType(entityType) {
+    switch(entityType) {
+      case Constants.ENTITY_DEPLOYMENT:
+        return "deploymentUuid";
+      case Constants.ENTITY_SERVICE_ACCOUNT:
+        return "serviceAccountUuid";
+      case Constants.ENTITY_WORKSPACE:
+        return "workspaceUuid";
+      case Constants.ENTITY_GROUP:
+        return "groupUuid";
+      default:
+        return "";
     }
   }
 

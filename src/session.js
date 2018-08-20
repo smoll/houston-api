@@ -198,9 +198,30 @@ class Session {
     if (!_.isArray(permissions)) {
       permissions = [permissions];
     }
+
+    // iterator over array of permissions, top level is must all be true. Any element of the top level
+    // can be an array, in which any permission in the array being true will cause the top level item to be true
+    // ie,
+    // true  <- [true, true] or [true, [true, true]] or [true, [false, true]]
+    // false <- [true, false] or [true, [false, false]] or [false, [true, false]]
+
+    // iteratve over all top level perms
     for(let permission of permissions) {
-      if (!this.permissions[permission]) {
+      if (_.isArray(permission)) {
+        // if permission is an array, check if any permission in array is true
+
+        for(let subPerm of permission) {
+          if (this.permissions[subPerm]) {
+            return true;
+          }
+        }
         return false;
+
+      } else {
+        // otherwise check if the permission itself is true
+        if (!this.permissions[permission]) {
+          return false;
+        }
       }
     }
     return true;

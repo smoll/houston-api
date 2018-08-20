@@ -18,14 +18,18 @@ class GroupService extends BaseService {
     return null;
   }
 
-  async fetchGroupsByEntityUuid(entityType, entityUuid) {
+  async fetchGroupsByEntity(entityType, entityUuid) {
+    const conditions = {
+      "groups.entity_type": entityType,
+    };
+    if (entityUuid) {
+      conditions.entity_uuid = entityUuid;
+    }
+
     const groups = await this.model("group")
       .query()
       .joinEager("users.emails")
-      .where({
-        "groups.entity_type": entityType,
-        "groups.entity_uuid": entityUuid,
-      });
+      .where(conditions);
 
     if (groups && groups.length) {
       return groups;

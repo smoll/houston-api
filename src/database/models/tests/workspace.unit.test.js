@@ -1,5 +1,7 @@
 const Faker = require("faker");
 
+const Constants = require("../../../constants.js");
+
 const Postgres = require("../../postgres.js");
 const Workspace = require("../workspace.js");
 const Group = require("../group.js");

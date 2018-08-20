@@ -1,32 +1,55 @@
 const BaseOperation = require("../base.js");
 
+const Constants = require("../../constants.js");
+
 class Groups extends BaseOperation {
   constructor() {
     super();
     this.name = "groups";
     this.typeDef = `
       # Fetch groups by groupUuid or workspaceUuid
-      groups(groupUuid: Uuid, workspaceUuid: Uuid) : [Group]
+      groups(groupUuid: Uuid, entityType: String, entityUuid: Uuid) : [Group]
     `;
     this.entrypoint = "query";
-    this.guards = ["authenticated"];
+    this.guards = ["authenticated",
+   //   "permission:user_group_view"
+    ];
   }
 
   async resolver(root, args, context) {
+    const session = context.session;
+
     try {
-      let groups;
-      if (args.groupUuid) {
-        groups = [this.service("group").fetchGroupByUuid(args.groupUuid, {
-          relations: "[users.emails]",
-        })];
-      } else if (args.workspaceUuid) {
-        groups = this.service("group").fetchGroupsByEntityUuid(args.workspaceUuid, this.model("group").ENTITY_WORKSPACE, {
-          relations: "[users.emails]",
-        });
-      } else {
-        throw new Error("A groupUuid or workspaceUuid is required");
+
+      // get system settings
+      if (args.entityType === this.model("group").ENTITY_SYSTEM) {
+        console.log(session);
+        if (!session.hasPermissions("global_group_list")) {
+          return this.unauthorized("list_global_groups");
+        }
+        return this.service("group").fetchGroupsByEntity(Constants.ENTITY_SYSTEM);
       }
-      return groups;
+
+      // get a specific group uuid
+      if (args.groupUuid) {
+        const group = session.resources.group;
+        if (group.entityType === Constants.ENTITY_SYSTEM && !session.hasPermissions("global_group_view")) {
+          return this.unauthorized("view_group");
+        }
+        if (!session.hasPermissions([["global_group_view", "user_group_view"]])) {
+          return this.unauthorized("view_group");
+        }
+        return [group];
+      } else if (args.entityUuid) {
+        // get all groups for an entity (non system)
+        if (!session.hasPermissions([["global_group_list", "user_group_list"]])) {
+          return this.unauthorized("list_groups");
+        }
+
+        return this.service("group").fetchGroupsByEntity(args.entityType, args.entityUuid);
+      } else {
+        throw new Error("A groupUuid or entityUuid is required");
+      }
     } catch (err) {
       this.error(err.message);
       throw err;

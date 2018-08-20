@@ -1,5 +1,7 @@
 const BaseModel = require("./base.js");
 
+const Constants = require("../../constants.js");
+
 class Role extends BaseModel {
 
   static get tableName() {
@@ -58,7 +60,7 @@ class Role extends BaseModel {
   }
 }
 
-Role.ENTITY_GROUP = "group";
-Role.ENTITY_SERVICE_ACCOUNT = "service_account";
+Role.ENTITY_GROUP = Constants.ENTITY_GROUP;
+Role.ENTITY_SERVICE_ACCOUNT = Constants.ENTITY_SERVICE_ACCOUNT;
 
 module.exports = Role;

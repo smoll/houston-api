@@ -1,6 +1,8 @@
 const BaseModel = require("./base.js");
 const CommonUtil = require("../../utils/common.js");
 
+const Constants = require("../../constants.js");
+
 class ServiceAccount extends BaseModel {
 
   static get tableName() {
@@ -60,5 +62,9 @@ class ServiceAccount extends BaseModel {
     });
   }
 }
+
+ServiceAccount.ENTITY_GROUP = Constants.ENTITY_GROUP;
+ServiceAccount.ENTITY_WORKSPACE = Constants.ENTITY_WORKSPACE;
+ServiceAccount.ENTITY_SYSTEM = Constants.ENTITY_SYSTEM;
 
 module.exports = ServiceAccount;

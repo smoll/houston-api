@@ -49,7 +49,7 @@ class Workspace extends BaseType {
         if (value.groups) {
           return value.groups
         }
-        return this.service("group").fetchGroupsByEntityUuid(this.model("group").ENTITY_WORKSPACE,value.uuid);
+        return this.service("group").fetchGroupsByEntity(this.model("group").ENTITY_WORKSPACE, value.uuid);
       },
       deploymentCount(value) {
         return this.service("deployment").fetchDeploymentByWorkspaceUuid(value.uuid, false)
