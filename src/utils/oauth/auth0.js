@@ -101,7 +101,6 @@ class Auth0PrivateOAuth extends BaseOAuth {
   }
 
   async getUserData(data) {
-    console.log(data);
     data.providerUserId = data.decodedJWT.sub;
     data.profile.email = data.decodedJWT.email;
     data.profile.fullName = data.decodedJWT.name;

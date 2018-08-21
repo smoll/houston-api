@@ -12,8 +12,6 @@ class OAuthData {
     this.decodedJWT = null;
     this.profile = {
       email: null,
-      firstName: null,
-      lastName: null,
       fullName: null,
       pictureUrl: null
     }
