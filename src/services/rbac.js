@@ -12,6 +12,7 @@ class RbacService extends BaseService {
       return [];
     }
 
+    // Set Workspace to Deployment Workspace if Session has No Workspace
     if (session.resources.deployment && !session.resources.workspace && session.resources.deployment.workspace) {
       session.resources.workspace = session.resources.deployment.workspace;
     }
@@ -35,7 +36,7 @@ class RbacService extends BaseService {
             "groups.entity_type": "workspace"
           });
         }
-        if(session.resources.deployment) {
+        if(session.resources.deployment && session.resources.deployment.workspace_uuid === session.resources.workspace.uuid) {
           qb.orWhere({
             "groups.entity_uuid": session.resources.deployment.uuid,
             "groups.entity_type": "deployment"
