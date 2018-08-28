@@ -60,7 +60,7 @@ class HelmMetadata {
     return value;
   }
 
-  async latestChart(chartName) {
+  async latestChart(chartName, platformVersion) {
     try {
       let repo = await this.getRepo();
       if (!repo.entries.hasOwnProperty(chartName)) {
@@ -69,9 +69,12 @@ class HelmMetadata {
 
       let latest = "0.0.0";
       for (let chart of repo.entries[chartName]) {
-        if (!this.allowEdge && chart.version.match(EDGE_REGEX)) {
-          continue;
+        if (!this.allowEdge) {
+          if (Semver.gt(chart.version, platformVersion) || chart.version.match(EDGE_REGEX)) {
+            continue;
+          }
         }
+
         if (Semver.gt(chart.version, latest)) {
           latest = chart.version;
         }
