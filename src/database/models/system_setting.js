@@ -43,6 +43,7 @@ SystemSetting.KEYS_REPLY_EMAIL = "reply_email";
 SystemSetting.KEYS_COMPANY_NAME = "company_name";
 SystemSetting.KEYS_USER_CONFIRMATION = "user_confirmation";
 SystemSetting.KEY_DOMAIN_WHITELIST = "domain_whitelist";
+SystemSetting.KEY_WORKER_SIZES = "worker_sizes";
 
 SystemSetting.KEY_GOOGLE_CLIENT_ID = "google_oauth_client_id";
 SystemSetting.KEY_AUTH0_CLIENT_ID = "auth0_oauth_client_id";
@@ -54,7 +55,6 @@ SystemSetting.ALL_KEYS = [
   SystemSetting.KEY_DEFAULT_WORKSPACE_GROUPS,
   SystemSetting.KEY_DEFAULT_DEPLOYMENT_GROUPS,
   SystemSetting.KEY_GOOGLE_CLIENT_ID,
-  SystemSetting.KEY_GOOGLE_CLIENT_SECRET,
 ];
 
 SystemSetting.CATEGORY_AUTH = "auth";
