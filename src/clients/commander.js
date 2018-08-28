@@ -109,16 +109,16 @@ class CommanderClient {
   }
 
   deleteDeployment(deployment) {
-    if (!Config.isProd()) {
-      return Promise.resolve(true);
-    }
-
     const payload = {
       release_name: deployment.releaseName,
+      namespace: `${Config.helmConfig(Config.GLOBAL_PLATFORM_RELEASE)}-${deployment.releaseName}`,
     };
 
-    console.log("Commander disabled, skipping #deleteDeployment");
-    console.log(payload);
+    if (!Config.isProd()) {
+      console.log("Commander disabled, skipping #deleteDeployment");
+      console.log(payload);
+      return Promise.resolve(true);
+    }
 
     return new Promise((resolve, reject) => {
       this.client.deleteDeployment(payload, function (err, response) {
