@@ -26,6 +26,11 @@ class CreateDeployment extends BaseOperation {
         throw new Error("Workspace uuid is required to create a deployment");
       }
 
+      if (!args.config.componentVersion) {
+        // TODO: At some point configure this based on the args.type & args.version
+        args.config.componentVersion = "0.1.9";
+      }
+
       let deployment = await this.service("deployment").createDeployment(
         context.session.resources.workspace,
         {
@@ -37,7 +42,7 @@ class CreateDeployment extends BaseOperation {
         }
       );
 
-      this.info(`Attempting to install "${args.type} v${args.version}"`);
+      this.info(`Attempting to install "${args.type}" - v${args.version}"`);
 
       await this.service("commander").createDeployment(deployment);
 
