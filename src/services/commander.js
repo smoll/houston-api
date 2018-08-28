@@ -37,20 +37,11 @@ class CommanderService extends BaseService {
   }
 
   async createDeployment(deployment) {
-    // if (!Config.isProd()) {
-    //   return Promise.resolve(deployment);
-    // }
-
     const constraints = await this.determineConstraints(deployment);
-
-    // merge default constraints
-    const defaults = new DotObject();
-    defaults.merge(...constraints.defaults);
 
     const deploymentConfig = new DeploymentConfig(deployment);
 
-    let helmConfig = await deploymentConfig.processCreateDeployment(this.conn("airflow"), defaults.get());
-    helmConfig = helmConfig.get();
+    let helmConfig = await deploymentConfig.processCreateDeployment(this.conn("airflow"), constraints.defaults).get();
 
     return this.commander.createDeployment(deployment, helmConfig);
   }
@@ -58,13 +49,10 @@ class CommanderService extends BaseService {
   async updateDeployment(deployment) {
     const constraints = await this.determineConstraints(deployment);
 
-    // merge default constraints
-    const defaults = new DotObject();
-    defaults.merge(...constraints.defaults);
-
     // determine update config
     const deploymentConfig = new DeploymentConfig(deployment);
-    const helmConfig = await deploymentConfig.processUpdateDeployment(defaults.get());
+
+    const helmConfig = await deploymentConfig.processUpdateDeployment(constraints.defaults).get();
 
     return this.commander.updateDeployment(deployment, helmConfig);
   }
@@ -93,7 +81,7 @@ class CommanderService extends BaseService {
     return await this.helmMetadata.getChart(chart, version);
   }
 
-  async determineConstraints(deployment) {
+  async determineConstraints(deployment = null) {
     const constraints = await this.model("deployment_constraint")
       .query()
       .where((qb) => {
@@ -101,14 +89,16 @@ class CommanderService extends BaseService {
           "deployment_constraints.entity_uuid": null,
           "deployment_constraints.entity_type": Constants.ENTITY_SYSTEM
         });
-        qb.orWhere({
-          "deployment_constraints.entity_uuid": deployment.workspaceUuid,
-          "deployment_constraints.entity_type": Constants.ENTITY_WORKSPACE
-        });
-        qb.orWhere({
-          "deployment_constraints.entity_uuid": deployment.uuid,
-          "deployment_constraints.entity_type": Constants.ENTITY_DEPLOYMENT
-        });
+        if (deployment) {
+          qb.orWhere({
+            "deployment_constraints.entity_uuid": deployment.workspaceUuid,
+            "deployment_constraints.entity_type": Constants.ENTITY_WORKSPACE
+          });
+          qb.orWhere({
+            "deployment_constraints.entity_uuid": deployment.uuid,
+            "deployment_constraints.entity_type": Constants.ENTITY_DEPLOYMENT
+          });
+        }
       });
 
     const assoc = _.keyBy(constraints, 'entityType');
@@ -130,7 +120,11 @@ class CommanderService extends BaseService {
         results.limits.push(constraint.limits);
       }
     }
-    return results
+
+    let config = { limits: {}, defaults: {}};
+    _.merge(config.limits, ...results.limits);
+    _.merge(config.defaults, ...results.defaults);
+    return config;
   }
 }
 
