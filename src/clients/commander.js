@@ -19,6 +19,10 @@ class CommanderClient {
   }
 
   ping() {
+    if (!Config.isProd()) {
+      return Promise.resolve(true);
+    }
+
     return new Promise((resolve, reject) => {
       this.client.ping({}, function(err, response) {
         if (err) {
@@ -31,6 +35,12 @@ class CommanderClient {
   }
 
   fetchDeployment(options = {}) {
+    return Promise.reject("Not implemented");
+
+    if (!Config.isProd()) {
+      return Promise.resolve(true);
+    }
+
     this.client.fetchDeployment({}, function(err, response) {
       console.log(err);
       console.log(response);
@@ -54,6 +64,12 @@ class CommanderClient {
       secrets: options.secrets
     };
 
+    if (!Config.isProd()) {
+      console.log("Commander disabled, skipping #createDeployment");
+      console.log(payload);
+      return Promise.resolve(true);
+    }
+
     return new Promise((resolve, reject) => {
       this.client.createDeployment(payload, function (err, response) {
         if (err) {
@@ -64,11 +80,7 @@ class CommanderClient {
     });
   }
 
-  updateDeployment(deployment) {
-    // add static global config
-    let config = deployment.getConfigCopy();
-    config["global"] = Config.helmConfig();
-
+  updateDeployment(deployment, config) {
     const payload = {
       release_name: deployment.releaseName,
       chart: {
@@ -77,6 +89,12 @@ class CommanderClient {
       },
       raw_config: JSON.stringify(config),
     };
+
+    if (!Config.isProd()) {
+      console.log("Commander disabled, skipping #updateDeployment");
+      console.log(payload);
+      return Promise.resolve(true);
+    }
 
     return new Promise((resolve, reject) => {
       this.client.updateDeployment(payload, function (err, response) {
@@ -89,13 +107,23 @@ class CommanderClient {
   }
 
   upgradeDeployment(deployment, version) {
-
+    return Promise.reject("Not implemented");
+    if (!Config.isProd()) {
+      return Promise.resolve(true);
+    }
   }
 
   deleteDeployment(deployment) {
+    if (!Config.isProd()) {
+      return Promise.resolve(true);
+    }
+
     const payload = {
       release_name: deployment.releaseName,
     };
+
+    console.log("Commander disabled, skipping #deleteDeployment");
+    console.log(payload);
 
     return new Promise((resolve, reject) => {
       this.client.deleteDeployment(payload, function (err, response) {
