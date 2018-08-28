@@ -2,6 +2,14 @@ const Config = require("../../utils/config.js");
 
 const SYSTEM_SETTING_TABLE = "system_settings";
 
+const insertIfNotExists = async (knex, record) => {
+  const setting = await knex.select().where("key", record.key);
+  if (setting.length) {
+    return;
+  }
+  return await knex.insert(record);
+};
+
 exports.up = function(knex) {
 
   const settings = [
@@ -24,14 +32,6 @@ exports.up = function(knex) {
       key: "domain_whitelist",
       value: Config.baseDomain(),
       category: "authentication",
-    },
-    {
-      key: "worker_defaults",
-      value: JSON.stringify({
-        workerCount: 1,
-        workerSize: "medium",
-      }),
-      category: "deployment",
     },
     {
       key: "worker_sizes",
@@ -71,13 +71,16 @@ exports.up = function(knex) {
     }
   ];
 
-  return knex(SYSTEM_SETTING_TABLE).insert(settings.map((setting) => {
+  const promises = [];
+
+  for(let setting of settings) {
     setting.created_at = new Date().toISOString();
     if (!setting.hasOwnProperty("is_encrypted")) {
       setting.is_encrypted = false;
     }
-    return setting;
-  }));
+    promises.push(insertIfNotExists(knex(SYSTEM_SETTING_TABLE), setting));
+  }
+  return Promise.all(promises);
 };
 
 exports.down = function(knex) {

@@ -72,6 +72,8 @@ exports.up = function(knex) {
           }
         },
         "pgbouncer": {
+          "metadataPoolSize": 2,
+          "resultBackendPoolSize": 1,
           "resources": {
             "limits": {
               "cpu": "500m",
@@ -140,8 +142,8 @@ exports.up = function(knex) {
               "memory": "1024Mi"
             }
           },
-          "replicas": 1,
-          "terminationGracePeriodSeconds": 600
+          "replicas": 10,
+          "terminationGracePeriodSeconds": 86400`
         },
         "scheduler": {
           "resources": {
@@ -192,6 +194,8 @@ exports.up = function(knex) {
           }
         },
         "pgbouncer": {
+          "metadataPoolSize": 2,
+          "resultBackendPoolSize": 1,
           "resources": {
             "limits": {
               "cpu": "500m",
