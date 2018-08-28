@@ -129,6 +129,6 @@ Config.BASE_URL_ORBIT = "BASE_URL_ORBIT";
 Config.BASE_URL_HOUSTON = "BASE_URL_HOUSTON";
 
 Config.GLOBAL_PLATFORM_VERSION = "releaseVersion";
-Config.GLOBAL_PLATFORM_RELEASE = "releaseRelease";
+Config.GLOBAL_PLATFORM_RELEASE = "releaseName";
 Config.GLOBAL_BASE_DOMAIN = "baseDomain";
 module.exports = Config;
