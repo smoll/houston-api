@@ -47,21 +47,16 @@ class CommanderClient {
     });
   }
 
-  createDeployment(deployment, options = {}) {
-    // add static global config to options.config
-    options.config["global"] = Config.helmConfig();
-
+  createDeployment(deployment, config) {
     const payload = {
       release_name: deployment.releaseName,
       chart: {
         name: deployment.type,
         version: deployment.version,
       },
-      organization_uuid: {
-        value: deployment.workspaceUuid
-      },
-      raw_config: JSON.stringify(options.config),
-      secrets: options.secrets
+      namespace: `${Config.helmConfig(Config.GLOBAL_PLATFORM_RELEASE)}-${deployment.releaseName}`,
+      raw_config: JSON.stringify(config),
+      secrets: {}
     };
 
     if (!Config.isProd()) {
@@ -114,16 +109,16 @@ class CommanderClient {
   }
 
   deleteDeployment(deployment) {
-    if (!Config.isProd()) {
-      return Promise.resolve(true);
-    }
-
     const payload = {
       release_name: deployment.releaseName,
+      namespace: `${Config.helmConfig(Config.GLOBAL_PLATFORM_RELEASE)}-${deployment.releaseName}`,
     };
 
-    console.log("Commander disabled, skipping #deleteDeployment");
-    console.log(payload);
+    if (!Config.isProd()) {
+      console.log("Commander disabled, skipping #deleteDeployment");
+      console.log(payload);
+      return Promise.resolve(true);
+    }
 
     return new Promise((resolve, reject) => {
       this.client.deleteDeployment(payload, function (err, response) {

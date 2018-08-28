@@ -54,29 +54,22 @@ class DeploymentService extends BaseService {
     return null;
   }
 
-  async createDeployment(workspace, type, version, label, description) {
+  async createDeployment(workspace, payload) {
     try {
       const DeploymentModel = this.model("deployment");
 
       const releaseName = ReleaseNamerUtil.generate();
 
-      const payload = {
-        type: type,
-        label: label,
-        description: description,
-        release_name: releaseName,
-        version: version,
-        workspace_uuid: workspace.uuid,
-      };
+      payload.workspace_uuid = workspace.uuid;
+      payload.release_name = releaseName;
 
       return await DeploymentModel
         .query()
         .insertGraph(payload).returning("*");
     } catch (err) {
 
-      if(err.message.indexOf("unique constraint") !== -1 &&
-         err.message.indexOf("deployments_workspace_uuid_label_unique") !== -1) {
-        throw new Error(`Workspace already has a deployment named ${label}`);
+      if(err.message.indexOf("unique_workspace_uuid_label") !== -1) {
+        throw new Error(`Workspace already has a deployment named ${payload.label}`);
       }
       throw err;
     }

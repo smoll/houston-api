@@ -13,9 +13,11 @@ class Deployment extends BaseType {
       description: String
       releaseName: String
       version: String
+      config: JSON
       workspace: Workspace
       urls: [DeploymentUrls]
       deployInfo: DeployInfo
+      deploymentConfig: DeploymentConfig
       createdAt: String
       updatedAt: String
     }`;
@@ -41,6 +43,9 @@ class Deployment extends BaseType {
       version(value) {
         return value.version || null;
       },
+      config(value) {
+        return value.config || {};
+      },
       workspace(value) {
         return value.workspace || {};
       },
@@ -61,6 +66,15 @@ class Deployment extends BaseType {
       },
       deployInfo(value) {
         return this.service("docker").fetchImagesByDeployment(value);
+      },
+      async deploymentConfig(value) {
+        const workerPresets = await this.service("system_setting").getSetting(this.model("system_setting").KEY_WORKER_SIZES);
+        return {
+          ...await this.service("commander").determineConstraints(value),
+          presets: {
+            workerSizes: workerPresets
+          }
+        };
       },
       createdAt(value) {
         return value.createdAt || null;

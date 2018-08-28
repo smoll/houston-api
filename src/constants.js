@@ -5,4 +5,5 @@ module.exports = {
   ENTITY_SYSTEM: "system",
   ENTITY_WORKSPACE: "workspace",
 
+  DEPLOYMENT_AIRFLOW: "airflow",
 };

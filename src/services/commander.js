@@ -4,18 +4,29 @@ const PasswordGen = require("generate-password");
 const BaseService = require("./base.js");
 const CommanderClient = require("../clients/commander.js");
 const Config = require("../utils/config.js");
+const Constants = require("../constants.js");
 const HelmMetadata = require("../utils/helm_metadata");
 const PostgresUtil = require("../utils/postgres.js");
-const HelmConfig = require("../utils/helm_config.js");
+const DotObject = require("../utils/dot_object.js");
+const DeploymentConfig = require("../utils/deployment_config.js");
+
+
+
+
 
 class CommanderService extends BaseService {
   constructor() {
     super(...arguments);
     this.commander = new CommanderClient(Config.get(Config.COMMANDER_HOST), Config.get(Config.COMMANDER_PORT));
+
+    const allowEdge = Config.get(Config.HELM_REPO_EDGE) === "true";
+
     this.helmMetadata = new HelmMetadata(
       Config.get(Config.HELM_ASTRO_REPO),
-      Config.get(Config.HELM_REPO_EDGE) === "true"
+      allowEdge,
     );
+
+    this.info(`Helm "Edge" builds are ${allowEdge ? "enabled" : "disabled"}`);
   }
 
   // grpc wrappers
@@ -25,176 +36,38 @@ class CommanderService extends BaseService {
     return response.received - start;
   }
 
-  async createDeployment(deployment, config) {
-    if (!config) {
-      // TODO: maybe always merge the input args with the helm config (but maybe not)
-      config = {}
-    }
+  async createDeployment(deployment) {
+    const constraints = await this.determineConstraints(deployment);
 
-    if (!Config.isProd()) {
-      return Promise.resolve(deployment);
-    }
+    const deploymentConfig = new DeploymentConfig(deployment);
 
-    let request = await this.createModuleRequest(deployment, config);
-    return this.commander.createDeployment(deployment, request).then((response) => {
-      return this.service("deployment").updateDeployment(deployment, { config: request.config }).then(() => {
-        return response;
-      });
-    });
+    let helmConfig = await deploymentConfig.processCreateDeployment(this.conn("airflow"), constraints.defaults).get();
+
+    return this.commander.createDeployment(deployment, helmConfig);
   }
 
   async updateDeployment(deployment) {
-    return this.commander.updateDeployment(deployment);
+    const constraints = await this.determineConstraints(deployment);
+
+    // determine update config
+    const deploymentConfig = new DeploymentConfig(deployment);
+
+    const helmConfig = await deploymentConfig.processUpdateDeployment(constraints.defaults).get();
+
+    return this.commander.updateDeployment(deployment, helmConfig);
   }
 
   async deleteDeployment(deployment) {
     // initialize delete with commander
-    return this.commander.deleteDeployment(deployment).then(() => {
-      return this.deleteModule(deployment);
-    });
-  }
+    await this.commander.deleteDeployment(deployment);
 
-  // helper functions
-  async createModuleRequest(deployment, config) {
-    switch (deployment.type) {
-      case "airflow":
-        return this.airflowConfig(deployment, config);
-      default:
-        this.debug("Unknown module to config");
-        return Promise.reject("Unknown module to config");
-    }
-  }
-
-  // helper functions
-  async deleteModule(deployment) {
-    switch (deployment.type) {
-      case "airflow":
-        return this.airflowDelete(deployment);
-      default:
-        this.debug("Unknown module to config");
-        return Promise.reject("Unknown module to config");
-    }
-  }
-
-  async airflowConfig(deployment, config) {
-    // For each deploy, lets create one database for all that deployments data based on release name
-    // For each service needed by that deployment, create a schema
-    // For each schema create a user
-    // Assign privileges to user in schema
-    // For each user, default its schema to the one associated to it
-    // Note: The reasons for creating a user per schema are:
-    //    1) Convenience: each user gets a default schema to use (Not all apps support selecting the schema in the URI)
-    //    2) Safety:      prevent one app from accidentally modifying data for another
-    //    3) Security:    should there be a vulnerability in one app, compromised connection URI cannot be used for other db's/schema's
-
-    const helmConfig = new HelmConfig(config);
-
-    const deployId = deployment.releaseName.replace(/-/g, "_");
-    const deployDB    = `${deployId}_airflow`;
-    const airflowId   = `${deployId}_airflow`;
-    const celeryId    = `${deployId}_celery`;
-
-    // create db
-    await PostgresUtil.createDatabase(this.conn("airflow"), deployDB);
-
-    // connect to new db
-    const userDB = await PostgresUtil.userAirflowConnect(deployDB);
-
-    // Create user, schema, assign privs for user in schema, set schema as user default
-    let airflowUri = await this.createDeploySchema(userDB, deployDB, "airflow", airflowId);
-    let celeryUri = await this.createDeploySchema(userDB, deployDB, "celery", celeryId);
-
-    // Close user db connection
-    await userDB.destroy();
-
-    // overwrite the secret names to add the deployment release name
-    helmConfig.setKey("data.airflowMetadataSecret", `${deployment.releaseName}-airflow-metadata`);
-    helmConfig.setKey("data.airflowResultBackendSecret", `${deployment.releaseName}-airflow-result-backend`);
-
-    // generate and redis password
-    helmConfig.setKey("redis.password", PasswordGen.generate({ length: 32, numbers: true }));
-
-    // generate and set fernet key (fernet keys have to be base64 encoded)
-    helmConfig.setKey("fernetKey", new Buffer(PasswordGen.generate({ length: 32, numbers: true })).toString('base64'));
-
-    const secrets = [
-      {
-        name: helmConfig.getKey("data.airflowMetadataSecret"),
-        key: "connection",
-        value: PostgresUtil.uriReplace(airflowUri, {
-          protocol: "postgresql"
-        })
-      },
-      {
-        name: helmConfig.getKey("data.airflowResultBackendSecret"),
-        key: "connection",
-        value: PostgresUtil.uriReplace(celeryUri, {
-          protocol: "db+postgresql"
-        })
-      }
-    ];
-
-    const deployConfigs = {
-      "env": []
-    };
-
-    return {
-      "secrets": secrets,
-      "config": _.merge(helmConfig.get(), deployConfigs)
-    }
-  }
-
-  async airflowDelete(deployment) {
-    const deployId = deployment.releaseName.replace(/-/g, "_");
-    const deployDB    = `${deployId}_airflow`;
-    const airflowId   = `${deployId}_airflow`;
-    const celeryId    = `${deployId}_celery`;
-
-    await PostgresUtil.forceDisconnectSessions(this.conn("airflow"), deployDB);
-    await PostgresUtil.deleteDatabase(this.conn("airflow"), deployDB);
-    await PostgresUtil.deleteUser(this.conn("airflow"), airflowId);
-    await PostgresUtil.deleteUser(this.conn("airflow"), celeryId);
-  }
-
-  async createDeploySchema(userDB, database, schema, user) {
-    try {
-      const password = PasswordGen.generate({
-        length: 32, numbers: true
-      });
-
-      const connUser = PostgresUtil.connectionUser(Config.get(Config.AIRFLOW_POSTGRES_URI));
-
-      // create user
-      await PostgresUtil.createUser(this.conn("airflow"), user, password);
-
-      // add grants to do stuff for user role
-      await PostgresUtil.creatorGrantRole(this.conn("airflow"), connUser, user);
-
-      // create schema
-      await PostgresUtil.createSchema(userDB, schema, user);
-
-      // grant user access to schema
-      await PostgresUtil.resetAccessGrants(userDB, database, schema, user);
-
-      // set schema to be users default
-      await PostgresUtil.setUserDefaultSchema(userDB, user, schema);
-
-      // revoke user role grant as airflow conn user won't need it anymore
-      await PostgresUtil.creatorRevokeRole(this.conn("airflow"), connUser, user);
-
-      return Promise.resolve(PostgresUtil.uriReplace(Config.get(Config.AIRFLOW_POSTGRES_URI), {
-        database: database,
-        username: user,
-        password: password
-      }));
-    } catch (err) {
-      this.error(err.message);
-      return Promise.reject("A problem occurred creating database schema");
-    }
+    // clean up db
+    const deploymentConfig = new DeploymentConfig(deployment);
+    return await deploymentConfig.processDeleteDeployment();
   }
 
   async latestHelmChartVersion(chart) {
-    return await this.helmMetadata.latestChart(chart);
+    return await this.helmMetadata.latestChart(chart, Config.helmConfig(Config.GLOBAL_PLATFORM_VERSION));
   }
 
   async fetchHelmConfig(chart, version = null) {
@@ -206,6 +79,52 @@ class CommanderService extends BaseService {
       version = await this.latestHelmChartVersion(chart)
     }
     return await this.helmMetadata.getChart(chart, version);
+  }
+
+  async determineConstraints(deployment = null) {
+    const constraints = await this.model("deployment_constraint")
+      .query()
+      .where((qb) => {
+        qb.orWhere({
+          "deployment_constraints.entity_uuid": null,
+          "deployment_constraints.entity_type": Constants.ENTITY_SYSTEM
+        });
+        if (deployment) {
+          qb.orWhere({
+            "deployment_constraints.entity_uuid": deployment.workspaceUuid,
+            "deployment_constraints.entity_type": Constants.ENTITY_WORKSPACE
+          });
+          qb.orWhere({
+            "deployment_constraints.entity_uuid": deployment.uuid,
+            "deployment_constraints.entity_type": Constants.ENTITY_DEPLOYMENT
+          });
+        }
+      });
+
+    const assoc = _.keyBy(constraints, 'entityType');
+
+    const results = {
+      limits: [],
+      defaults: [],
+    };
+
+    for(let type of [Constants.ENTITY_SYSTEM, Constants.ENTITY_WORKSPACE, Constants.ENTITY_DEPLOYMENT]) {
+      if (!assoc[type]) {
+        continue;
+      }
+      const constraint = assoc[type];
+      if (_.isObject(constraint.defaults)) {
+        results.defaults.push(constraint.defaults);
+      }
+      if (_.isObject(constraint.limits)) {
+        results.limits.push(constraint.limits);
+      }
+    }
+
+    let config = { limits: {}, defaults: {}};
+    _.merge(config.limits, ...results.limits);
+    _.merge(config.defaults, ...results.defaults);
+    return config;
   }
 }
 

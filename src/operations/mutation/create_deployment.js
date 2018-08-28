@@ -6,7 +6,7 @@ class CreateDeployment extends BaseOperation {
     this.name = "createDeployment";
     this.typeDef = `
       # Creates a new deployment
-      createDeployment(type: String!, label: String!, description: String, workspaceUuid: Uuid, version: String) : Deployment
+      createDeployment(type: String!, label: String!, description: String, version: String, workspaceUuid: Uuid!, config: JSON!) : Deployment
     `;
     this.entrypoint = "mutation";
     this.guards = ["authenticated", "permission:user_deployment_create"];
@@ -18,7 +18,6 @@ class CreateDeployment extends BaseOperation {
         try {
           args.version = await this.service("commander").latestHelmChartVersion(args.type);
         } catch (err) {
-
           throw new Error(`Unable to determine latest version for type "${args.type}"`);
         }
       }
@@ -27,16 +26,25 @@ class CreateDeployment extends BaseOperation {
         throw new Error("Workspace uuid is required to create a deployment");
       }
 
+      if (!args.config.componentVersion) {
+        // TODO: At some point configure this based on the args.type & args.version
+        args.config.componentVersion = "0.1.9";
+      }
+
       let deployment = await this.service("deployment").createDeployment(
         context.session.resources.workspace,
-        args.type,
-        args.version,
-        args.label,
-        args.description,
+        {
+          type: args.type,
+          version: args.version,
+          label: args.label + Math.random().toString(),
+          description: args.description,
+          config: args.config,
+        }
       );
 
-      // On duplicate error will be;  duplicate key value violates unique constraint \"unique_workspace_uuid_label\"",
-      await this.service("commander").createDeployment(deployment, args.config);
+      this.info(`Attempting to install "${args.type}" - v${args.version}"`);
+
+      await this.service("commander").createDeployment(deployment);
 
       return deployment;
     } catch (err) {

@@ -14,7 +14,7 @@ class Config {
     Config.defaults[Config.JWT_PASSPHRASE] = "insecure_passphrase";
     Config.defaults[Config.AUTH_STRATEGY] = "local";
     Config.defaults[Config.HELM_GLOBAL_CONFIG] = {};
-    Config.defaults[Config.HELM_ASTRO_REPO] = "http://helm.astronomer.io/";
+    Config.defaults[Config.HELM_ASTRO_REPO] = "https://helm.astronomer.io/";
     Config.defaults[Config.HELM_REPO_EDGE] = "false";
 
     Config.defaults[Config.REGISTRY_CERT_PATH] = "/tmp/houston/";
@@ -36,15 +36,18 @@ class Config {
     return this.get(Config.NODE_ENV) === "production";
   }
 
-  static helmConfig() {
+  static helmConfig(key = null) {
     if (!HelmConfig) {
       HelmConfig = JSON.parse(Config.get(Config.HELM_GLOBAL_CONFIG));
+    }
+    if (key) {
+      return HelmConfig[key];
     }
     return HelmConfig;
   }
 
   static baseDomain(includeProtocol = false) {
-    const base = this.helmConfig()["baseDomain"];
+    const base = this.helmConfig(Config.GLOBAL_BASE_DOMAIN);
     if (!includeProtocol) {
       return base;
     }
@@ -125,5 +128,7 @@ Config.AUTH0_EXTERNAL_LOGIN = "AUTH0_EXTERNAL_LOGIN";
 Config.BASE_URL_ORBIT = "BASE_URL_ORBIT";
 Config.BASE_URL_HOUSTON = "BASE_URL_HOUSTON";
 
-
+Config.GLOBAL_PLATFORM_VERSION = "releaseVersion";
+Config.GLOBAL_PLATFORM_RELEASE = "releaseName";
+Config.GLOBAL_BASE_DOMAIN = "baseDomain";
 module.exports = Config;

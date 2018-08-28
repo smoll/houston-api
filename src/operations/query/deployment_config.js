@@ -5,7 +5,7 @@ class DeploymentConfig extends BaseOperation {
     this.name = "deploymentConfig";
     this.typeDef = `
       # Fetches config needed to create a module deployment
-      deploymentConfig(type: String!, version: String): JSON
+      deploymentConfig(workspaceUuid: Uuid, type: String, version: String, deploymentUuid: Uuid): DeploymentConfig
     `;
     this.entrypoint = "query";
     this.guards = ["authenticated"];
@@ -13,7 +13,13 @@ class DeploymentConfig extends BaseOperation {
 
   async resolver(root, args, context) {
     try {
-      return await this.service("commander").fetchHelmConfig(args.type, args.version);
+      const workerPresets = await this.service("system_setting").getSetting(this.model("system_setting").KEY_WORKER_SIZES);
+      return {
+        ...await this.service("commander").determineConstraints(null),
+        presets: {
+          workerSizes: workerPresets
+        }
+      };
     } catch (err) {
       this.error(err.error.message);
       return {};
