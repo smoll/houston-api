@@ -15,7 +15,7 @@ class Deployments extends BaseOperation {
   async resolver(root, args, context) {
     try {
       if (args.deploymentUuid) {
-        return [this.service("deployment").fetchDeploymentByUuid(args.deploymentUuid)];
+        return [context.session.resources.deployment];
       } else if (args.workspaceUuid) {
         return this.service("deployment").fetchDeploymentByWorkspaceUuid(args.workspaceUuid, false);
       } else if (args.releaseName) {
