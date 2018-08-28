@@ -1,11 +1,12 @@
 module.exports = [
+  require("./deployment.js"),
+  require("./deployment_constraint.js"),
   require("./email.js"),
   require("./group.js"),
   require("./group_property.js"),
   require("./group_role_map.js"),
   require("./invite_token.js"),
   require("./local_credential.js"),
-  require("./deployment.js"),
   require("./oauth_credential.js"),
   require("./permission.js"),
   require("./role.js"),

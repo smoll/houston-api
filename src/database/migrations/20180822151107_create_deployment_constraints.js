@@ -1,6 +1,4 @@
-const MigrationHelper = require("../migration_helpers.js");
-
-const TABLE_NAME = "system_settings";
+const TABLE_NAME = "deployment_constraints";
 
 exports.up = function(knex) {
   return knex.schema.hasTable(TABLE_NAME).then((exists) => {
@@ -9,11 +7,14 @@ exports.up = function(knex) {
     }
 
     return knex.schema.createTable(TABLE_NAME, function (table) {
-      table.string("key").primary();
-      table.text("value");
-      table.string("category").index();
-      table.boolean("is_encrypted");
+      table.increments();
+      table.string("entity_type");
+      table.uuid("entity_uuid").nullable();
+      table.text("defaults");
+      table.text("limits");
       table.timestamps();
+
+      table.unique(["entity_type", "entity_uuid"]);
     });
   });
 };

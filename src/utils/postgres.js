@@ -271,6 +271,18 @@ class PostgresFunctions {
     return parts.auth.substr(0, parts.auth.indexOf(":"));
   }
 
+  static toObject(uri) {
+    let parts = Url.parse(uri);
+
+    return {
+      user: parts.username,
+      pass: parts.password,
+      host: parts.hostname,
+      port: parts.port,
+      db: parts.database
+    };
+  }
+
   static debug(message) {
     if(!DEBUG) {
       return;

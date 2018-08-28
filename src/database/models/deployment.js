@@ -1,5 +1,6 @@
 const _ = require("lodash");
 const BaseModel = require("./base.js");
+const Constants = require("../../constants.js");
 
 class Deployment extends BaseModel {
 
@@ -42,21 +43,32 @@ class Deployment extends BaseModel {
         relation: BaseModel.BelongsToOneRelation,
         modelClass: `${__dirname}/workspace.js`,
         join: {
-          from: 'deployments.workspace_uuid',
-          to: 'workspaces.uuid'
+          from: "deployments.workspace_uuid",
+          to: "workspaces.uuid"
         }
       },
       groups: {
         relation: BaseModel.HasManyRelation,
         modelClass: `${__dirname}/group.js`,
         filter: {
-          "entity_type": "deployment"
+          "entity_type": Constants.ENTITY_DEPLOYMENT,
         },
         join: {
-          from: 'deployments.uuid',
-          to: 'groups.entity_uuid'
+          from: "deployments.uuid",
+          to: "groups.entity_uuid"
         }
       },
+      constraint: {
+        relation: BaseModel.HasOneRelation,
+        modelClass: `${__dirname}/deployment_constraint.js`,
+        filter: {
+          "entity_type": Constants.ENTITY_WORKSPACE,
+        },
+        join: {
+          from: "deployments.workspace_uuid",
+          to: "deployment_constraints.entity_uuid"
+        }
+      }
     };
   }
 
