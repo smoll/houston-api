@@ -143,7 +143,7 @@ exports.up = function(knex) {
             }
           },
           "replicas": 10,
-          "terminationGracePeriodSeconds": 86400`
+          "terminationGracePeriodSeconds": 86400
         },
         "scheduler": {
           "resources": {
