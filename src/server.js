@@ -89,7 +89,8 @@ const schema = makeExecutableSchema({
   return server.start({
     // cors config options https://github.com/expressjs/cors#configuration-options
     cors: {
-      origin: [new RegExp(`.${Config.baseDomain()}$`)],
+      // allow any localhost or requests from any url with the base domain
+      origin: ['http://app.local.astronomer.io:5000', new RegExp(":\\/\\/localhost[:\\d+]?"), new RegExp(`.${Config.baseDomain()}$`)],
       methods: "GET,PUT,POST,DELETE,OPTIONS",
       allowedHeaders: "Content-Type, Authorization, Content-Length, X-Requested-With",
       credentials: true,
