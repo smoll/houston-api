@@ -1,5 +1,6 @@
 const { makeExecutableSchema } = require("graphql-tools");
 const { GraphQLServer, PubSub } = require("graphql-yoga");
+const ConstraintDirective = require('graphql-constraint-directive')
 const BodyParser = require("body-parser");
 const ApolloError = require("apollo-errors").formatError;
 const Config = require("./utils/config.js");
@@ -33,9 +34,9 @@ SchemaBuilder.registerGuards(guards);
 // Create the schema
 const schema = makeExecutableSchema({
   typeDefs: SchemaBuilder.generateTypeDefs({}, []),
-  resolvers: SchemaBuilder.generateResolvers({}, [])
+  resolvers: SchemaBuilder.generateResolvers({}, []),
+  schemaDirectives: { constraint: ConstraintDirective }
 });
-
 
 (async function() {
   Application.logger().info("Running migrations... ");
