@@ -273,13 +273,13 @@ class PostgresFunctions {
 
   static toObject(uri) {
     let parts = Url.parse(uri);
-
+    let auth = parts.auth.split(":");
     return {
-      user: parts.username,
-      pass: parts.password,
+      user: auth[0],
+      pass: auth[1],
       host: parts.hostname,
       port: parts.port,
-      db: parts.database
+      db: parts.pathname.substr(1)
     };
   }
 
