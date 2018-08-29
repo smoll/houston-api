@@ -77,7 +77,7 @@ Once PostgreSQL is running `npm run test` can now be run.
 
 ## Development
 When developing you will want to test your changes locally before pushing a change.
-You can do this by running `docker-compose up -f docker-compose.yaml -f docker-compose.override.yaml` from your root houston-api project directory, where `docker-compose.override.yaml` is the override file created using the specification below.
+You can do this by running `docker-compose up` from your root houston-api project directory. You will want to create a file named `docker-compose.override.yaml`. This override file will supply configurations for running the project locally. Example found below.
 
 In some circumstances the API server will spin up before the Postgres dependency is ready.
 You can resolve this error by opening up and `.js` houston-api file, making a change and saving the file.
