@@ -77,7 +77,25 @@ Once PostgreSQL is running `npm run test` can now be run.
 
 ## Development
 When developing you will want to test your changes locally before pushing a change.
-You can do this by running `docker-compose up` from your root houston-api project directory.
+You can do this by running `docker-compose up` from your root houston-api project directory. You will want to create a file named `docker-compose.override.yaml`. This override file will supply configurations for running the project locally. Example found below.
+
 In some circumstances the API server will spin up before the Postgres dependency is ready.
 You can resolve this error by opening up and `.js` houston-api file, making a change and saving the file.
 This will trigger the API server to restart and look for the Postgres database again.
+
+```yaml
+---
+version: "2.1"
+
+volumes:
+  postgres_data:
+
+services:
+  houston-api:
+    environment:
+      AUTH0_EXTERNAL_LOGIN: "false"
+      AUTH0_CUSTOM: "true"
+      HELM_GLOBAL_CONFIG: "{\"baseDomain\":\"local.astronomer.io\",\"acme\":false,\"rbacEnabled\":true,\"releaseName\":\"release-name\",\"registrySecretName\":\"registry\"}"
+      BASE_URL_ORBIT: "http://app.local.astronomer.io:5000/"
+      BASE_URL_HOUSTON: "http://houston.local.astronomer.io:8870/"
+```
