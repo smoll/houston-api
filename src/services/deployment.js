@@ -5,6 +5,25 @@ const deleteQueue = {};
 
 class DeploymentService extends BaseService {
 
+  async fetchAllDeploymentsByUserUuid(userUuid, throwError = true) {
+    const deployments = await this.model("deployment")
+      .query()
+      .leftJoin("user_workspace_map", "user_workspace_map.workspace_uuid", "deployments.workspace_uuid")
+      .where({
+        "user_workspace_map.user_uuid": userUuid
+      })
+      .whereNot("status", this.model("deployment").STATUS_DELETING);
+
+    if (deployments && deployments.length > 0) {
+      return deployments;
+    }
+    if (throwError) {
+      this.notFound("deployment", userUuid);
+    }
+    return [];
+  }
+
+
   async fetchDeploymentByUuid(deploymentUuid, throwError = true) {
     let deployment = await this.model("deployment")
       .query()
