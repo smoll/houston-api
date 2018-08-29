@@ -27,7 +27,7 @@ class DeploymentConfig {
   }
 
   getHelmTemplate(version) {
-    if (Semver.lt(version, "0.5.0")) {
+    if (Semver.lte(version, "0.4.1")) {
       // use old version
       return Helm_0_3_0;
     }
