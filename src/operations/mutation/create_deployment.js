@@ -6,7 +6,7 @@ class CreateDeployment extends BaseOperation {
     this.name = "createDeployment";
     this.typeDef = `
       # Creates a new deployment
-      createDeployment(type: String!, label: String!, description: String, version: String, workspaceUuid: Uuid!, config: JSON!) : Deployment
+      createDeployment(type: String!, label: String!, workspaceUuid: Uuid!, description: String, version: String, config: JSON) : Deployment
     `;
     this.entrypoint = "mutation";
     this.guards = ["authenticated", "permission:user_deployment_create"];
@@ -20,6 +20,10 @@ class CreateDeployment extends BaseOperation {
         } catch (err) {
           throw new Error(`Unable to determine latest version for type "${args.type}"`);
         }
+      }
+
+      if (!args.config) {
+        args.config = {};
       }
 
       if (!args.workspaceUuid) {
