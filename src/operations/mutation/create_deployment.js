@@ -36,7 +36,7 @@ class CreateDeployment extends BaseOperation {
         {
           type: args.type,
           version: args.version,
-          label: args.label + Math.random().toString(),
+          label: args.label,
           description: args.description,
           config: args.config,
         }
