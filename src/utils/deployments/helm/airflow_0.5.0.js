@@ -74,6 +74,6 @@ class Airflow_0_4_2 extends Base {
 }
 
 Airflow_0_4_2.SUPPORTED_EXECUTORS = ["LocalExecutor","SequentialExecutor","CeleryExecutor","KubernetesExecutor"];
-Airflow_0_4_2.DEFAULT_EXECUTOR = ["CeleryExecutor"];
+Airflow_0_4_2.DEFAULT_EXECUTOR = "CeleryExecutor";
 
 module.exports = Airflow_0_4_2;

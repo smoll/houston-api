@@ -73,8 +73,8 @@ class DeploymentConfig {
     return helmConfig;
   }
 
-  async processDeleteDeployment() {
-    const helm = new this.helmTemplate(this.deployment);
+  async processDeleteDeployment(conn) {
+    const helm = new this.helmTemplate(this.deployment, conn);
     return await helm.deploymentTeardown();
   }
 }

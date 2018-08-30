@@ -41,9 +41,9 @@ class CommanderService extends BaseService {
 
     const deploymentConfig = new DeploymentConfig(deployment);
 
-    let helmConfig = await deploymentConfig.processCreateDeployment(this.conn("airflow"), constraints.defaults).get();
+    let helmConfig = await deploymentConfig.processCreateDeployment(this.conn("airflow"), constraints.defaults);
 
-    return this.commander.createDeployment(deployment, helmConfig);
+    return this.commander.createDeployment(deployment, helmConfig.get());
   }
 
   async updateDeployment(deployment) {
@@ -52,9 +52,9 @@ class CommanderService extends BaseService {
     // determine update config
     const deploymentConfig = new DeploymentConfig(deployment);
 
-    const helmConfig = await deploymentConfig.processUpdateDeployment(constraints.defaults).get();
+    const helmConfig = await deploymentConfig.processUpdateDeployment(constraints.defaults);
 
-    return this.commander.updateDeployment(deployment, helmConfig);
+    return this.commander.updateDeployment(deployment, helmConfig.get());
   }
 
   async deleteDeployment(deployment) {
@@ -63,7 +63,7 @@ class CommanderService extends BaseService {
 
     // clean up db
     const deploymentConfig = new DeploymentConfig(deployment);
-    return await deploymentConfig.processDeleteDeployment();
+    return await deploymentConfig.processDeleteDeployment(this.conn("airflow"));
   }
 
   async latestHelmChartVersion(chart) {

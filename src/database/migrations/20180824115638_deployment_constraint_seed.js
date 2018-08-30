@@ -98,7 +98,7 @@ exports.up = function(knex) {
           }
         },
         "quotas": {
-          "pods": 100,
+          //"pods": 100,
           "requests": {
             "cpu": "3",
             "memory": "12Gi"
@@ -220,7 +220,7 @@ exports.up = function(knex) {
           }
         },
         "quotas": {
-          "pods": 100,
+          //"pods": 100,
           "requests": {
             "cpu": "3",
             "memory": "12Gi"
