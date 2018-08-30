@@ -48,7 +48,7 @@ class DeploymentConfig {
 
   async processCreateDeployment(conn, defaults = {}) {
     const helmConfig = new DotObject(defaults);
-    const envVars = {};
+    const envVars = [];
 
     const helm = new this.helmTemplate(this.deployment, conn);
     const component = new this.componentTemplate(this.deployment);
