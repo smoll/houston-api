@@ -68,13 +68,13 @@ class CommanderClient {
     }
 
     return new Promise((resolve, reject) => {
-      Logger.info("Running commanderClient#reateDeployment()");
+      Logger.info("Running commanderClient#createDeployment()");
       this.client.createDeployment(payload, function (err, response) {
         if (err) {
-          Logger.info(err);
+          Logger.info(JSON.stringify(err));
           return reject(err);
         }
-        Logger.info(response);
+        Logger.info(JSON.stringify(response));
         return resolve(response);
       });
     });
@@ -100,10 +100,10 @@ class CommanderClient {
       Logger.info("Running commanderClient#updateDeployment()");
       this.client.updateDeployment(payload, function (err, response) {
         if (err) {
-          Logger.info(err);
+          Logger.info(JSON.stringify(err));
           return reject(err);
         }
-        Logger.info(response);
+        Logger.info(JSON.stringify(response));
         return resolve(response);
       });
     });
@@ -132,10 +132,10 @@ class CommanderClient {
       Logger.info("Running commanderClient#deleteDeployment()");
       this.client.deleteDeployment(payload, function (err, response) {
         if (err) {
-          Logger.info(err);
+          Logger.info(JSON.stringify(err));
           return reject(err);
         }
-        Logger.info(response);
+        Logger.info(JSON.stringify(response));
         return resolve(response);
       });
     });
