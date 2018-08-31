@@ -48,6 +48,7 @@ class Airflow_0_4_2 extends Base {
     helmConfig.set("registryAuthSecretName", helmGlobals.registryAuthSecret);
     helmConfig.set("platform.release", helmGlobals.releaseName);
     helmConfig.set("platform.workspace", this.deployment.workspaceUuid);
+    helmConfig.set("pgbouncer.enabled", true);
 
     if (!helmConfig.get("executor") || helmConfig.get("executor").indexOf(payload.executor) === -1) {
       helmConfig.set("executor", Airflow_0_4_2.DEFAULT_EXECUTOR);
