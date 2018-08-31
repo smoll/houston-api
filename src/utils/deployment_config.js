@@ -57,6 +57,9 @@ class DeploymentConfig {
     await component.generateEnv(helmConfig, envVars);
 
     helmConfig.set("env", envVars);
+
+    await helmConfig.merge(this.deployment.config);
+
     return helmConfig;
   }
 
@@ -69,6 +72,8 @@ class DeploymentConfig {
     await component.generateEnv(helmConfig, envVars);
 
     helmConfig.set("env", envVars.get());
+
+    await helmConfig.merge(this.deployment.config);
 
     return helmConfig;
   }
