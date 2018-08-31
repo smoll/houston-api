@@ -2,6 +2,8 @@ const Config = require("../utils/config.js");
 
 const GRPC = require("grpc");
 const PROTO_PATH = require("commander");
+const Logger = require("../logger.js");
+
 class CommanderClient {
   constructor(hostname, port) {
     const host = `${hostname}:${port}`;
@@ -66,10 +68,13 @@ class CommanderClient {
     }
 
     return new Promise((resolve, reject) => {
+      Logger.info("Running commanderClient#reateDeployment()");
       this.client.createDeployment(payload, function (err, response) {
         if (err) {
+          Logger.info(err);
           return reject(err);
         }
+        Logger.info(response);
         return resolve(response);
       });
     });
@@ -92,10 +97,13 @@ class CommanderClient {
     }
 
     return new Promise((resolve, reject) => {
+      Logger.info("Running commanderClient#updateDeployment()");
       this.client.updateDeployment(payload, function (err, response) {
         if (err) {
+          Logger.info(err);
           return reject(err);
         }
+        Logger.info(response);
         return resolve(response);
       });
     });
@@ -121,10 +129,13 @@ class CommanderClient {
     }
 
     return new Promise((resolve, reject) => {
+      Logger.info("Running commanderClient#deleteDeployment()");
       this.client.deleteDeployment(payload, function (err, response) {
         if (err) {
+          Logger.info(err);
           return reject(err);
         }
+        Logger.info(response);
         return resolve(response);
       });
     });
