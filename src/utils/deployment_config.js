@@ -65,13 +65,13 @@ class DeploymentConfig {
 
   async processUpdateDeployment(defaults) {
     const helmConfig = new DotObject(defaults);
-    const envVars = new DotObject();
+    const envVars = [];
 
     const component = new this.componentTemplate(this.deployment);
 
     await component.generateEnv(helmConfig, envVars);
 
-    helmConfig.set("env", envVars.get());
+    helmConfig.set("env", envVars);
 
     await helmConfig.merge(this.deployment.config);
 
