@@ -98,15 +98,11 @@ exports.up = function(knex) {
           }
         },
         "quotas": {
-          //"pods": 100,
-          "requests": {
-            "cpu": "3",
-            "memory": "12Gi"
-          },
-          "limits": {
-            "cpu": "5",
-            "memory": "20Gi"
-          }
+          "pods": 100,
+          "requests.cpu": "3000m",
+          "requests.memory": "12Gi",
+          "limits.cpu": "5000m",
+          "limits.memory": "20Gi"
         },
         "limits": [{
           "type": "Pod",
@@ -220,15 +216,13 @@ exports.up = function(knex) {
           }
         },
         "quotas": {
-          //"pods": 100,
-          "requests": {
-            "cpu": "3",
-            "memory": "12Gi"
+          "quotas": {
+            "pods": 100,
+            "requests.cpu": "3000m",
+            "requests.memory": "12Gi",
+            "limits.cpu": "5000m",
+            "limits.memory": "20Gi"
           },
-          "limits": {
-            "cpu": "5",
-            "memory": "20Gi"
-          }
         },
         "limits": [{
           "type": "Pod",
