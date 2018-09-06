@@ -72,8 +72,8 @@ exports.up = function(knex) {
           }
         },
         "pgbouncer": {
-          "metadataPoolSize": 2,
-          "resultBackendPoolSize": 1,
+          "metadataPoolSize": 3,
+          "resultBackendPoolSize": 2,
           "resources": {
             "limits": {
               "cpu": "500m",
@@ -190,8 +190,8 @@ exports.up = function(knex) {
           }
         },
         "pgbouncer": {
-          "metadataPoolSize": 2,
-          "resultBackendPoolSize": 1,
+          "metadataPoolSize": 3,
+          "resultBackendPoolSize": 2,
           "resources": {
             "limits": {
               "cpu": "500m",
