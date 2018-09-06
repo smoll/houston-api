@@ -12,8 +12,8 @@ exports.up = function(knex) {
         "workers": {
           "resources": {
             "limits": {
-              "cpu": "4",
-              "memory": "8192Mi"
+              "cpu": "2",
+              "memory": "6Gi"
             },
             "requests": {
               "cpu": "500m",
@@ -101,14 +101,14 @@ exports.up = function(knex) {
           "pods": 100,
           "requests.cpu": "3000m",
           "requests.memory": "12Gi",
-          "limits.cpu": "5000m",
-          "limits.memory": "20Gi"
+          "limits.cpu": "10000m",
+          "limits.memory": "30Gi"
         },
         "limits": [{
           "type": "Pod",
           "max": {
             "cpu": "4",
-            "memory": "8192Mi"
+            "memory": "8Gi"
           }
         }, {
           "type": "Container",
@@ -130,8 +130,8 @@ exports.up = function(knex) {
         "workers": {
           "resources": {
             "limits": {
-              "cpu": "4",
-              "memory": "8192Mi"
+              "cpu": "2",
+              "memory": "6Gi"
             },
             "requests": {
               "cpu": "500m",
@@ -220,15 +220,15 @@ exports.up = function(knex) {
             "pods": 100,
             "requests.cpu": "3000m",
             "requests.memory": "12Gi",
-            "limits.cpu": "5000m",
-            "limits.memory": "20Gi"
+            "limits.cpu": "10000m",
+            "limits.memory": "30Gi"
           },
         },
         "limits": [{
           "type": "Pod",
           "max": {
             "cpu": "4",
-            "memory": "8192Mi"
+            "memory": "8Gi"
           }
         }, {
           "type": "Container",
