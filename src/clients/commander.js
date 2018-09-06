@@ -56,7 +56,7 @@ class CommanderClient {
         name: deployment.type,
         version: deployment.version,
       },
-      namespace: `${Config.helmConfig(Config.GLOBAL_PLATFORM_RELEASE)}-${deployment.releaseName}`,
+      namespace: `${Config.helmConfig(Config.GLOBAL_PLATFORM_NAMESPACE)}-${deployment.releaseName}`,
       raw_config: JSON.stringify(config),
       secrets: {}
     };
@@ -119,7 +119,7 @@ class CommanderClient {
   deleteDeployment(deployment) {
     const payload = {
       release_name: deployment.releaseName,
-      namespace: `${Config.helmConfig(Config.GLOBAL_PLATFORM_RELEASE)}-${deployment.releaseName}`,
+      namespace: `${Config.helmConfig(Config.GLOBAL_PLATFORM_NAMESPACE)}-${deployment.releaseName}`,
     };
 
     if (!Config.isProd()) {
