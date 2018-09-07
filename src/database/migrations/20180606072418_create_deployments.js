@@ -15,6 +15,7 @@ exports.up = function(knex) {
       table.string("description");
       table.uuid("workspace_uuid").references("uuid").inTable("workspaces").notNullable().onDelete("RESTRICT").index();
       table.string("release_name").unique();
+      table.string("registry_password");
       table.string("version");
       table.string("status");
       table.text("config");

@@ -46,14 +46,14 @@ class DeploymentConfig {
     }
   }
 
-  async processCreateDeployment(conn, defaults = {}) {
+  async processCreateDeployment(conn, defaults = {}, data = {}) {
     const helmConfig = new DotObject(defaults);
     const envVars = [];
 
     const helm = new this.helmTemplate(this.deployment, conn);
     const component = new this.componentTemplate(this.deployment);
 
-    await helm.deploymentSetup(helmConfig, envVars);
+    await helm.deploymentSetup(helmConfig, envVars, data);
     await component.generateEnv(helmConfig, envVars);
 
     helmConfig.set("env", envVars);

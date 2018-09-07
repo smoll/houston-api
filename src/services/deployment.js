@@ -120,6 +120,9 @@ class DeploymentService extends BaseService {
     if (payload["status"] !== undefined && payload.status !== deployment.status) {
       changes.status = payload.status;
     }
+    if (payload["registryPassword"] !== undefined) {
+      changes.registryPassword = payload.registryPassword;
+    }
     // if (payload["workspace"] !== undefined && payload.workspace && payload.workspace.uuid !== deployment.workspaceUuid) {
     //   changes.workspace_uuid = payload.workspace.uuid;
     // }

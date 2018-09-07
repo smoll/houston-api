@@ -4,15 +4,12 @@ const PasswordGen = require("generate-password");
 const BaseService = require("./base.js");
 const CommanderClient = require("../clients/commander.js");
 const Config = require("../utils/config.js");
+const Common = require("../utils/common.js");
 const Constants = require("../constants.js");
 const HelmMetadata = require("../utils/helm_metadata");
 const PostgresUtil = require("../utils/postgres.js");
 const DotObject = require("../utils/dot_object.js");
 const DeploymentConfig = require("../utils/deployment_config.js");
-
-
-
-
 
 class CommanderService extends BaseService {
   constructor() {
@@ -41,7 +38,15 @@ class CommanderService extends BaseService {
 
     const deploymentConfig = new DeploymentConfig(deployment);
 
-    let helmConfig = await deploymentConfig.processCreateDeployment(this.conn("airflow"), constraints.defaults);
+    const data = {
+      registryPassword: await Common.randomToken(32),
+    };
+
+    await this.service("deployment").updateDeployment(deployment, {
+      registryPassword: data.registryPassword,
+    });
+
+    let helmConfig = await deploymentConfig.processCreateDeployment(this.conn("airflow"), constraints.defaults, data);
 
     return this.commander.createDeployment(deployment, helmConfig.get());
   }

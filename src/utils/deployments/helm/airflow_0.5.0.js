@@ -2,11 +2,12 @@ const PasswordGen = require("generate-password");
 
 const Base = require("./base");
 const Config = require("../../config.js");
+const CommonUtil = require("../../common.js");
 const PostgresUtil = require("../../postgres.js");
 
 class Airflow_0_4_2 extends Base {
 
-  async deploymentSetup(helmConfig) {
+  async deploymentSetup(helmConfig, env, data) {
 
     // For each deploy, lets create one database for all that deployments data based on release name
     // For each service needed by that deployment, create a schema
@@ -45,7 +46,8 @@ class Airflow_0_4_2 extends Base {
     helmConfig.set("ingress.class", helmGlobals.releaseName + "-nginx");
     helmConfig.set("networkPolicies.enabled", true);
     helmConfig.set("rbacEnabled", helmGlobals.rbacEnabled);
-    helmConfig.set("registryAuthSecretName", helmGlobals.registryAuthSecret);
+    helmConfig.set("registryAuthSecretName", `${this.deployment.releaseName}-registry-auth`);
+    helmConfig.set("registryAuthPassword", data.registryPassword);
     helmConfig.set("platform.release", helmGlobals.releaseName);
     helmConfig.set("platform.workspace", this.deployment.workspaceUuid);
     helmConfig.set("pgbouncer.enabled", true);
