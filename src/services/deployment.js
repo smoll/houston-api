@@ -9,6 +9,7 @@ class DeploymentService extends BaseService {
     const deployments = await this.model("deployment")
       .query()
       .leftJoin("user_workspace_map", "user_workspace_map.workspace_uuid", "deployments.workspace_uuid")
+      .leftJoin("workspace", "deployments.workspace_uuid", "workspace.uuid")
       .where({
         "user_workspace_map.user_uuid": userUuid
       })
