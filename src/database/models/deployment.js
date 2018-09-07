@@ -2,7 +2,13 @@ const _ = require("lodash");
 const BaseModel = require("./base.js");
 const Constants = require("../../constants.js");
 
-class Deployment extends BaseModel {
+const Password = require('objection-password-bcryptjs')({
+  allowEmptyPassword: true,
+  passwordField: "registryPassword",
+  rounds: 10
+});
+
+class Deployment extends Password(BaseModel) {
 
   static get tableName() {
     return "deployments";
@@ -23,6 +29,7 @@ class Deployment extends BaseModel {
         label: { type: "string", minLength: 1, maxLength: 255 },
         description: { type: "string", minLength: 1, maxLength: 255 },
         release_name: { type: "string", minLength: 1, maxLength: 128 },
+        registry_password: { type: "string" },
         version: { type: "string" },
         workspace_uuid: { type: ["string"] },
         status: { type: "string" },

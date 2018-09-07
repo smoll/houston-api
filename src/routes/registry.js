@@ -32,7 +32,13 @@ class RegistryRoute extends BaseRoute {
       if (authorization.substr(0, 5) === "Basic") {
         authorization = authorization.substr(6);
 
-        if (this.isRegistryAuth(authorization)) {
+        let isRegistryAuth = false;
+        try {
+          isRegistryAuth = await this.isRegistryAuth(authorization);
+        } catch (err) {
+          return this.unauthorized(err.message);
+        }
+        if (isRegistryAuth) {
           session = { userUuid: function() { return "registry" } };
           isRegistry = true;
         } else {
@@ -152,8 +158,15 @@ class RegistryRoute extends BaseRoute {
     return null;
   }
 
-  isRegistryAuth(authToken) {
-    let registryAuth = Config.get(Config.REGISTRY_AUTH)
+  async isRegistryAuth(authToken) {
+    if (this.isPlatformRegistryAuth(authToken)) {
+      return true;
+    }
+    return await this.isDeploymentRegistryAuth(authToken);
+  }
+
+  isPlatformRegistryAuth(authToken) {
+    let registryAuth = Config.get(Config.REGISTRY_AUTH);
     try {
       registryAuth = JSON.parse(registryAuth);
       for(let auth of Object.keys(registryAuth.auths)) {
@@ -166,6 +179,32 @@ class RegistryRoute extends BaseRoute {
       this.error(err.message);
       return false;
     }
+  }
+
+  async isDeploymentRegistryAuth(authToken) {
+    const decoded = Buffer.from(authToken, 'base64').toString();
+    const [releaseName, password] = decoded.split(":");
+
+    // if password isn't defined, it must not have been a token consisting of a user:pass
+    if (!password) {
+      return false;
+    }
+
+    // crude releaseName check, if releaseName doesn't contain two dashes, it can't be a real release name
+    // in splitting on the dash, there should be 3 parts
+    if (releaseName.split("-").length !== 3) {
+      return false;
+    }
+
+    const deployment = await this.service("deployment").fetchDeploymentByReleaseName(releaseName, false);
+    if (!deployment) {
+      return false;
+    }
+
+    if (!await deployment.verifyPassword(password)) {
+      throw new Error("Invalid password provided for k8 registry user");
+    }
+    return true;
   }
 
   denied(res, message) {

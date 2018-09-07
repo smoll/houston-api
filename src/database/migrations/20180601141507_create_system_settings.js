@@ -10,7 +10,7 @@ exports.up = function(knex) {
 
     return knex.schema.createTable(TABLE_NAME, function (table) {
       table.string("key").primary();
-      table.text("value");
+      table.string("value");
       table.string("category").index();
       table.boolean("is_encrypted");
       table.timestamps();
