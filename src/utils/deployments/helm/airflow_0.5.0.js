@@ -46,8 +46,12 @@ class Airflow_0_4_2 extends Base {
     helmConfig.set("ingress.class", helmGlobals.releaseName + "-nginx");
     helmConfig.set("networkPolicies.enabled", true);
     helmConfig.set("rbacEnabled", helmGlobals.rbacEnabled);
-    helmConfig.set("registryAuthSecretName", `${this.deployment.releaseName}-registry-auth`);
-    helmConfig.set("registryAuthPassword", data.registryPassword);
+    helmConfig.set("registry.secretName", `${this.deployment.releaseName}-registry-auth`);
+    helmConfig.set("registry.connection.host", `registry.${helmGlobals.baseDomain}`);
+    helmConfig.set("registry.connection.email", `admin@${helmGlobals.baseDomain}`);
+    helmConfig.set("registry.connection.user", this.deployment.releaseName);
+    helmConfig.set("registry.connection.pass", data.registryPassword);
+
     helmConfig.set("platform.release", helmGlobals.releaseName);
     helmConfig.set("platform.workspace", this.deployment.workspaceUuid);
     helmConfig.set("pgbouncer.enabled", true);
