@@ -72,7 +72,7 @@ exports.up = function(knex) {
           }
         },
         "pgbouncer": {
-          "metadataPoolSize": 3,
+          "metadataPoolSize": 5,
           "resultBackendPoolSize": 2,
           "resources": {
             "limits": {
@@ -190,7 +190,7 @@ exports.up = function(knex) {
           }
         },
         "pgbouncer": {
-          "metadataPoolSize": 3,
+          "metadataPoolSize": 5,
           "resultBackendPoolSize": 2,
           "resources": {
             "limits": {
