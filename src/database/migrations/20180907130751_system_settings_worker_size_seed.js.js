@@ -15,33 +15,33 @@ exports.up = function(knex) {
       key: "worker_sizes",
       value: JSON.stringify({
         small: {
-          limits: {
-            cpu: "250m",
-            memory: "1024Mi", // 1Gb
-          },
           requests: {
-            cpu: "375m",
+            cpu: "500m",
+            memory: "1Gi", // 1Gb
+          },
+          limits: {
+            cpu: "750m",
             memory: "1536Mi", // 1.5Gb
           }
         },
         medium: {
-          limits: {
-            cpu: "500m",
-            memory: "2048Mi", // 2Gb
-          },
           requests: {
-            cpu: "750m",
-            memory: "3072Mi",  // 3Gb
+            cpu: "1000m",
+            memory: "2Gi", // 2Gb
+          },
+          limits: {
+            cpu: "1500m",
+            memory: "3Gi",  // 3Gb
           }
         },
         large: {
-          limits: {
-            cpu: "1000m",
-            memory: "4096Mi", // 4Gb
-          },
           requests: {
-            cpu: "1500m",
-            memory: "6144Mi", // 6Gb
+            cpu: "2000m",
+            memory: "4Gi", // 4Gb
+          },
+          limits: {
+            cpu: "3000m",
+            memory: "6Gi", // 6Gb
           }
         },
       }),

@@ -66,6 +66,34 @@ class Airflow_0_4_2 extends Base {
     helmConfig.set("platform.release", helmGlobals.releaseName);
   }
 
+  async deploymentMigrate(helmConfig, env, data) {
+    // add globals
+    const helmGlobals = Config.helmConfig();
+
+    helmConfig.set("ingress.enabled", true);
+    helmConfig.set("ingress.baseDomain", helmGlobals.baseDomain);
+    helmConfig.set("ingress.acme", helmGlobals.acme);
+    helmConfig.set("ingress.class", helmGlobals.releaseName + "-nginx");
+    helmConfig.set("networkPolicies.enabled", true);
+    helmConfig.set("rbacEnabled", helmGlobals.rbacEnabled);
+    helmConfig.set("registry.connection.host", `registry.${helmGlobals.baseDomain}`);
+    helmConfig.set("registry.connection.email", `admin@${helmGlobals.baseDomain}`);
+    helmConfig.set("registry.connection.user", this.deployment.releaseName);
+    helmConfig.set("registry.connection.pass", data.registryPassword);
+
+    helmConfig.set("platform.release", helmGlobals.releaseName);
+    helmConfig.set("platform.workspace", this.deployment.workspaceUuid);
+    helmConfig.set("pgbouncer.enabled", true);
+
+    if (!helmConfig.get("executor") || helmConfig.get("executor").indexOf(payload.executor) === -1) {
+      helmConfig.set("executor", Airflow_0_4_2.DEFAULT_EXECUTOR);
+    }
+
+    helmConfig.set("fernetKey", data.fernetKey);
+    helmConfig.set("data.metadataConnection", PostgresUtil.toObject(data.metadataUri));
+    helmConfig.set("data.resultBackendConnection", PostgresUtil.toObject(data.resultBackendUri));
+  }
+
   async deploymentTeardown(helmConfig) {
     const deployId    = this.deployment.releaseName.replace(/-/g, "_");
     const deployDB    = `${deployId}_airflow`;

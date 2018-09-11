@@ -116,10 +116,13 @@ class CommanderClient {
     }
   }
 
-  deleteDeployment(deployment) {
+  deleteDeployment(deployment, namespace) {
+    if (!namespace) {
+      namespace = `${Config.helmConfig(Config.GLOBAL_PLATFORM_NAMESPACE)}-${deployment.releaseName}`;
+    }
     const payload = {
       release_name: deployment.releaseName,
-      namespace: `${Config.helmConfig(Config.GLOBAL_PLATFORM_NAMESPACE)}-${deployment.releaseName}`,
+      namespace: namespace,
     };
 
     if (!Config.isProd()) {
@@ -131,6 +134,25 @@ class CommanderClient {
     return new Promise((resolve, reject) => {
       Logger.info("Running commanderClient#deleteDeployment()");
       this.client.deleteDeployment(payload, function (err, response) {
+        if (err) {
+          Logger.info(JSON.stringify(err));
+          return reject(err);
+        }
+        Logger.info(JSON.stringify(response));
+        return resolve(response);
+      });
+    });
+  }
+
+  getSecret(namespace, secretName) {
+    const payload = {
+      namespace: namespace,
+      secretName: secretName
+    };
+
+    return new Promise((resolve, reject) => {
+      Logger.info("Running commanderClient#getSecret()");
+      this.client.getSecret(payload, function (err, response) {
         if (err) {
           Logger.info(JSON.stringify(err));
           return reject(err);

@@ -50,6 +50,10 @@ class Airflow_0_3_0 extends Base {
     helmConfig.set("fernetKey", new Buffer(PasswordGen.generate({ length: 32, numbers: true })).toString('base64'));
   }
 
+  async deploymentMigrate() {
+    throw new Error("Cannot migrate, no known versions before 0.3.0");
+  }
+
   async deploymentTeardown(helmConfig) {
     const deployId    = this.deployment.releaseName.replace(/-/g, "_");
     const deployDB    = `${deployId}_airflow`;

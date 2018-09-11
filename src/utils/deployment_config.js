@@ -42,7 +42,8 @@ class DeploymentConfig {
         }
         return Airflow_1_10;
       default:
-        throw new Error("Unknown component");
+        // TODO, determine default component version based on component
+        return Airflow_1_9;
     }
   }
 
@@ -54,6 +55,23 @@ class DeploymentConfig {
     const component = new this.componentTemplate(this.deployment);
 
     await helm.deploymentSetup(helmConfig, envVars, data);
+    await component.generateEnv(helmConfig, envVars);
+
+    helmConfig.set("env", envVars);
+
+    await helmConfig.merge(this.deployment.config);
+
+    return helmConfig;
+  }
+
+  async processMigrateDeployment(conn, defaults, data) {
+    const helmConfig = new DotObject(defaults);
+    const envVars = [];
+
+    const helm = new this.helmTemplate(this.deployment, conn);
+    const component = new this.componentTemplate(this.deployment);
+
+    await helm.deploymentMigrate(helmConfig, envVars, data);
     await component.generateEnv(helmConfig, envVars);
 
     helmConfig.set("env", envVars);

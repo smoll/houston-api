@@ -71,6 +71,56 @@ class CommanderService extends BaseService {
     return await deploymentConfig.processDeleteDeployment(this.conn("airflow"));
   }
 
+  async getSecret(namespace, secretName) {
+    return await this.commander.getSecret(namespace, secretName);
+  }
+
+  // Other functions
+  async migrateDeployment(deployment, version) {
+    const namespace = Config.helmConfig(Config.GLOBAL_PLATFORM_NAMESPACE);
+    const fernetKey = `${deployment.releaseName}-fernet-key`;
+    const metadataKey = `${deployment.releaseName}-airflow-metadata`;
+    const resultBackendKey = `${deployment.releaseName}-airflow-result-backend`;
+    const fernetSecret = await this.service("commander").getSecret(namespace, fernetKey);
+    const metadataSecret = await this.service("commander").getSecret(namespace, metadataKey);
+    const resultBackendSecret = await this.service("commander").getSecret(namespace, resultBackendKey);
+
+    if (fernetSecret.Result.Success
+
+    await this.commander.deleteDeployment(deployment, Config.helmConfig(Config.GLOBAL_PLATFORM_NAMESPACE));
+
+    const data = {
+      registryPassword: await Common.randomToken(32),
+      metadataUri: metadataSecret.Secret.Data["connection"],
+      resultBackendUri: resultBackendSecret.Secret.Data["connection"],
+      fernetKey: fernetSecret.Secret.Data["fernet-key"]
+    };
+
+    const constraints = await this.determineConstraints(deployment);
+
+    const deploymentConfig = new DeploymentConfig(deployment);
+
+    deployment = await this.service("deployment").updateDeployment(deployment, {
+      registryPassword: data.registryPassword,
+      version: version,
+      config: {
+        images: {
+          airflow: {
+            name: image,
+            tag: tag
+          }
+        }
+      }
+    });
+
+    let helmConfig = await deploymentConfig.processMigrateDeployment(this.conn("airflow"), constraints.defaults, data);
+
+    await this.commander.createDeployment(deployment, helmConfig.get());
+
+    return deployment;
+  }
+
+
   async latestHelmChartVersion(chart) {
     return await this.helmMetadata.latestChart(chart, Config.helmConfig(Config.GLOBAL_PLATFORM_VERSION));
   }
