@@ -10,6 +10,7 @@ const HelmMetadata = require("../utils/helm_metadata");
 const PostgresUtil = require("../utils/postgres.js");
 const DotObject = require("../utils/dot_object.js");
 const DeploymentConfig = require("../utils/deployment_config.js");
+const Transaction = require('objection').transaction;
 
 class CommanderService extends BaseService {
   constructor() {
@@ -95,37 +96,38 @@ class CommanderService extends BaseService {
       throw new Error("Failed to retrieve result backend connection URI");
     }
 
-    await this.commander.deleteDeployment(deployment, Config.helmConfig(Config.GLOBAL_PLATFORM_NAMESPACE));
+    return await Transaction(this.conn("postgres"), async (trx) => {
+      const data = {
+        registryPassword: await Common.randomToken(32),
+        metadataUri: metadataSecret.secret.data["connection"],
+        resultBackendUri: resultBackendSecret.secret.data["connection"],
+        fernetKey: fernetSecret.secret.data["fernet-key"]
+      };
 
-    const data = {
-      registryPassword: await Common.randomToken(32),
-      metadataUri: metadataSecret.secret.data["connection"],
-      resultBackendUri: resultBackendSecret.secret.data["connection"],
-      fernetKey: fernetSecret.secret.data["fernet-key"]
-    };
-
-    const constraints = await this.determineConstraints(deployment);
-
-    const deploymentConfig = new DeploymentConfig(deployment);
-
-    deployment = await this.service("deployment").updateDeployment(deployment, {
-      registryPassword: data.registryPassword,
-      version: version,
-      config: {
-        images: {
-          airflow: {
-            name: image,
-            tag: tag
-          }
-        }
+      const config = {};
+      if (deployment.config && deployment.config.images && deployment.config.images.airflow) {
+        config.images.airflow = deployment.config.images.airflow;
       }
+
+      deployment = await this.service("deployment").updateDeployment(deployment, {
+        registryPassword: data.registryPassword,
+        version: version,
+        config: config
+      }, {
+        transaction: trx
+      });
+
+      const constraints = await this.determineConstraints(deployment);
+
+      const deploymentConfig = new DeploymentConfig(deployment);
+
+      let helmConfig = await deploymentConfig.processMigrateDeployment(this.conn("airflow"), constraints.defaults, data);
+
+      await this.commander.deleteDeployment(deployment, Config.helmConfig(Config.GLOBAL_PLATFORM_NAMESPACE), false);
+      await this.commander.createDeployment(deployment, helmConfig.get());
+
+      return deployment;
     });
-
-    let helmConfig = await deploymentConfig.processMigrateDeployment(this.conn("airflow"), constraints.defaults, data);
-
-    await this.commander.createDeployment(deployment, helmConfig.get());
-
-    return deployment;
   }
 
 

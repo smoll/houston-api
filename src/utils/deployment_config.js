@@ -35,6 +35,11 @@ class DeploymentConfig {
   }
 
   getComponentTemplate(component, version) {
+    if (!version) {
+      // TODO, determine default component version based on component
+      return Airflow_1_9;
+    }
+
     switch(component) {
       case DeploymentConfig.COMPONENT_AIRFLOW:
         if (Semver.lt(version, "1.10.0")) {
@@ -42,8 +47,7 @@ class DeploymentConfig {
         }
         return Airflow_1_10;
       default:
-        // TODO, determine default component version based on component
-        return Airflow_1_9;
+        throw new Error("Unknown component");
     }
   }
 

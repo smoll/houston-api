@@ -95,7 +95,7 @@ class DeploymentService extends BaseService {
   }
 
   // return false if nothing to update, user on success, throw error on failure
-  async updateDeployment(deployment, payload) {
+  async updateDeployment(deployment, payload, options = {}) {
     let changes = {};
 
     // TODO: Do this check in a more extendable way
@@ -123,6 +123,9 @@ class DeploymentService extends BaseService {
     if (payload["registryPassword"] !== undefined) {
       changes.registryPassword = payload.registryPassword;
     }
+    if (payload["version"] !== undefined) {
+      changes.version = payload.version;
+    }
     // if (payload["workspace"] !== undefined && payload.workspace && payload.workspace.uuid !== deployment.workspaceUuid) {
     //   changes.workspace_uuid = payload.workspace.uuid;
     // }
@@ -138,7 +141,7 @@ class DeploymentService extends BaseService {
     }
 
     if(Object.keys(changes).length > 0) {
-      deployment = await deployment.$query().patch(changes).returning("*");
+      deployment = await deployment.$query(options.transaction).patch(changes).returning("*");
     }
 
     return deployment;

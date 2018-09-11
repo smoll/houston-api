@@ -116,13 +116,14 @@ class CommanderClient {
     }
   }
 
-  deleteDeployment(deployment, namespace) {
+  deleteDeployment(deployment, namespace, deleteNamespace = true) {
     if (!namespace) {
       namespace = `${Config.helmConfig(Config.GLOBAL_PLATFORM_NAMESPACE)}-${deployment.releaseName}`;
     }
     const payload = {
       release_name: deployment.releaseName,
       namespace: namespace,
+      delete_namespace: deleteNamespace,
     };
 
     if (!Config.isProd()) {
