@@ -30,6 +30,7 @@ module.exports = [
   require("./mutation/create_deployment.js"),
   require("./mutation/update_deployment.js"),
   require("./mutation/delete_deployment.js"),
+  require("./mutation/migrate_deployment.js"),
 
   // Workspace Operations
   require("./mutation/create_workspace.js"),

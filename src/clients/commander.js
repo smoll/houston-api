@@ -147,7 +147,7 @@ class CommanderClient {
   getSecret(namespace, secretName) {
     const payload = {
       namespace: namespace,
-      secretName: secretName
+      name: secretName
     };
 
     return new Promise((resolve, reject) => {

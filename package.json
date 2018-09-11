@@ -36,7 +36,7 @@
     "apollo-upload-server": "^5.0.0",
     "auth0": "^2.12.0",
     "aws-lambda": "^0.1.2",
-    "commander": "github:astronomerio/commander#helm",
+    "commander": "github:astronomerio/commander",
     "email-templates": "^4.0.3",
     "generate-password": "^1.4.0",
     "googleapis": "^32.0.0",

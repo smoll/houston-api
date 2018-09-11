@@ -85,13 +85,13 @@ class CommanderService extends BaseService {
     const metadataSecret = await this.service("commander").getSecret(namespace, metadataKey);
     const resultBackendSecret = await this.service("commander").getSecret(namespace, resultBackendKey);
 
-    if (!fernetSecret.Result.Success) {
+    if (!fernetSecret.result.success) {
       throw new Error("Failed to retrieve fernetKey");
     }
-    if (!metadataSecret.Result.Success) {
+    if (!metadataSecret.result.success) {
       throw new Error("Failed to retrieve metadata connection URI");
     }
-    if (!resultBackendSecret.Result.Success) {
+    if (!resultBackendSecret.result.success) {
       throw new Error("Failed to retrieve result backend connection URI");
     }
 
@@ -99,9 +99,9 @@ class CommanderService extends BaseService {
 
     const data = {
       registryPassword: await Common.randomToken(32),
-      metadataUri: metadataSecret.Secret.Data["connection"],
-      resultBackendUri: resultBackendSecret.Secret.Data["connection"],
-      fernetKey: fernetSecret.Secret.Data["fernet-key"]
+      metadataUri: metadataSecret.secret.data["connection"],
+      resultBackendUri: resultBackendSecret.secret.data["connection"],
+      fernetKey: fernetSecret.secret.data["fernet-key"]
     };
 
     const constraints = await this.determineConstraints(deployment);

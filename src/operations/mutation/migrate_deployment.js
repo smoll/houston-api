@@ -6,7 +6,7 @@ class MigrateDeployment extends BaseOperation {
     this.name = "migrateDeployment";
     this.typeDef = `
       # Creates a new deployment
-      createDeployment(releaseName: String!, version: String!) : Deployment
+      migrateDeployment(releaseName: String!, version: String!) : Deployment
     `;
     this.entrypoint = "mutation";
     this.guards = ["authenticated", "permission:global_deployment_create"];
@@ -28,7 +28,7 @@ class MigrateDeployment extends BaseOperation {
          Rebuild the config via 0.5.0 builder, add image to it
 
          */
-      const deployment = this.service("deployment").fetchDeploymentByReleaseName(args.releaseName);
+      const deployment = await this.service("deployment").fetchDeploymentByReleaseName(args.releaseName);
       await this.service("commander").migrateDeployment(deployment, args.version);
 
       return deployment;
@@ -40,4 +40,4 @@ class MigrateDeployment extends BaseOperation {
 
 }
 
-module.exports = CreateDeployment;
+module.exports = MigrateDeployment;
