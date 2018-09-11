@@ -85,7 +85,15 @@ class CommanderService extends BaseService {
     const metadataSecret = await this.service("commander").getSecret(namespace, metadataKey);
     const resultBackendSecret = await this.service("commander").getSecret(namespace, resultBackendKey);
 
-    if (fernetSecret.Result.Success
+    if (!fernetSecret.Result.Success) {
+      throw new Error("Failed to retrieve fernetKey");
+    }
+    if (!metadataSecret.Result.Success) {
+      throw new Error("Failed to retrieve metadata connection URI");
+    }
+    if (!resultBackendSecret.Result.Success) {
+      throw new Error("Failed to retrieve result backend connection URI");
+    }
 
     await this.commander.deleteDeployment(deployment, Config.helmConfig(Config.GLOBAL_PLATFORM_NAMESPACE));
 
