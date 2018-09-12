@@ -20,6 +20,7 @@ class Config {
     Config.defaults[Config.REGISTRY_CERT_PATH] = "/tmp/houston/";
     Config.defaults[Config.REGISTRY_ISSUER] = "houston";
     Config.defaults[Config.REGISTRY_SERVICE] = "docker-registry";
+    Config.defaults[Config.SERVER_TIMEOUT] = 120000; // ms
   }
 
   static get(key) {
@@ -127,6 +128,7 @@ Config.AUTH0_BASE_DOMAIN = "AUTH0_BASE_DOMAIN";
 Config.AUTH0_EXTERNAL_LOGIN = "AUTH0_EXTERNAL_LOGIN";
 Config.BASE_URL_ORBIT = "BASE_URL_ORBIT";
 Config.BASE_URL_HOUSTON = "BASE_URL_HOUSTON";
+Config.SERVER_TIMEOUT = "SERVER_TIMEOUT";
 
 Config.GLOBAL_PLATFORM_VERSION = "releaseVersion";
 Config.GLOBAL_PLATFORM_RELEASE = "releaseName";
