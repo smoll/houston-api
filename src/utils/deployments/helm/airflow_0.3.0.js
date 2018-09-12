@@ -39,15 +39,42 @@ class Airflow_0_3_0 extends Base {
     // add globals
     const helmGlobals = Config.helmConfig();
 
+    const metadataSecretName = `${this.deployment.releaseName}-airflow-metadata`;
+    const resultBackendSecretName = `${this.deployment.releaseName}-airflow-result-backend`;
+
     // overwrite the secret names to add the deployment release name
-    helmConfig.set("data.airflowMetadataSecret", `${this.deployment.releaseName}-airflow-metadata`);
-    helmConfig.set("data.airflowResultBackendSecret", `${this.deployment.releaseName}-airflow-result-backend`);
+    helmConfig.set("data.airflowMetadataSecret", metadataSecretName);
+    helmConfig.set("data.airflowResultBackendSecret", resultBackendSecretName);
+
+    helmConfig.set("global.baseDomain", helmGlobals.baseDomain);
+    helmConfig.set("global.acme", helmGlobals.acme);
+    helmConfig.set("global.rbacEnabled", helmGlobals.rbacEnabled);
+    helmConfig.set("global.tlsSecret", helmGlobals.tlsSecret);
 
     // generate and redis password
     helmConfig.set("redis.password", PasswordGen.generate({ length: 32, numbers: true }));
 
     // generate and set fernet key (fernet keys have to be base64 encoded)
     helmConfig.set("fernetKey", new Buffer(PasswordGen.generate({ length: 32, numbers: true })).toString('base64'));
+
+    return {
+      secrets: [
+        {
+          name: metadataSecretName,
+          data: {
+            "connection": airflowUri,
+          },
+        },
+        {
+          name: resultBackendSecretName,
+          data: {
+            "connection": PostgresUtil.uriReplace(celeryUri, {
+              protocol: "db+postgresql"
+            })
+          }
+        },
+      ],
+    };
   }
 
   async deploymentMigrate() {

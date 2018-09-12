@@ -49,7 +49,7 @@ class CommanderClient {
     });
   }
 
-  createDeployment(deployment, config) {
+  createDeployment(deployment, config, secrets) {
     const payload = {
       release_name: deployment.releaseName,
       chart: {
@@ -58,7 +58,7 @@ class CommanderClient {
       },
       namespace: `${Config.helmConfig(Config.GLOBAL_PLATFORM_NAMESPACE)}-${deployment.releaseName}`,
       raw_config: JSON.stringify(config),
-      secrets: {}
+      secrets: secrets
     };
 
     if (!Config.isProd()) {

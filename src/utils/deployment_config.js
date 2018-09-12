@@ -58,14 +58,17 @@ class DeploymentConfig {
     const helm = new this.helmTemplate(this.deployment, conn);
     const component = new this.componentTemplate(this.deployment);
 
-    await helm.deploymentSetup(helmConfig, envVars, data);
+    let result = await helm.deploymentSetup(helmConfig, envVars, data);
     await component.generateEnv(helmConfig, envVars);
 
     helmConfig.set("env", envVars);
 
     await helmConfig.merge(this.deployment.config);
 
-    return helmConfig;
+    return {
+      config: helmConfig,
+      secrets: result.secrets
+    };
   }
 
   async processMigrateDeployment(conn, defaults, data) {

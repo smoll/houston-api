@@ -47,9 +47,12 @@ class CommanderService extends BaseService {
       registryPassword: data.registryPassword,
     });
 
-    let helmConfig = await deploymentConfig.processCreateDeployment(this.conn("airflow"), constraints.defaults, data);
+    let result = await deploymentConfig.processCreateDeployment(this.conn("airflow"), constraints.defaults, data);
 
-    return this.commander.createDeployment(deployment, helmConfig.get());
+    const helmConfig = result.config;
+    const helmSecrets = result.secrets;
+
+    return this.commander.createDeployment(deployment, helmConfig.get(), helmSecrets);
   }
 
   async updateDeployment(deployment) {
