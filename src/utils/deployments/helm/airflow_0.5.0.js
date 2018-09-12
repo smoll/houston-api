@@ -92,6 +92,8 @@ class Airflow_0_4_2 extends Base {
     helmConfig.set("fernetKey", data.fernetKey);
     helmConfig.set("data.metadataConnection", PostgresUtil.toObject(data.metadataUri));
     helmConfig.set("data.resultBackendConnection", PostgresUtil.toObject(data.resultBackendUri));
+
+    return {};
   }
 
   async deploymentTeardown(helmConfig) {
