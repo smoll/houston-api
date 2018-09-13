@@ -109,7 +109,9 @@ class CommanderService extends BaseService {
 
       const config = {};
       if (deployment.config && deployment.config.images && deployment.config.images.airflow) {
-        config.images.airflow = deployment.config.images.airflow;
+        config.images = {
+          airflow: deployment.config.images.airflow
+        };
       }
 
       deployment = await this.service("deployment").updateDeployment(deployment, {
