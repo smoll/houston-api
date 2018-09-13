@@ -6,7 +6,7 @@ class DotObject {
     this.isDotObject = true;
   }
 
-  get(path) {
+  get(path, defaultValue = null) {
     if (!path) {
       return this.object;
     }
@@ -14,10 +14,10 @@ class DotObject {
     let search = this.object;
     for(let key of keys) {
       if (!search.hasOwnProperty(key)) {
-        return null;
+        return defaultValue;
       }
       if(!_.isObject(search)) {
-        return null;
+        return defaultValue;
       }
       search = search[key];
     }

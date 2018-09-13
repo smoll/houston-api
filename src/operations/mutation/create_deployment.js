@@ -32,7 +32,7 @@ class CreateDeployment extends BaseOperation {
 
       if (!args.config.componentVersion) {
         // TODO: At some point configure this based on the args.type & args.version
-        args.config.componentVersion = "1.9";
+        args.config.componentVersion = "1.9.0";
       }
 
       let deployment = await this.service("deployment").createDeployment(

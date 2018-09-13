@@ -81,7 +81,7 @@ class DeploymentConfig {
     await helm.deploymentMigrate(helmConfig, envVars, data);
     await component.generateEnv(helmConfig, envVars);
 
-    helmConfig.set("env", envVars);
+    helmConfig.set("env", [...envVars, ...helmConfig.get("env", [])]);
 
     await helmConfig.merge(this.deployment.config);
 
@@ -96,7 +96,7 @@ class DeploymentConfig {
 
     await component.generateEnv(helmConfig, envVars);
 
-    helmConfig.set("env", envVars);
+    helmConfig.set("env", [...envVars, ...helmConfig.get("env", [])]);
 
     await helmConfig.merge(this.deployment.config);
 
