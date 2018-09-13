@@ -81,7 +81,6 @@ module.exports = [
   "lens",
   "magnify",
   "magnitude",
-  "mare",
   "mass",
   "meteor",
   "meteorite",
