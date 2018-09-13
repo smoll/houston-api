@@ -111,7 +111,7 @@ const schema = makeExecutableSchema({
       }, formatError: ApolloError
     });
 
-    express.setTimeout(Config.get(Config.SERVER_TIMEOUT));
+    express.setTimeout(parseInt(Config.get(Config.SERVER_TIMEOUT)));
   } catch (err) {
     Application.logger().error("Server failed to start");
     Application.output(err);
