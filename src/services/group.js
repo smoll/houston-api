@@ -23,7 +23,7 @@ class GroupService extends BaseService {
       "groups.entity_type": entityType,
     };
     if (entityUuid) {
-      conditions.entity_uuid = entityUuid;
+      conditions["groups.entity_uuid"] = entityUuid;
     }
 
     const groups = await this.model("group")
