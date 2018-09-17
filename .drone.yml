@@ -1,11 +1,11 @@
 pipeline:
   build:
-    image: nodejs:alpine
+    image: node:alpine
     commands:
       - npm install
 
   test:
-    image: nodejs:alpine
+    image: node:alpine
     commands:
       - npm test
 
