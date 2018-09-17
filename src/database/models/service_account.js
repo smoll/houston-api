@@ -16,7 +16,7 @@ class ServiceAccount extends BaseModel {
   static get jsonSchema () {
     return {
       type: "object",
-      required: ["label", "category"],
+      required: ["label", "category", "entityType"],
 
       properties: {
         uuid: { type: "uuid" },
