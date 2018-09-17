@@ -56,7 +56,7 @@ class CommonService extends BaseService {
     }
   }
 
-  async resolveEntityType(entityType) {
+  resolveEntityType(entityType) {
     switch(entityType) {
       case Constants.ENTITY_DEPLOYMENT:
         return "deploymentUuid";
