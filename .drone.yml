@@ -9,12 +9,12 @@ pipeline:
     commands:
       - npm test
 
-  trigger:
-    image: plugins/downstream
-    server: http://drone.astronomer.io
-    fork: true
-    secrets: [ downstream_token ]
-    repositories:
-      - astronomerio/astronomer
-    when:
-      branch: master
+  # trigger:
+  #   image: plugins/downstream
+  #   server: http://drone.astronomer.io
+  #   fork: true
+  #   secrets: [ downstream_token ]
+  #   repositories:
+  #     - astronomerio/astronomer
+  #   when:
+  #     branch: master
