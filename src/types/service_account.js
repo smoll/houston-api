@@ -10,7 +10,7 @@ class ServiceAccount extends BaseType {
       apiKey: String
       label: String
       category: String
-      entityType: EntityType
+      entityType: String
       entityUuid: Uuid
       active: Boolean
       createdAt: String
