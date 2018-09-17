@@ -22,7 +22,7 @@ class Groups extends BaseOperation {
     try {
 
       // get system settings
-      if (args.entityType === this.model("group").ENTITY_SYSTEM) {
+      if (args.entityType === Constants.ENTITY_SYSTEM) {
         if (!session.hasPermissions("global_group_list")) {
           return this.unauthorized("list_global_groups");
         }
