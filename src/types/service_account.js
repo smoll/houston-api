@@ -16,6 +16,7 @@ class ServiceAccount extends BaseType {
       active: Boolean
       createdAt: String
       updatedAt: String
+      lastUsedAt: String
     }`;
   }
 
@@ -54,6 +55,9 @@ class ServiceAccount extends BaseType {
       updatedAt(value) {
         return value.updatedAt || null;
       },
+      lastUsedAt(value) {
+        return value.lastUsedAt || null;
+      }
     };
   }
 }
