@@ -6,7 +6,7 @@ class Config {
   static setDefaults(defaults) {
     Config.defaults = Object.assign({}, defaults);
     Config.defaults[Config.NODE_ENV] = "development";
-    Config.defaults[Config.PORT] = 5001;
+    Config.defaults[Config.PORT] = 8870;
     Config.defaults[Config.API_ENDPOINT_URL] = "/v1";
     Config.defaults[Config.WEBSOCKET_ENDPOINT_URL] = "/ws";
     Config.defaults[Config.PLAYGROUND_ENDPOINT_URL] = "/playground";
