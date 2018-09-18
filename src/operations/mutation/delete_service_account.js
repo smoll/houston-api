@@ -1,4 +1,7 @@
 const BaseOperation = require("../base.js");
+
+const Constants = require("../../constants.js");
+
 class DeleteServiceAccount extends BaseOperation {
   constructor() {
     super();
@@ -11,18 +14,37 @@ class DeleteServiceAccount extends BaseOperation {
     this.guards = ["authenticated"];
   }
 
-  async resolver(root, args, context) {
+  async resolver(root, args, { session }) {
     try {
-      const DeletedServiceAccount = await this.service("service_account").deleteServiceAccountByUuid(context.session.resources.serviceAccount.uuid);
-      if (!!DeletedServiceAccount) {
-        return {uuid:context.session.resources.serviceAccount.uuid};
-      } else {
-        throw new Error("No Service Accounts were deleted.")
+      if (!this.checkPermissionByEntityType(args.entityType, session)) {
+        return this.unauthorized("delete_service_account");
       }
+
+      await this.service("service_account").deleteServiceAccount(session.resources.serviceAccount);
+
+      return {
+        uuid: session.resources.serviceAccount.uuid
+      };
     } catch(err) {
       this.error(err.message);
       throw err;
     }
+  }
+
+  checkPermissionByEntityType(entityType, session) {
+    if (session.hasPermissions("global_service_account_delete")) {
+      return true;
+    }
+
+    if (entityType === Constants.ENTITY_WORKSPACE) {
+      return session.hasPermissions("user_workspace_service_account_delete");
+    }
+
+    if (entityType === Constants.ENTITY_DEPLOYMENT) {
+      return session.hasPermissions("user_deployment_service_account_delete");
+    }
+
+    return false;
   }
 }
 

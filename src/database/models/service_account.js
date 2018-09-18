@@ -16,7 +16,7 @@ class ServiceAccount extends BaseModel {
   static get jsonSchema () {
     return {
       type: "object",
-      required: ["label", "category", "entityType"],
+      required: ["label", "entityType"],
 
       properties: {
         uuid: { type: "uuid" },
@@ -50,7 +50,15 @@ class ServiceAccount extends BaseModel {
             to: `service_account_role_map.role_uuid`
           },
         }
-      }
+      },
+      service_account_roles: {
+        relation: BaseModel.HasManyRelation,
+        modelClass: `${__dirname}/service_account_role_map.js`,
+        join: {
+          from: 'service_accounts.uuid',
+          to: 'service_account_role_map.service_account_uuid',
+        }
+      },
     };
   }
 

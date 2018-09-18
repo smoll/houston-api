@@ -80,6 +80,13 @@ const schema = makeExecutableSchema({
     });
 
     OperationManager.registerPreHook(async function (root, args, context, info, operation) {
+      if (args.hasOwnProperty("entityType")) {
+        args.entityType = args.entityType.toLowerCase();
+      }
+      return Promise.resolve([root, args, context, info, operation]);
+    });
+
+    OperationManager.registerPreHook(async function (root, args, context, info, operation) {
       context.session.resources = await Application.service("common").resourceResolver(args);
       await Application.service("common").resolveRequesterPermissions(context.session);
       return Promise.resolve([root, args, context, info, operation]);

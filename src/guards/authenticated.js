@@ -9,12 +9,19 @@ class AuthenticatedGuard extends BaseGuard {
     if (!context || !context.session) {
       return false;
     }
+
+    if (context.session.authServiceAccount) {
+      return true;
+    }
+
     if (!context.session.token.valid) {
       return false;
     }
+
     if (context.session.token.expired) {
       return false;
     }
+
     return context.session.authUser !== null;
   }
 }

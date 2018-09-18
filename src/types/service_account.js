@@ -1,3 +1,4 @@
+const _ = require("lodash");
 const BaseType = require("./base.js");
 
 class ServiceAccount extends BaseType {
@@ -24,7 +25,13 @@ class ServiceAccount extends BaseType {
         return value.uuid || null;
       },
       apiKey(value) {
-        return value.apiKey || null;
+        if (value.new === true) {
+          return value.apiKey;
+        }
+        if (!value.apiKey) {
+          return null;
+        }
+        return _.padEnd(value.apiKey.substr(0, 6), value.apiKey.length, "*");
       },
       label(value) {
         return value.label || null;

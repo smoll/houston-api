@@ -89,7 +89,18 @@ class AuthService extends BaseService {
     // If authorization token is a service
     if (this.isServiceToken(authorization)) {
       // TODO: Do something with service auth
+      const serviceAccount = await this.service("service_account").fetchServiceAccountByKey(authorization, false);
       session = new Session(authorization, Session.REQUESTER_SERVICE);
+      if (serviceAccount) {
+        if (!serviceAccount.active) {
+          this.error(`Service account not active`)
+        } else {
+          session.setAuthServiceAccount(serviceAccount);
+          await this.service("service_account").updateServiceAccountLastUsed(serviceAccount);
+        }
+      } else {
+        this.error(`Service account api key not found (${authorization})`)
+      }
       return session;
     }
 
@@ -178,28 +189,8 @@ class AuthService extends BaseService {
   }
 
   isServiceToken(token) {
-    // TODO: Add check if token is a service token
-    return false;
-  }
-
-  // express middleware to generate context for a request
-  authorizeRequest(req, res, next) {
-    let authorization = req.headers.authorization;
-    req.context = {};
-    this.authenticateRequest(authorization).then((session) => {
-      session.origin = req.headers.origin;
-      req.context = {
-        session: session,
-        req: req,
-        res: res,
-      };
-
-      return next();
-    }).catch((err) => {
-      // TODO: This *shouldn't* happen, but if it does, we need to make sure we know, add WUPHF™ or something
-      this.error(`Error determining request authorization: ${err.message}`);
-      return res.status(500).send('Unable to process request');
-    })
+    // if length == 32 and doesn't contain a '.'
+    return token && token.length === 32 && !~token.indexOf(".");
   }
 }
 

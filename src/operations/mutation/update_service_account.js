@@ -1,4 +1,7 @@
 const BaseOperation = require("../base.js");
+
+const Constants = require("../../constants.js");
+
 class UpdateServiceAccount extends BaseOperation {
   constructor() {
     super();
@@ -11,14 +14,33 @@ class UpdateServiceAccount extends BaseOperation {
     this.guards = ["authenticated"];
   }
 
-  async resolver(root, args, context) {
+  async resolver(root, args, { session }) {
     try {
-      const updatedServiceAccount = await this.service("service_account").updateServiceAccount(context.session.resources.serviceAccount, args.payload); // expects args (serviceAccount, payload)
-      return updatedServiceAccount;
+      if (!this.checkPermissionByEntityType(args.entityType, session)) {
+        return this.unauthorized("update_service_account");
+      }
+
+      return await this.service("service_account").updateServiceAccount(session.resources.serviceAccount, args.payload); // expects args (serviceAccount, payload)
     } catch(err) {
       this.error(err.message);
       throw err;
     }
+  }
+
+  checkPermissionByEntityType(entityType, session) {
+    if (session.hasPermissions("global_service_account_update")) {
+      return true;
+    }
+
+    if (entityType === Constants.ENTITY_WORKSPACE) {
+      return session.hasPermissions("user_workspace_service_account_update");
+    }
+
+    if (entityType === Constants.ENTITY_DEPLOYMENT) {
+      return session.hasPermissions("user_deployment_service_account_update");
+    }
+
+    return false;
   }
 }
 

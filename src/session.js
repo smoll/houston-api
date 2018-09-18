@@ -183,6 +183,10 @@ class Session {
     this.authServiceAccount = serviceAccount;
   }
 
+  isServiceAccount() {
+    return !this.authUser && this.authServiceAccount;
+  }
+
   setPerm(group, key, value) {
     this.permissions[group][key] = value;
   }

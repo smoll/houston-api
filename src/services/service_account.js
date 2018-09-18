@@ -1,14 +1,14 @@
-const BaseService = require("./base.js");
+const _ = require("lodash");
 
+const BaseService = require("./base.js");
+const Constants = require("../constants.js");
 class ServiceAccountService extends BaseService {
 
-  async fetchServiceAccountByKey (apiKey, throwError = true) {
+  async fetchServiceAccountByKey(apiKey, throwError = true) {
     let service = await this.model("service_account")
       .query()
       .eager("roles")
-      .where({
-        apiKey: apiKey
-      });
+      .findOne("apiKey", apiKey);
 
     if (service) {
       return service;
@@ -19,7 +19,7 @@ class ServiceAccountService extends BaseService {
     return null;
   }
 
-  async fetchServiceAccountByUuid (uuid, throwError = true) {
+  async fetchServiceAccountByUuid(uuid, throwError = true) {
     let service = await this.model("service_account")
       .query()
       .eager("roles")
@@ -34,14 +34,18 @@ class ServiceAccountService extends BaseService {
     return null;
   }
 
-  async fetchServiceAccountsByEntity(entityType, entityUuid) {
+  async fetchServiceAccountsByEntity(entityType, entityUuid = null) {
+    const search = {
+      entity_type: entityType,
+    };
+    if (entityUuid) {
+      search.entity_uuid = entityUuid;
+    }
+
     const serviceAccounts = await this.model("service_account")
       .query()
       .eager("roles")
-      .where({
-        entity_type: entityType,
-        entity_uuid: entityUuid,
-      });
+      .where(search);
 
     if (serviceAccounts && serviceAccounts.length > 0) {
       return serviceAccounts;
@@ -52,11 +56,32 @@ class ServiceAccountService extends BaseService {
 
   async createServiceAccount(label, category, type, uuid) {
     // TODO: Add label and category validation
+    let roleUuid = null;
+
+    switch(type) {
+      case Constants.ENTITY_DEPLOYMENT:
+        roleUuid = await this.service("system_setting").getSetting(Constants.SYSTEM_SETTING_DEPLOYMENT_ROLE_TEMPLATE);
+        break;
+      case Constants.ENTITY_WORKSPACE:
+        roleUuid = await this.service("system_setting").getSetting(Constants.SYSTEM_SETTING_WORKSPACE_ROLE_TEMPLATE);
+        break;
+      case Constants.ENTITY_SYSTEM:
+        roleUuid = await this.service("system_setting").getSetting(Constants.SYSTEM_SETTING_SYSTEM_ROLE_TEMPLATE);
+        break
+    }
+    const roles = [];
+    if (roleUuid) {
+      roles.push({
+        role_uuid: roleUuid,
+      });
+    }
+
     return await this.model("service_account").query().insertGraph([{
       label: label,
       category: category,
       entityType: type,
-      entityUuid: uuid || null
+      entityUuid: uuid || null,
+      service_account_roles: roles,
     }]).returning("*").first();
   }
 
@@ -76,6 +101,12 @@ class ServiceAccountService extends BaseService {
     }
 
     return await serviceAccount.$query().patch(changes).returning("*").first();
+  }
+
+  async updateServiceAccountLastUsed(serviceAccount) {
+    return await serviceAccount.$query().patch({
+      last_used_at: new Date().toISOString()
+    });
   }
 
   async deleteServiceAccount(serviceAccount) {

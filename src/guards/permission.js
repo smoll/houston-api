@@ -6,12 +6,13 @@ class PermissionGuard extends BaseGuard {
   }
 
   validate(context, extras) {
-    for(let permission of extras) {
-      if (!context.session.permissions[permission]) {
-        return false;
+    return context.session.hasPermissions(extras.map((item) => {
+      if (~item.indexOf("|")) {
+        return item.split("|");
+      } else {
+        return item;
       }
-    }
-    return true;
+    }));
   }
 }
 
