@@ -8,7 +8,7 @@ class ServiceAccounts extends BaseOperation {
     this.name = "serviceAccounts";
     this.typeDef = `
       # Fetch Service Accounts by apiKey, serviceAccountUuid, or entityType and entityUuid
-      serviceAccounts(serviceAccountUuid: String, entityType: EntityType!, entityUuid: Uuid): [ServiceAccount]
+      serviceAccounts(serviceAccountUuid: Uuid, entityType: EntityType!, entityUuid: Uuid): [ServiceAccount]
     `;
     this.entrypoint = "query";
     this.guards = ["authenticated"];
