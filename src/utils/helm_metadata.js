@@ -4,12 +4,9 @@ let YAML = require("yamljs");
 
 let Request = require("./request.js");
 
-const EDGE_REGEX = /^\d+\.\d+\.\d+-rc\.\d+$/;
-
 class HelmMetadata {
-  constructor(repoUrl, allowEdge = false) {
+  constructor(repoUrl) {
     this.request = new Request(repoUrl);
-    this.allowEdge = allowEdge;
     this.cache = new NodeCache();
   }
 
@@ -61,28 +58,7 @@ class HelmMetadata {
   }
 
   async latestChart(chartName, platformVersion) {
-    try {
-      let repo = await this.getRepo();
-      if (!repo.entries.hasOwnProperty(chartName)) {
-        throw new Error("Unknown chart in repo");
-      }
-
-      let latest = "0.0.0";
-      for (let chart of repo.entries[chartName]) {
-        if (!this.allowEdge) {
-          if (Semver.gt(chart.version, platformVersion) || chart.version.match(EDGE_REGEX)) {
-            continue;
-          }
-        }
-
-        if (Semver.gt(chart.version, latest)) {
-          latest = chart.version;
-        }
-      }
-      return latest;
-    } catch (err) {
-      return Promise.reject(err);
-    }
+    return platformVersion;
   }
 
   cacheKey(chartName, chartVersion) {
