@@ -1,5 +1,7 @@
 const BaseType = require("./base.js");
 
+// TODO: customize typeDef fields + add func for each prop in resolver
+
 class DeploymentLog extends BaseType {
   constructor(application) {
     super(application);

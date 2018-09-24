@@ -7,7 +7,7 @@ class PubSubPoller {
     this.channel = channel;
     this.pollFunc = pollFunction;
     this.poller = null;
-    this.interval = 1000;
+    this.interval = 500;
     this.watchers = [];
   }
 

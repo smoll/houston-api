@@ -1,3 +1,5 @@
+// TODO: we need to something to stop setInterval (every graphql query is a new one)... have some sort of object we register each channel with and make them stop when nothing's watching it
+
 const { BaseSubscriptionOperation } = require("sealab");
 
 const PubSubPoller = require("../../utils/pubsub_poller.js");
@@ -24,19 +26,15 @@ class DeploymentLogStream extends BaseSubscriptionOperation {
 
   subscribe(root, args, context, info) {
     console.log("Not implemented");
-
     const channel = "deployment_logs";
     return PubSubPoller.subscribe(this.pubsub(), channel, (currentDate, interval) => {
       console.log("Fake search...");
-      return [{
-        timestamp: currentDate.getTime().toString(),
-        level: interval.toString(),
-        message: 'Output test'
-      },{
-        timestamp: "now",
-        level: "error",
-        message: 'Still not implemented'
-      }];
+
+      const deployment = context.session.resources.deployment;
+      const component = args.component;
+      const startTime = currentDate - interval;
+      const endTime = currentDate;
+      return await this.service('elasticsearch').fetchDeploymentLogs(deployment, component, startTime, endTime);
     });
   }
 }
