@@ -8,7 +8,7 @@ pipeline:
     image: node
     commands:
       - sleep 30 # Sleep long enough for postgres to start
-      - PG_HOST=database PG_PORT=5432 npm run test"
+      - PG_HOST=database PG_PORT=5432 npm run test
 
 services:
   database:
