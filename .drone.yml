@@ -7,4 +7,23 @@ pipeline:
   test:
     image: node
     commands:
-      - npm test
+      - sleep 30 # Sleep long enough for postgres to start
+      - PG_HOST=database PG_PORT=5423 npm run test"
+
+services:
+  database:
+    image: postgresql
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+
+  # trigger:
+  #   image: plugins/downstream
+  #   server: http://drone.astronomer.io
+  #   fork: true
+  #   secrets: [ downstream_token ]
+  #   repositories:
+  #     - astronomerio/astronomer
+  #   when:
+  #     branch: master

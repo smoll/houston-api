@@ -4,9 +4,9 @@ services:
   postgres:
     image: postgres:9.6
     ports:
-      - "6432:6432"
+      - "5932:5932"
     environment:
-      - POSTGRES_USER=houston
-      - POSTGRES_PASSWORD=houston
-      - POSTGRES_DB=houston
-    command: -p 6432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    command: -p 5932
