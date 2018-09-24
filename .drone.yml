@@ -1,20 +1,10 @@
 pipeline:
   build:
-    image: node:alpine
+    image: node
     commands:
       - npm install
 
   test:
-    image: node:alpine
+    image: node
     commands:
       - npm test
-
-  # trigger:
-  #   image: plugins/downstream
-  #   server: http://drone.astronomer.io
-  #   fork: true
-  #   secrets: [ downstream_token ]
-  #   repositories:
-  #     - astronomerio/astronomer
-  #   when:
-  #     branch: master
