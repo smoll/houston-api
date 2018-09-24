@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 # Ensure vars get defaulted
 if [[ -z "${PG_PORT}" ]]; then
