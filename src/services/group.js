@@ -1,5 +1,6 @@
 const _ = require("lodash");
 const BaseService = require("./base.js");
+const Constants = require("../constants.js");
 
 class GroupService extends BaseService {
 
@@ -42,7 +43,7 @@ class GroupService extends BaseService {
       .query()
       .joinEager("users.emails")
       .where({
-        "groups.entity_type": this.model("group").ENTITY_DEPLOYMENT,
+        "groups.entity_type": Constants.ENTITY_DEPLOYMENT,
         "groups.entity_uuid": deploymentUuid,
       });
 
@@ -57,7 +58,7 @@ class GroupService extends BaseService {
       .query()
       .joinEager("users.emails")
       .where({
-        "groups.entity_type": this.model("group").ENTITY_WORKSPACE,
+        "groups.entity_type": Constants.ENTITY_WORKSPACE,
         "groups.entity_uuid": workspaceUuid,
       });
 

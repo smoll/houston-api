@@ -17,14 +17,7 @@ class CommanderService extends BaseService {
     super(...arguments);
     this.commander = new CommanderClient(Config.get(Config.COMMANDER_HOST), Config.get(Config.COMMANDER_PORT));
 
-    const allowEdge = Config.get(Config.HELM_REPO_EDGE) === "true";
-
-    this.helmMetadata = new HelmMetadata(
-      Config.get(Config.HELM_ASTRO_REPO),
-      allowEdge,
-    );
-
-    this.info(`Helm "Edge" builds are ${allowEdge ? "enabled" : "disabled"}`);
+    this.helmMetadata = new HelmMetadata(Config.get(Config.HELM_ASTRO_REPO));
   }
 
   // grpc wrappers

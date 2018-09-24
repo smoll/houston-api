@@ -21,9 +21,5 @@ describe("When testing user", () => {
       expect(user.username).toEqual(username);
       done();
     });
-
-    test("with username missing fails", async () => {
-      await expect(User.query().insertAndFetch({})).rejects.toThrow();
-    });
   });
 });

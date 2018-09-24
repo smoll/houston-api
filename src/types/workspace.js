@@ -1,5 +1,5 @@
 const BaseType = require("./base.js");
-
+const Constants = require("../constants.js");
 class Workspace extends BaseType {
   constructor(application) {
     super(application);
@@ -49,7 +49,7 @@ class Workspace extends BaseType {
         if (value.groups) {
           return value.groups
         }
-        return this.service("group").fetchGroupsByEntity(this.model("group").ENTITY_WORKSPACE, value.uuid);
+        return this.service("group").fetchGroupsByEntity(Constants.ENTITY_WORKSPACE, value.uuid);
       },
       deploymentCount(value) {
         return this.service("deployment").fetchDeploymentByWorkspaceUuid(value.uuid, false)

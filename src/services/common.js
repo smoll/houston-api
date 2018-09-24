@@ -84,8 +84,7 @@ class CommonService extends BaseService {
     if (!Config.get(Config.SMTP_URI)) {
       return false;
     }
-    const requireConfirmKey = this.model("system_setting").KEYS_USER_CONFIRMATION;
-    const requireConfirm    = await this.service("system_setting").getSetting(requireConfirmKey);
+    const requireConfirm = await this.service("system_setting").getSetting(Constants.SYSTEM_SETTING_USER_CONFIRMATION);
     return (requireConfirm === true);
   }
 }

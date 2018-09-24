@@ -1,4 +1,5 @@
 const BaseService = require("./base.js");
+const Constants = require("../constants.js");
 
 class OauthUserService extends BaseService {
 
@@ -18,7 +19,7 @@ class OauthUserService extends BaseService {
     }
 
     const userData = {
-      status: this.model("user").STATUS_ACTIVE,
+      status: Constants.USER_STATUS_ACTIVE,
       email: data.profile.email,
       emailVerified: true,
       username: data.profile.email,

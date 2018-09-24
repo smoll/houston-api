@@ -1,4 +1,5 @@
 const BaseModel = require("./base.js");
+const Constants = require("../../constants.js");
 
 class User extends BaseModel {
 
@@ -11,7 +12,7 @@ class User extends BaseModel {
   }
 
   static get defaultEager () {
-    return 'emails'
+    return "emails"
   }
 
   static get jsonSchema () {
@@ -31,23 +32,23 @@ class User extends BaseModel {
 
   statusMessage() {
     switch(this.status) {
-      case User.STATUS_ACTIVE:
+      case Constants.USER_STATUS_ACTIVE:
         return "Your account is active";
-      case User.STATUS_PENDING:
+      case Constants.USER_STATUS_PENDING:
         return "Your account is awaiting email confirmation";
-      case User.STATUS_BANNED:
+      case Constants.USER_STATUS_BANNED:
         return "Your account has been banned";
-      case User.STATUS_INACTIVE:
+      case Constants.USER_STATUS_INACTIVE:
         return "Your account is inactive";
     }
   }
 
   isActive() {
-    return this.status === User.STATUS_ACTIVE;
+    return this.status === Constants.USER_STATUS_ACTIVE;
   }
 
   isPending() {
-    return this.status === User.STATUS_PENDING;
+    return this.status === Constants.USER_STATUS_PENDING;
   }
 
   static get jsonAttributes() {

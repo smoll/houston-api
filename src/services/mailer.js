@@ -1,5 +1,6 @@
 const FS = require("fs");
 const BaseService = require("./base.js");
+const Constants = require("../constants.js");
 const Emailer = require('email-templates');
 const Path = require("path");
 const Handlebars = require("handlebars");
@@ -42,7 +43,7 @@ class MailerService extends BaseService {
   }
 
   async sendEmail(recipient, subject, text, html = null) {
-    const replyEmailKey = this.model("system_setting").KEYS_REPLY_EMAIL;
+    const replyEmailKey = Constants.SYSTEM_SETTING_REPLY_EMAIL;
     const replyEmail = await this.service("system_setting").getSetting(replyEmailKey);
 
     const message = {
@@ -62,7 +63,7 @@ class MailerService extends BaseService {
   }
 
   async sendEmailFromTemplate(template, recipient, payload) {
-    const replyEmailKey = this.model("system_setting").KEYS_REPLY_EMAIL;
+    const replyEmailKey = Constants.SYSTEM_SETTING_REPLY_EMAIL;
     const replyEmail = await this.service("system_setting").getSetting(replyEmailKey);
 
     const message = {
@@ -96,7 +97,7 @@ class MailerService extends BaseService {
   }
 
   async sendPasswordReset(recipient, user, token) {
-    const companyKey = this.model("system_setting").KEYS_COMPANY_NAME;
+    const companyKey = Constants.SYSTEM_SETTING_COMPANY_NAME;
     const companyName = await this.service("system_setting").getSetting(companyKey);
 
     return await this.sendEmailFromTemplate("forgot_password", recipient, {
@@ -107,7 +108,7 @@ class MailerService extends BaseService {
   }
 
   async sendConfirmation(recipient, token) {
-    const companyKey = this.model("system_setting").KEYS_COMPANY_NAME;
+    const companyKey = Constants.SYSTEM_SETTING_COMPANY_NAME;
     const companyName = await this.service("system_setting").getSetting(companyKey);
 
     return await this.sendEmailFromTemplate("confirm_email", recipient, {

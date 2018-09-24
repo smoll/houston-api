@@ -15,7 +15,6 @@ class Config {
     Config.defaults[Config.AUTH_STRATEGY] = "local";
     Config.defaults[Config.HELM_GLOBAL_CONFIG] = {};
     Config.defaults[Config.HELM_ASTRO_REPO] = "https://helm.astronomer.io/";
-    Config.defaults[Config.HELM_REPO_EDGE] = "false";
 
     Config.defaults[Config.REGISTRY_CERT_PATH] = "/tmp/houston/";
     Config.defaults[Config.REGISTRY_ISSUER] = "houston";
@@ -116,7 +115,6 @@ Config.REGISTRY_AUTH = "REGISTRY_AUTH";
 Config.REGISTRY_SERVICE = "REGISTRY_SERVICE";
 Config.HELM_GLOBAL_CONFIG = "HELM_GLOBAL_CONFIG";
 Config.HELM_ASTRO_REPO = "HELM_ASTRO_REPO";
-Config.HELM_REPO_EDGE = "HELM_REPO_EDGE";
 Config.COMMANDER_HOST = "COMMANDER_HOST";
 Config.COMMANDER_PORT = "COMMANDER_PORT";
 Config.AUTH_STRATEGY = "AUTH_STRATEGY"; // local, auth0_oauth, google_oauth

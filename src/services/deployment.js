@@ -1,4 +1,5 @@
 const BaseService = require("./base.js");
+const Constants = require("../constants.js");
 const ReleaseNamerUtil = require("../utils/releases_namer.js");
 
 const deleteQueue = {};
@@ -12,7 +13,7 @@ class DeploymentService extends BaseService {
       .where({
         "user_workspace_map.user_uuid": userUuid
       })
-      .whereNot("status", this.model("deployment").STATUS_DELETING);
+      .whereNot("status", Constants.DEPLOYMENT_STATUS_DELETING);
 
     if (deployments && deployments.length > 0) {
       return deployments;
@@ -45,7 +46,7 @@ class DeploymentService extends BaseService {
       .where({
         "workspace_uuid": workspaceUuid,
       })
-      .whereNot("status", this.model("deployment").STATUS_DELETING);
+      .whereNot("status", Constants.DEPLOYMENT_STATUS_DELETING);
 
     if (deployments && deployments.length > 0) {
       return deployments;
@@ -60,7 +61,7 @@ class DeploymentService extends BaseService {
     const deployment = await this.model("deployment")
       .query()
       .joinEager("workspace")
-      .whereNot("status", this.model("deployment").STATUS_DELETING)
+      .whereNot("status", Constants.DEPLOYMENT_STATUS_DELETING)
       .findOne({
         "release_name": releaseName,
       });
@@ -149,7 +150,7 @@ class DeploymentService extends BaseService {
 
   async updateDeploymentImage(deployment, image, tag) {
     switch(deployment.type) {
-      case this.model("deployment").MODULE_AIRFLOW:
+      case Constants.DEPLOYMENT_AIRFLOW:
         let config = deployment.getConfigCopy();
         if (config.images === undefined) {
           config.images = {};
@@ -166,7 +167,7 @@ class DeploymentService extends BaseService {
 
   async queueDeploymentDeletion(deployment) {
     await this.service("deployment").updateDeployment(deployment, {
-      "status": this.model("deployment").STATUS_DELETING
+      "status": Constants.DEPLOYMENT_STATUS_DELETING
     });
 
     deleteQueue[deployment.uuid] = this.service("commander").deleteDeployment(deployment).then(async (response) => {

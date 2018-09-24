@@ -1,5 +1,6 @@
 const _ = require("lodash");
 const BaseService = require("./base.js");
+const Constants = require("../constants.js");
 
 const Transaction = require('objection').transaction;
 
@@ -63,8 +64,7 @@ class WorkspaceService extends BaseService {
 
   async createWorkspaceWithDefaultGroups(user, payload) {
     // Determine default workspace groups
-    const DEFAULT_GROUPS_KEY = this.model("system_setting").KEY_DEFAULT_WORKSPACE_GROUPS;
-    let groupTemplates = await this.service("system_setting").getSetting(DEFAULT_GROUPS_KEY);
+    let groupTemplates = await this.service("system_setting").getSetting(Constants.SYSTEM_SETTING_DEFAULT_WORKSPACE_GROUPS);
     if (groupTemplates && groupTemplates.length > 0) {
       groupTemplates = groupTemplates.split(",");
     } else {

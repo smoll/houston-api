@@ -1,4 +1,7 @@
 const BaseOperation = require("../base.js");
+
+const Constants = require("../../constants.js");
+
 class DeploymentConfig extends BaseOperation {
   constructor() {
     super();
@@ -13,7 +16,7 @@ class DeploymentConfig extends BaseOperation {
 
   async resolver(root, args, context) {
     try {
-      const workerPresets = await this.service("system_setting").getSetting(this.model("system_setting").KEY_WORKER_SIZES);
+      const workerPresets = await this.service("system_setting").getSetting(Constants.SYSTEM_SETTING_WORKER_SIZES);
       return {
         ...await this.service("commander").determineConstraints(null),
         presets: {

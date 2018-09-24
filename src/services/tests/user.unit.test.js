@@ -1,15 +1,41 @@
 const Faker = require("faker");
 const Postgres = require("../../database/postgres.js");
-
+const Constants = require("../../constants.js");
 const UserService = require("../user.js");
 const UserModel = require("../../database/models/user.js");
+const UserPropertyModel = require("../../database/models/user_property.js");
 const EmailModel = require("../../database/models/email.js");
-
+const GroupModel = require("../../database/models/group.js");
 let application = {
   model: function(name) {
     return {
-      "user": UserModel,
-      "email": EmailModel,
+      user: UserModel,
+      email: EmailModel,
+      user_property: UserPropertyModel,
+    }[name];
+  },
+  service: function(name) {
+    let settings = {};
+    let group = null;
+    return {
+      common: {
+        emailConfirmationEnabled: function(){
+          return false;
+        }
+      },
+
+      // TODO: Should eventually full support testing this, but for now stub out
+      system_setting: {
+        getSetting: function() {},
+      },
+      group: {
+        fetchGroupByUuid: function() {},
+        addUser: function() {}
+      },
+      workspace: {
+        createWorkspaceWithDefaultGroups: function() {}
+      }
+
     }[name];
   }
 };
@@ -23,7 +49,6 @@ describe("When testing user service", () => {
       userService = new UserService(application);
       done();
     });
-
   });
 
   let username = Faker.internet.userName();
@@ -31,14 +56,22 @@ describe("When testing user service", () => {
   let user;
   describe("check that #createUser", () => {
     test("creates new user that doesn't exist", async (done) => {
-      user = await userService.createUser(username, email, "password");
+      user = await userService.createUser({
+        username: username,
+        email: email,
+        password:"password"
+      });
       expect(user.username).toEqual(username);
       expect(user.emails[0].address).toEqual(email);
       done();
     });
 
     test("fails to creates new user with email that exists", async () => {
-      expect(userService.createUser(username, email, "password")).rejects.toThrow();
+      expect(userService.createUser({
+        username: username,
+        email: email,
+        password:"password"
+      })).rejects.toThrow();
     });
   });
 
@@ -83,7 +116,7 @@ describe("When testing user service", () => {
     });
 
     test("fails with uuid that does not exist", async (done) => {
-      let fetchUser = await userService.fetchUserByUuid("202f8e12-05af-4b20-9443-339eeeef7552");
+      let fetchUser = await userService.fetchUserByUuid("202f8e12-05af-4b20-9443-339eeeef7552", false);
       expect(fetchUser).toBeNull();
       done();
     });
@@ -93,12 +126,12 @@ describe("When testing user service", () => {
 
     test("works for email that exists", async (done) => {
       let updateUser = await userService.updateUser(user, {
-        status: "bad"
+        fullName: "derp"
       });
-      expect(updateUser.status).toEqual("bad");
+      expect(updateUser.fullName).toEqual("derp");
 
       let fetchUser = await userService.fetchUserByUuid(user.uuid);
-      expect(updateUser.status).toEqual("bad");
+      expect(fetchUser.fullName).toEqual("derp");
       done();
     });
   });

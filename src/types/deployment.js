@@ -1,4 +1,5 @@
 const BaseType = require("./base.js");
+const Constants = require("../constants.js");
 const Config = require("../utils/config.js");
 
 class Deployment extends BaseType {
@@ -68,7 +69,7 @@ class Deployment extends BaseType {
         return this.service("docker").fetchImagesByDeployment(value);
       },
       async deploymentConfig(value) {
-        const workerPresets = await this.service("system_setting").getSetting(this.model("system_setting").KEY_WORKER_SIZES);
+        const workerPresets = await this.service("system_setting").getSetting(Constants.SYSTEM_SETTING_WORKER_SIZES);
         return {
           ...await this.service("commander").determineConstraints(value),
           presets: {

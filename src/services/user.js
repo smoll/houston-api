@@ -1,5 +1,7 @@
-const BaseService = require("./base.js");
 const _ = require("lodash");
+
+const BaseService = require("./base.js");
+const Constants = require("../constants.js");
 const ShortId = require("shortid");
 const Transaction = require('objection').transaction;
 
@@ -118,13 +120,13 @@ class UserService extends BaseService {
       // get current user count, will use later to see if user should be a system admin
       const userCount = await this.fetchUserCount();
 
-      const AVATAR_URL = this.model("user_property").KEY_AVATAR_URL;
+      const AVATAR_URL = Constants.USER_PROPERTY_AVATAR_URL;
 
       if (userData.hasOwnProperty(AVATAR_URL)) {
         properties.push({
           key: AVATAR_URL,
           value: userData.avatarUrl,
-          category: this.model("user_property").CATEGORY_PROFILE
+          category: Constants.USER_PROPERTY_CATEGORY_PROFILE
         });
       }
 
@@ -151,16 +153,14 @@ class UserService extends BaseService {
 
       if (userCount === 0) {
         // this is the first user, lets make them a system owner
-        const adminGroupKey = this.model("system_setting").KEY_ADMIN_GROUP_UUID;
-        const adminGroupUuid = await this.service("system_setting").getSetting(adminGroupKey);
+        const adminGroupUuid = await this.service("system_setting").getSetting(Constants.SYSTEM_SETTING_ADMIN_GROUP_UUID);
         const adminGroup = await this.service("group").fetchGroupByUuid(adminGroupUuid);
         await this.service("group").addUser(adminGroup, user);
         USER_COUNT = null;
       }
 
       // Add all users to the system level users group
-      const usersGroupKey = this.model("system_setting").KEY_USERS_GROUP_UUID;
-      const usersGroupUuid = await this.service("system_setting").getSetting(usersGroupKey);
+      const usersGroupUuid = await this.service("system_setting").getSetting(Constants.SYSTEM_SETTING_USERS_GROUP_UUID);
       const usersGroup = await this.service("group").fetchGroupByUuid(usersGroupUuid);
       await this.service("group").addUser(usersGroup, user);
 
@@ -212,7 +212,7 @@ class UserService extends BaseService {
       userChanges.fullName = payload.fullName;
     }
 
-    const KEY_AVATAR = this.model("user_property").KEY_AVATAR_URL;
+    const KEY_AVATAR = Constants.USER_PROPERTY_AVATAR_URL;
 
     if (payload[KEY_AVATAR] !== undefined) {
       if (!properties[KEY_AVATAR]) {
@@ -220,7 +220,7 @@ class UserService extends BaseService {
           user_uuid: user.uuid,
           key: KEY_AVATAR,
           value: payload[KEY_AVATAR],
-          category: this.model("user_property").CATEGORY_PROFILE
+          category: Constants.USER_PROPERTY_CATEGORY_PROFILE
         }).then((property) => {
           user.properties.push(property);
         }));
@@ -250,7 +250,7 @@ class UserService extends BaseService {
 
   async markActive(user) {
     return await user.$query().patch({
-      status: this.model("user").STATUS_ACTIVE,
+      status: Constants.USER_STATUS_ACTIVE,
     }).returning("*");
   }
 
@@ -280,9 +280,9 @@ class UserService extends BaseService {
       confirmEnabled = await this.service("common").emailConfirmationEnabled();
     }
     if (confirmEnabled) {
-      return this.model("user").STATUS_PENDING;
+      return Constants.USER_STATUS_PENDING;
     }
-    return this.model("user").STATUS_ACTIVE;
+    return Constants.USER_STATUS_ACTIVE;
   }
 }
 
