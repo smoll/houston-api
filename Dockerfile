@@ -33,4 +33,4 @@ COPY . .
 
 EXPOSE 8870
 
-ENTRYPOINT ["npm", "start"]
+ENTRYPOINT ["sh", "./includes/entrypoint", "npm", "run", "start"]

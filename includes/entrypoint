@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -e
+
+# Wait for postgres then init the db
+if [[ -n $HOUSTON_POSTGRES_URI ]]; then
+  # Wait for database port to open up
+  DB_HOST=$(echo "${HOUSTON_POSTGRES_URI}" | awk -F: '{print $3}' | awk -F@ '{print $2}')
+  DB_PORT=$(echo "${HOUSTON_POSTGRES_URI}" | awk -F: '{print $4}' | awk -F/ '{print $1}')
+  echo "Waiting for host: ${DB_HOST} ${DB_PORT}"
+  while ! nc -w 1 -z "${DB_HOST}" "${DB_PORT}"; do
+    sleep 0.001
+  done
+fi
+
+echo "Starting houston..."
+exec "$@"

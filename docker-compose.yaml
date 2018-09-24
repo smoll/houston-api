@@ -28,7 +28,7 @@ services:
       COMMANDER_HOST: "docker.for.mac.localhost"
       COMMANDER_PORT: "50051"
       HELM_GLOBAL_CONFIG: "{\"baseDomain\":\"localhost:5000\",\"acme\":true,\"rbacEnabled\":true,\"tlsSecret\":\"\"}"
-    entrypoint: ["npm", "run", "dev"]
+    entrypoint: ["sh", "./includes/entrypoint", "npm", "run", "dev"]
   postgres-houston:
     image: postgres:9.6
     ports:
@@ -39,9 +39,4 @@ services:
       - POSTGRES_DB=houston
     volumes:
       - ./.local/postgres/houston:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 30s
-      timeout: 30s
-      retries: 3
     command: -p 5430
