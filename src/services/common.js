@@ -28,7 +28,7 @@ class CommonService extends BaseService {
       }
 
       const promise = this.resolveResource(type, args[resourceKey]).then((result) => {
-        results[resourceKey.replace("Uuid", "")] = result;
+        results[type.replace("Uuid", "")] = result;
       });
 
       promises.push(promise);
