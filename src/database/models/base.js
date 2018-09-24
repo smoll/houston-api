@@ -24,6 +24,11 @@ class BaseModel extends Model {
     super.$beforeInsert(context);
 
     for(let field of this.constructor.uuidFields) {
+      // ensure field is in jsonSchema definition before creating it
+      if (!this.constructor.jsonSchema || !this.constructor.jsonSchema.properties[field]) {
+        continue;
+      }
+
       this[field] = this.generateUuid();
     }
 
