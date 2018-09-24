@@ -21,7 +21,8 @@ describe("When testing service_account", () => {
 
       let service = await ServiceAccount.query().insertAndFetch({
         label: label,
-        category: 'user',
+        category: "user",
+        entityType: "system",
       });
       expect(service.label).toEqual(label);
       done();
@@ -35,6 +36,7 @@ describe("When testing service_account", () => {
       let saLabel = Faker.lorem.words();
 
       let perm = await Permission.query().insertAndFetch({
+        id: Faker.lorem.words().replace(" ", "_"),
         label: permLabel,
         scope: 'global',
         category: 'user'
@@ -47,12 +49,13 @@ describe("When testing service_account", () => {
 
       let rolePerm = await RolePermission.query().insertAndFetch({
         role_uuid: role.uuid,
-        permission_uuid: perm.uuid,
+        permission_id: perm.id,
       });
 
       let service = await ServiceAccount.query().insertAndFetch({
         label: saLabel,
         category: 'user',
+        entityType: "system",
       });
 
       let serviceRole = await ServiceAccountRole.query().insertAndFetch({

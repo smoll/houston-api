@@ -18,6 +18,7 @@ describe("When testing permission", () => {
       let label = Faker.lorem.words();
 
       let perm = await Permission.query().insertAndFetch({
+        id: Faker.lorem.words().replace(" ", "_"),
         label: label,
         scope: 'global',
         category: 'user'
@@ -33,6 +34,7 @@ describe("When testing permission", () => {
       let roleLabel = Faker.lorem.words();
 
       let perm = await Permission.query().insertAndFetch({
+        id: Faker.lorem.words().replace(/\s/g, "_"),
         label: permLabel,
         scope: 'global',
         category: 'user'
@@ -45,7 +47,7 @@ describe("When testing permission", () => {
 
       let rolePerm = await RolePermission.query().insertAndFetch({
         role_uuid: role.uuid,
-        permission_uuid: perm.uuid,
+        permission_id: perm.id,
       });
 
       let relationTest = await perm.$relatedQuery('roles');

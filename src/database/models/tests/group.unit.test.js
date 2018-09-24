@@ -36,6 +36,7 @@ describe("When testing group", () => {
       let groupLabel = Faker.lorem.words();
 
       let perm = await Permission.query().insertAndFetch({
+        id: Faker.lorem.words().replace(/\s/g, "_"),
         label: permLabel,
         scope: 'global',
         category: 'user'
@@ -48,7 +49,7 @@ describe("When testing group", () => {
 
       let rolePerm = await RolePermission.query().insertAndFetch({
         role_uuid: role.uuid,
-        permission_uuid: perm.uuid,
+        permission_id: perm.id,
       });
 
       let group = await Group.query().insertAndFetch({
@@ -64,14 +65,6 @@ describe("When testing group", () => {
       let relationTest = await group.$relatedQuery('roles');
       expect(relationTest[0].label).toEqual(role.label);
       done();
-    });
-
-    test("for users", async (done) => {
-      /*
-       user = await User.query().insertAndFetch({
-        username: username,
-
-       */
     });
   });
 
