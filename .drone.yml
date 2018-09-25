@@ -5,7 +5,7 @@ pipeline:
       - npm install
 
   test:
-    image: node
+    image: astronomerio/ap-build:0.0.7
     commands:
       - PG_HOST=database PG_PORT=5432 npm run test
 
