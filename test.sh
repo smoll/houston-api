@@ -1,11 +1,11 @@
 #!/usr/bin/env sh
 
 # Ensure vars get defaulted
-if [[ -z "${PG_PORT}" ]]; then
+if [ -n "${PG_PORT}" ]; then
   PG_PORT=5932
 fi
 
-if [[ -z "${PG_HOST}" ]]; then
+if [ -n "${PG_HOST}" ]; then
   PG_HOST="localhost"
 fi
 
