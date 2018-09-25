@@ -42,7 +42,7 @@ const schema = makeExecutableSchema({
   try {
     Application.logger().info("Running migrations... ");
     await PostgresMigration();
-    Application.logger().info("Done");
+    Application.logger().info("Done - migration successful");
   } catch (err) {
     Application.logger().error("Migrations failed, abort starting server");
     Application.output(err);
@@ -106,19 +106,28 @@ const schema = makeExecutableSchema({
         methods: "GET,PUT,POST,DELETE,OPTIONS",
         allowedHeaders: "Content-Type, Authorization, Content-Length, X-Requested-With",
         credentials: true,
-      }, port: Config.get(Config.PORT), endpoint: Config.get(Config.API_ENDPOINT_URL), subscriptions: {
+      },
+      port: Config.get(Config.PORT),
+      endpoint: Config.get(Config.API_ENDPOINT_URL),
+      subscriptions: {
         path: Config.get(Config.WEBSOCKET_ENDPOINT_URL), onConnect: function (connParams, websocket, context) {
           // Handle websocket authorization
           return Application.service("auth").authenticateRequest(connParams.authorization).then((session) => {
             return {session: session};
           });
         }
-      }, playground: Config.get(Config.PLAYGROUND_ENDPOINT_URL), uploads: {}, rootValue: {
+      },
+      playground: Config.get(Config.PLAYGROUND_ENDPOINT_URL),
+      uploads: {},
+      rootValue: {
         schema: schema, application: Application,
-      }, formatError: ApolloError
+      },
+      formatError: ApolloError
     });
 
     express.setTimeout(parseInt(Config.get(Config.SERVER_TIMEOUT)));
+
+    Application.logger().info(`Server started: localhost:${Config.get(Config.PORT)}`);
   } catch (err) {
     Application.logger().error("Server failed to start");
     Application.output(err);
