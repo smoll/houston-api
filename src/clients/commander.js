@@ -163,6 +163,29 @@ class CommanderClient {
       });
     });
   }
+
+  setSecret(namespace, releaseName, secretName, data) {
+    const payload = {
+      release_name: releaseName,
+      namespace: namespace,
+      secret: {
+        name: secretName,
+        data: data
+      }
+    };
+
+    return new Promise((resolve, reject) => {
+      Logger.info("Running commanderClient#setSecret()");
+      this.client.getSecret(payload, function (err, response) {
+        if (err) {
+          Logger.info(JSON.stringify(err));
+          return reject(err);
+        }
+        Logger.info(JSON.stringify(response));
+        return resolve(response);
+      });
+    });
+  }
 }
 
 module.exports = CommanderClient;

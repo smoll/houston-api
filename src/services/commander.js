@@ -79,6 +79,10 @@ class CommanderService extends BaseService {
     return await this.commander.getSecret(namespace, secretName);
   }
 
+  async setSecret(namespace, releaseName, secretName, data) {
+    return await this.commander.setSecret(namespace, releaseName, secretName, data);
+  }
+
   // Other functions
   async migrateDeployment(deployment, version) {
     const namespace = Config.helmConfig(Config.GLOBAL_PLATFORM_NAMESPACE);
