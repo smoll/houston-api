@@ -21,7 +21,10 @@ class UpdateDeployment extends BaseOperation {
     try {
       let deployment = context.session.resources.deployment;
 
-      deployment = await this.service("deployment").updateDeployment(deployment, args.payload);
+      deployment = await this.service("deployment").updateDeployment(deployment, args.payload, {
+        // limit the properties that can be updated to this subset
+        properties: ["label", "description", "config", "version"]
+      });
 
       if (args.sync === true) {
         await this.service("commander").updateDeployment(deployment);

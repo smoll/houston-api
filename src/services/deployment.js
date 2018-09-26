@@ -1,4 +1,6 @@
 const BaseService = require("./base.js");
+
+const DotObject = require("../utils/dot_object.js");
 const ReleaseNamerUtil = require("../utils/releases_namer.js");
 
 const deleteQueue = {};
@@ -96,51 +98,34 @@ class DeploymentService extends BaseService {
 
   // return false if nothing to update, user on success, throw error on failure
   async updateDeployment(deployment, payload, options = {}) {
-    let changes = {};
+    let properties = ["label", "description", "config", "status", "registryPassword", "version"];
+    if (options.properties) {
+      properties = options.properties;
+    }
 
-    // TODO: Do this check in a more extendable way
-    if (payload["config"] !== undefined && payload.config !== deployment.config) {
-      // TODO: This is specific to airflow deploys. We need a way to set config values in the request that
-      // won't get persisted so it never ends up here
-      if (payload.config.fernetKey) {
-        delete payload.config.fernetKey;
-      }
-      if (payload.config.redis && payload.config.redis.password) {
-        delete payload.config.redis.password;
-      }
+    // if payload.config is set and the function is allowed to edit the config
+    const modifyConfig = ~properties.indexOf("config") && payload.config;
+    let deployConfig;
 
-      changes.config = payload.config;
+    // merge config changes into existing config
+    if (modifyConfig) {
+      deployConfig = new DotObject(deployment.config);
+      deployConfig.merge(payload.config);
+      delete payload.config;
     }
-    if (payload["label"] !== undefined && payload.label !== deployment.label) {
-      changes.label = payload.label;
-    }
-    if (payload["description"] !== undefined && payload.description !== deployment.description) {
-      changes.description = payload.description;
-    }
-    if (payload["status"] !== undefined && payload.status !== deployment.status) {
-      changes.status = payload.status;
-    }
-    if (payload["registryPassword"] !== undefined) {
-      changes.registryPassword = payload.registryPassword;
-    }
-    if (payload["version"] !== undefined) {
-      changes.version = payload.version;
-    }
-    // if (payload["workspace"] !== undefined && payload.workspace && payload.workspace.uuid !== deployment.workspaceUuid) {
-    //   changes.workspace_uuid = payload.workspace.uuid;
-    // }
 
-    // TODO: Currently mutually exclusive to payload.config (will overwrite)
-    if (payload["images"] !== undefined) {
-      let config = deployment.getConfigCopy();
-      let latest = this.computeImageChanges(config.images, payload['images']);
-      if (latest) {
-        config.images = latest;
-        changes.config = config;
-      }
+    // create mutation object
+    const changes = this.filterChanges(deployment, payload, properties);
+
+    // add merged config to mutation object
+    if (modifyConfig) {
+
+      changes.config = deployConfig.get();
     }
 
     if(Object.keys(changes).length > 0) {
+      console.log("Updating deployment");
+      console.log(changes);
       deployment = await deployment.$query(options.transaction).patch(changes).returning("*");
     }
 
@@ -185,32 +170,6 @@ class DeploymentService extends BaseService {
 
   async deleteDeploymentMetadata(deployment) {
     return await deployment.$query().delete();
-  }
-
-  computeImageChanges(current, latest) {
-    latest = Object.assign({}, latest);
-
-    let changed = false;
-    for(let key in latest) {
-      if (!latest.hasOwnProperty(key)) {
-        continue;
-      }
-
-      // if current images doesn't have the image, skip
-      if (!current.hasOwnProperty(key)) {
-        continue;
-      }
-
-      if (latest[key] !== current[key]) {
-        changed = true;
-        current[key] = latest[key];
-      }
-    }
-
-    if (changed) {
-      return current;
-    }
-    return false;
   }
 }
 
