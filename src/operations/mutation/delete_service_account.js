@@ -15,8 +15,9 @@ class DeleteServiceAccount extends BaseOperation {
   }
 
   async resolver(root, args, { session }) {
+    const serviceAccount = session.resources.serviceAccount;
     try {
-      if (!this.checkPermissionByEntityType(args.entityType, session)) {
+      if (!this.checkPermissionByEntityType(serviceAccount.entityType, session)) {
         return this.unauthorized("delete_service_account");
       }
 

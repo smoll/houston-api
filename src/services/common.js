@@ -28,7 +28,10 @@ class CommonService extends BaseService {
       }
 
       const promise = this.resolveResource(type, args[resourceKey]).then((result) => {
-        results[type.replace("Uuid", "")] = result;
+        const resourceType = type.replace("Uuid", "");
+        results[resourceType] = result;
+
+        return this.resolveDependencies(resourceType, result);
       });
 
       promises.push(promise);
@@ -37,6 +40,18 @@ class CommonService extends BaseService {
     return Promise.all(promises).then(() => {
       return results;
     });
+  }
+
+  async resolveDependencies(resourceType, resource) {
+    switch(resourceType) {
+      case "serviceAccount":
+        if (resource.entityType === Constants.ENTITY_WORKSPACE) {
+          resource.workspace = await this.resolveResource("workspaceUuid", resource.entityUuid);
+        }
+        if (resource.entityType === Constants.ENTITY_DEPLOYMENT) {
+          resource.deployment = await this.resolveResource("deploymentUuid", resource.entityUuid);
+        }
+    }
   }
 
   async resolveResource(resourceType, resourceUuid) {

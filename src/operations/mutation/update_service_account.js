@@ -16,11 +16,12 @@ class UpdateServiceAccount extends BaseOperation {
 
   async resolver(root, args, { session }) {
     try {
-      if (!this.checkPermissionByEntityType(args.entityType, session)) {
+      const serviceAccount = session.resources.serviceAccount;
+      if (!this.checkPermissionByEntityType(serviceAccount.entityType, session)) {
         return this.unauthorized("update_service_account");
       }
 
-      return await this.service("service_account").updateServiceAccount(session.resources.serviceAccount, args.payload); // expects args (serviceAccount, payload)
+      return await this.service("service_account").updateServiceAccount(serviceAccount, args.payload); // expects args (serviceAccount, payload)
     } catch(err) {
       this.error(err.message);
       throw err;

@@ -1,4 +1,7 @@
 const BaseService = require("./base.js");
+
+const Constants = require("../constants.js");
+
 class RbacService extends BaseService {
 
   async fetchPermissionsForSession(session) {
@@ -8,6 +11,16 @@ class RbacService extends BaseService {
     // - in a workspace admin group and a deployment group
     // - no in a workspace admin group, but in a deployment group
     // - in global admin group
+
+    // specific resources use an entityType & entityUuid, common.js will resolve those entities an append it to the object
+    if (session.resources.serviceAccount) {
+      if (session.resources.serviceAccount.entityType === Constants.ENTITY_WORKSPACE) {
+        session.resources.workspace = session.resources.serviceAccount.workspace;
+      }
+      if (session.resources.serviceAccount.entityType === Constants.ENTITY_DEPLOYMENT) {
+        session.resources.deployment = session.resources.serviceAccount.deployment;
+      }
+    }
 
     if (session.resources.deployment && !session.resources.workspace && session.resources.deployment.workspace) {
       session.resources.workspace = session.resources.deployment.workspace;
