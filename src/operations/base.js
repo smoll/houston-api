@@ -15,6 +15,18 @@ class HoustonOperation extends BaseOperation {
     throw Errors.InputInvalid(this.name, errors);
   }
 
+  inputError(message) {
+    const error = new Errors.InputError(message);
+    error.setOperation(this.name);
+    throw error;
+  }
+
+  notFoundError(message) {
+    const error = new Errors.GeneralError(message);
+    error.setOperation(this.name);
+    throw error;
+  }
+
   userNotFound(criteria) {
     throw Errors.UserNotFound(criteria);
   }

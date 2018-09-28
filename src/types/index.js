@@ -1,23 +1,5 @@
 const { SchemaBuilder } = require("../operations.js");
 
-const AuthConfig = require("./auth_config.js");
-const AuthUser = require("./auth_user.js");
-const DeployInfo = require("./deploy_info.js");
-const Deployment = require("./deployment.js");
-const DeploymentConfig = require("./deployment_config.js");
-const DeploymentLog = require("./deployment_log.js");
-const DeploymentUrls = require("./deployment_urls.js");
-const Email = require("./email.js");
-const Group = require("./group.js");
-const Invite = require("./invite.js");
-const ServiceAccount = require("./service_account.js");
-const SystemSetting = require("./system_setting.js");
-const Workspace = require("./workspace.js");
-const Token = require("./token.js");
-const TokenPayload = require("./token_payload.js");
-const User = require("./user.js");
-const UserProperty = require("./user_property.js");
-
 // TypeDefs that are not GQL types (resolvable objects)
 
 SchemaBuilder.addTypeDef(`
@@ -74,20 +56,22 @@ SchemaBuilder.addTypeDef(`
 `);
 
 module.exports = [
-  AuthConfig,
-  AuthUser,
-  DeployInfo,
-  Deployment,
-  DeploymentConfig,
-  DeploymentLog,
-  DeploymentUrls,
-  Email,
-  Invite,
-  Group,
-  Workspace,
-  Token,
-  TokenPayload,
-  ServiceAccount,
-  User,
-  UserProperty,
+  require("./auth_config.js"),
+  require("./auth_user.js"),
+  require("./deploy_info.js"),
+  require("./deployment.js"),
+  require("./deployment_config.js"),
+  require("./deployment_log.js"),
+  require("./deployment_urls.js"),
+  require("./email.js"),
+  require("./group.js"),
+  require("./invite.js"),
+  require("./permissions.js"),
+  require("./service_account.js"),
+  require("./system_setting.js"),
+  require("./token.js"),
+  require("./token_payload.js"),
+  require("./user.js"),
+  require("./user_property.js"),
+  require("./workspace.js"),
 ];

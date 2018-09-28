@@ -61,7 +61,7 @@ class WorkspaceService extends BaseService {
     }).returning("*");
   }
 
-  async createWorkspaceWithDefaultGroups(user, payload) {
+  async createWorkspaceWithDefaultGroups(user, payload, options = {}) {
     // Determine default workspace groups
     const DEFAULT_GROUPS_KEY = this.model("system_setting").KEY_DEFAULT_WORKSPACE_GROUPS;
     let groupTemplates = await this.service("system_setting").getSetting(DEFAULT_GROUPS_KEY);
@@ -71,24 +71,18 @@ class WorkspaceService extends BaseService {
       groupTemplates = [];
     }
 
-    return await Transaction(this.conn("postgres"), async (trx) => {
-      const options = {
-        transaction: trx
-      };
+    // create workspace
+    const workspace = await this.createWorkspace(user, payload, options);
 
-      // create workspace
-      const workspace = await this.createWorkspace(user, payload, options);
-
-      // create default groups for workspace
-      const groups = await this.service("group").createGroupsFromTemplates(this.model("group").ENTITY_WORKSPACE, workspace.uuid, groupTemplates, options);
-      const promises = [];
-      for(let group of groups) {
-        promises.push(this.service("group").addUser(group, user, options));
-      }
-      await Promise.all(promises);
-      // return workspace
-      return workspace;
-    });
+    // create default groups for workspace
+    const groups = await this.service("group").createGroupsFromTemplates(this.model("group").ENTITY_WORKSPACE, workspace.uuid, groupTemplates, options);
+    const promises = [];
+    for(let group of groups) {
+      promises.push(this.service("group").addUser(group, user, options));
+    }
+    await Promise.all(promises);
+    // return workspace
+    return workspace;
   }
 
   async updateWorkspace(workspace, payload) {
@@ -110,12 +104,26 @@ class WorkspaceService extends BaseService {
     return workspace;
   }
 
-  async addUser(workspace, user) {
-    return this.model("user_workspace").query()
+  async addUser(workspace, user, options = {}) {
+    return await this.addUserByWorkspaceUuid(workspace.uuid, user, options);
+  }
+
+  async addUserByWorkspaceUuid(workspaceUuid, user, options = {}) {
+    await this.model("user_workspace")
+      .query(options.transaction)
       .insertGraph({
         user_uuid: user.uuid,
-        workspace_uuid: workspace.uuid,
+        workspace_uuid: workspaceUuid,
       });
+
+    // TODO: Remove: temporary until RBAC is fully exposed
+    //   add user to all workspace groups
+    const groups = await this.service("group").fetchGroupsByWorkspaceUuid(workspaceUuid);
+    const promises = [];
+    for (let group of groups) {
+      promises.push(this.service("group").addUser(group, user));
+    }
+    await Promise.all(promises);
   }
 
   async removeUser(workspace, user) {

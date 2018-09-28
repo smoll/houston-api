@@ -110,8 +110,8 @@ class AuthService extends BaseService {
     // only attempt to decodeJWT if there is one
     if(authorization && authorization.length > 0) {
       try {
-        let decoded = await this.decodeJWT(authorization);
-        let user = await this.service("user").fetchUserByUuid(decoded.uuid, false);
+        session.decoded = await this.decodeJWT(authorization);
+        let user = await this.service("user").fetchUserByUuid(session.decoded.uuid, false);
         if (user) {
           session.setAuthUser(user);
         }

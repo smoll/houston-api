@@ -26,6 +26,10 @@ const GenericError = createError('GenericError', {
 });
 
 module.exports = {
+  AuthError: require("./auth.js"),
+  GeneralError: require("./general.js"),
+  InputError: require("./input.js"),
+
   AuthExpired: () =>{
     return new AuthExpiredError({
       data: {},

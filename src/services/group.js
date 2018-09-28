@@ -129,7 +129,7 @@ class GroupService extends BaseService {
     return Promise.all(promises);
   }
 
-  async updateGroup(group, payload) {
+  async updateGroup(group, payload, options = {}) {
     let changes = {};
 
     // TODO: Do this check in a more extendable way
@@ -144,7 +144,7 @@ class GroupService extends BaseService {
       return false;
     }
 
-    await group.$query().patch(changes).returning("*");
+    await group.$query(options.transaction).patch(changes).returning("*");
     return group;
   }
 
@@ -157,9 +157,9 @@ class GroupService extends BaseService {
       });
   }
 
-  async removeUser(group, user) {
+  async removeUser(group, user, options = {}) {
     return group
-      .$relatedQuery('users')
+      .$relatedQuery('users', options.transaction)
       .unrelate()
       .where({
         user_uuid: user.uuid,
@@ -167,12 +167,12 @@ class GroupService extends BaseService {
       });
   }
 
-  async deleteGroup(group) {
-    return await group.$query().delete();
+  async deleteGroup(group, options = {}) {
+    return await group.$query(options.transaction).delete();
   }
 
-  async deleteGroupByUuid(groupUuid) {
-    return await this.model("group").query().deleteById(groupUuid);
+  async deleteGroupByUuid(groupUuid, options) {
+    return await this.model("group").query(options.transaction).deleteById(groupUuid);
   }
 }
 

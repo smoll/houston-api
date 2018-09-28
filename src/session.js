@@ -10,8 +10,10 @@ class Session {
       valid: true,
       expired: false,
     };
+    this.decoded = {};
     this.req = null;
     this.res = null;
+    this.isAdmin = false;
 
     this.permissions = {
       ////// USER LEVEL (Specific to objects associated with a user)

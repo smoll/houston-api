@@ -104,7 +104,7 @@ class UserService extends BaseService {
     return USER_COUNT;
   }
 
-  async createUser(userData) {
+  async createUser(userData, options = {}) {
     try {
       const emailConfirmEnabled = await this.service("common").emailConfirmationEnabled();
 
@@ -131,7 +131,7 @@ class UserService extends BaseService {
       const emailToken = ShortId.generate();
 
       let user = await this.model("user")
-        .query()
+        .query(options.transaction)
         .insertGraph({
           username: username,
           full_name: fullName,
@@ -154,15 +154,16 @@ class UserService extends BaseService {
         const adminGroupKey = this.model("system_setting").KEY_ADMIN_GROUP_UUID;
         const adminGroupUuid = await this.service("system_setting").getSetting(adminGroupKey);
         const adminGroup = await this.service("group").fetchGroupByUuid(adminGroupUuid);
-        await this.service("group").addUser(adminGroup, user);
+        await this.service("group").addUser(adminGroup, user, options);
         USER_COUNT = null;
       }
+
 
       // Add all users to the system level users group
       const usersGroupKey = this.model("system_setting").KEY_USERS_GROUP_UUID;
       const usersGroupUuid = await this.service("system_setting").getSetting(usersGroupKey);
       const usersGroup = await this.service("group").fetchGroupByUuid(usersGroupUuid);
-      await this.service("group").addUser(usersGroup, user);
+      await this.service("group").addUser(usersGroup, user, options);
 
       // create default workspace for user
       let workspaceLabel = "Default Workspace";
@@ -184,7 +185,7 @@ class UserService extends BaseService {
       await this.service("workspace").createWorkspaceWithDefaultGroups(user, {
         label: workspaceLabel,
         description: workspaceDesc
-      });
+      }, options);
 
       return user;
     } catch (err) {

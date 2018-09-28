@@ -48,11 +48,11 @@ class LocalUserService extends BaseService {
     return user
   }
 
-  async createUser(email, password, username, userData = {}) {
+  async createUser(email, password, username, userData = {}, options = {}) {
     userData.email = email;
     userData.username = username;
 
-    const user = await this.service("user").createUser(userData);
+    const user = await this.service("user").createUser(userData, options);
 
     await this.model("local_credential")
       .query()

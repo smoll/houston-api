@@ -43,7 +43,11 @@ class ConfirmEmail extends BaseOperation {
         token: {
           value: token,
           payload: tokenPayload
-        }
+        },
+
+        // TODO Do a rbac lookup for the user
+        permissions: {},
+        isAdmin: false,
       }
     } catch (err) {
       this.error(err);

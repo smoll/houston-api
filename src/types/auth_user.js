@@ -8,6 +8,8 @@ class AuthUser extends BaseType {
     type AuthUser {
       user: User
       token: Token
+      permissions: Permissions
+      isAdmin: Boolean
     }`;
   }
 
@@ -18,6 +20,12 @@ class AuthUser extends BaseType {
       },
       token(value) {
         return value.token || null;
+      },
+      permissions(value) {
+        return value.permissions;
+      },
+      isAdmin(value) {
+        return value.isAdmin;
       }
     };
   }

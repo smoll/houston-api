@@ -14,7 +14,7 @@ class InviteToken extends BaseModel {
   static get jsonSchema () {
     return {
       type: "object",
-      required: ["email", "workspace_uuid", "assignments"],
+      required: ["email", "assignments"],
 
       properties: {
         uuid: { type: "uuid" },

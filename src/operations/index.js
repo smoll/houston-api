@@ -48,6 +48,10 @@ module.exports = [
   require("./mutation/group_add_user.js"),
   require("./mutation/group_remove_user.js"),
 
+  // Invite Tokens
+  require("./mutation/create_invite_token.js"),
+  require("./mutation/delete_invite_token.js"),
+
   // =========
   // Subscriptions
   // =========

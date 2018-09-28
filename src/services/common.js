@@ -90,6 +90,9 @@ class CommonService extends BaseService {
     const permissions = await this.service("rbac").fetchPermissionsForSession(session);
     if (permissions.length > 0) {
       for(let permission of permissions) {
+        if (permission.substr(0, 6) === "global") {
+          session.isAdmin = true;
+        }
         session.permissions[permission] = true;
       }
     }

@@ -1,4 +1,5 @@
 const BaseType = require("./base.js");
+const Constants = require("../constants.js");
 
 class AuthConfig extends BaseType {
   constructor(application) {
@@ -6,6 +7,7 @@ class AuthConfig extends BaseType {
     this.typeName = "AuthConfig";
     this.typeDef = `
     type AuthConfig {
+      publicSignup: Boolean
       localEnabled: Boolean
       googleEnabled: Boolean
       githubEnabled: Boolean
@@ -18,6 +20,9 @@ class AuthConfig extends BaseType {
 
   resolver() {
     return {
+      publicSignup(value) {
+        return this.service("system_setting").getSetting(Constants.SYSTEM_SETTING_PUBLIC_SIGNUP);
+      },
       localEnabled(value) {
         return value.localEnabled || false;
       },

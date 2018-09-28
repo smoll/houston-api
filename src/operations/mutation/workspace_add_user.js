@@ -24,31 +24,22 @@ class WorkspaceAddUser extends BaseOperation {
         groupUuids = args.groupUuids.split(",");
       }
 
+      let invites = await this.service("invite_token").fetchInvitesByWorkspaceUuid(workspace.uuid);
+      if (this.userInvited(invites, user.uuid, args.email)) {
+        throw new Error("User already invited to group");
+      }
+
       if (!user) {
-        this.userNotFound(args.email);
-        let invites = await this.service("invite_token").fetchInvitesByWorkspaceUuid(workspace.uuid);
-        if (this.userInvited(invites, args.email)) {
-          throw new Error("User already invited to group");
-        }
         const assignments = {
           groupUuids: groupUuids
         };
+
         const invite = await this.service("invite_token").createInviteToken(args.email, workspace.uuid, assignments);
         invites.push(invite);
         workspace.invites = invites;
         return workspace;
       } else {
         await this.service("workspace").addUser(workspace, user);
-
-        // TODO: Remove: temporary until RBAC is fully exposed
-        //   add user to all workspace groups
-        const groups = await this.service("group").fetchGroupsByWorkspaceUuid(workspace.uuid);
-        const promises = [];
-        for (let group of groups) {
-          promises.push(this.service("group").addUser(group, user));
-        }
-        await Promise.all(promises);
-
         return await this.service("workspace").fetchWorkspaceByUuid(workspace.uuid, { relation: "users, groups, groups.users]" });
       }
     } catch (err) {
@@ -57,12 +48,15 @@ class WorkspaceAddUser extends BaseOperation {
     }
   }
 
-  userInvited(invites, email) {
+  userInvited(invites, uuid, email) {
     if (!invites || invites.length === 0) {
       return false;
     }
     for(let invite of invites) {
       if (invite.email === email) {
+        return true;
+      }
+      if (invite.userUuid === uuid) {
         return true;
       }
     }

@@ -31,16 +31,17 @@ class SystemSettingService extends BaseService {
   }
 
   async getSetting(key) {
-    await this.ensureFetched();
-
-    const value = this.settings.get(key);
-
-    if (value === undefined) {
+    // await this.ensureFetched();
+    //
+    // const value = this.settings.get(key);
+    const setting = await this.model("system_setting")
+      .query()
+      .findById(key);
+    if (!setting) {
       throw Error("Unknown setting");
     }
-    return value;
+    return setting.value;
   }
-
 }
 
 module.exports = SystemSettingService;

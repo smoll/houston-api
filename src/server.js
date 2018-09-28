@@ -122,9 +122,37 @@ const schema = makeExecutableSchema({
       rootValue: {
         schema: schema, application: Application,
       },
-      formatError: ApolloError
-    });
+      // formatError: ApolloError,
+      formatError: (gqlError) => {
+        let err = gqlError.originalError;
 
+        if (!err) {
+          err = gqlError;
+        }
+
+        const payload = {
+          message: err.message,
+          //code: null,
+          locations: gqlError.locations,
+          path: gqlError.path,
+          type: null,
+          operation: null,
+          timestamp: new Date().getTime(),
+        };
+
+        Application.logger().error(err.message);
+        Application.logger().error(err.stack);
+
+        if (!err.isHoustonError) {
+          return ApolloError(gqlError);
+        }
+
+        payload.type = err.name;
+        payload.operation = err.operation;
+
+        return payload;
+      },
+    });
     express.setTimeout(parseInt(Config.get(Config.SERVER_TIMEOUT)));
 
     Application.logger().info(`Server started: localhost:${Config.get(Config.PORT)}`);
