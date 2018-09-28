@@ -5,7 +5,7 @@ const Config = require("../../config.js");
 const CommonUtil = require("../../common.js");
 const PostgresUtil = require("../../postgres.js");
 
-class Airflow_0_5_0 extends Base {
+class Airflow_0_6_2 extends Base {
 
   async deploymentSetup(helmConfig, env, data) {
 
@@ -56,7 +56,7 @@ class Airflow_0_5_0 extends Base {
     helmConfig.set("pgbouncer.enabled", true);
 
     if (!helmConfig.get("executor") || helmConfig.get("executor").indexOf(payload.executor) === -1) {
-      helmConfig.set("executor", Airflow_0_5_0.DEFAULT_EXECUTOR);
+      helmConfig.set("executor", Airflow_0_6_2.DEFAULT_EXECUTOR);
     }
 
     // generate database uris for metadata (airflow) and result backend (celery)
@@ -90,7 +90,7 @@ class Airflow_0_5_0 extends Base {
     helmConfig.set("pgbouncer.enabled", true);
 
     if (!helmConfig.get("executor") || helmConfig.get("executor").indexOf(payload.executor) === -1) {
-      helmConfig.set("executor", Airflow_0_5_0.DEFAULT_EXECUTOR);
+      helmConfig.set("executor", Airflow_0_6_2.DEFAULT_EXECUTOR);
     }
 
     helmConfig.set("fernetKey", data.fernetKey);
@@ -111,7 +111,7 @@ class Airflow_0_5_0 extends Base {
   }
 }
 
-Airflow_0_5_0.SUPPORTED_EXECUTORS = ["LocalExecutor","SequentialExecutor","CeleryExecutor","KubernetesExecutor"];
-Airflow_0_5_0.DEFAULT_EXECUTOR = "CeleryExecutor";
+Airflow_0_6_2.SUPPORTED_EXECUTORS = ["LocalExecutor","SequentialExecutor","CeleryExecutor","KubernetesExecutor"];
+Airflow_0_6_2.DEFAULT_EXECUTOR = "CeleryExecutor";
 
-module.exports = Airflow_0_5_0;
+module.exports = Airflow_0_6_2;

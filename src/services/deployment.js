@@ -2,6 +2,7 @@ const BaseService = require("./base.js");
 
 const DotObject = require("../utils/dot_object.js");
 const ReleaseNamerUtil = require("../utils/releases_namer.js");
+const Semver = require("semver");
 
 const deleteQueue = {};
 
@@ -139,10 +140,19 @@ class DeploymentService extends BaseService {
         if (config.images === undefined) {
           config.images = {};
         }
-        config.images.airflow = {
-          name: image,
-          tag: tag
-        };
+
+        if (Semver.gt(version, "0.6.1")) {
+          config.images.airflow = {
+            repository: image,
+            tag: tag
+          };
+        } else {
+          config.images.airflow = {
+            name: image,
+            tag: tag
+          };
+        }
+
         return await this.updateDeployment(deployment, {
           config: config
         });

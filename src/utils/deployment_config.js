@@ -12,6 +12,7 @@ const DotObject = require("./dot_object.js");
 const Constants = require("../constants.js");
 
 // Helm Configs
+const Helm_0_6_2 = require("./deployments/helm/airflow_0.6.2.js");
 const Helm_0_5_0 = require("./deployments/helm/airflow_0.5.0.js");
 const Helm_0_3_0 = require("./deployments/helm/airflow_0.3.0.js");
 
@@ -27,11 +28,17 @@ class DeploymentConfig {
   }
 
   getHelmTemplate(version) {
-    if (Semver.lte(version, "0.4.1")) {
-      // use old version
-      return Helm_0_3_0;
+    // Note: using gt previous version so rc builds will work
+
+    if (Semver.gt(version, "0.6.1")) {
+      return Helm_0_6_2;
     }
-    return Helm_0_5_0;
+    if (Semver.gt(version, "0.4.2")) {
+      return Helm_0_5_0;
+    }
+
+    // use old version
+    return Helm_0_3_0;
   }
 
   getComponentTemplate(component, version) {
