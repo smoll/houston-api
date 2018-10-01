@@ -8,7 +8,7 @@ class AuthUser extends BaseType {
     type AuthUser {
       user: User
       token: Token
-      permissions: Permissions
+      permissions: JSON
       isAdmin: Boolean
     }`;
   }

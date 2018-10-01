@@ -3,6 +3,7 @@ const Transaction = require('objection').transaction;
 const BaseOperation = require("../base.js");
 const Constants = require("../../constants.js");
 const Errors = require("../../errors");
+
 class CreateUser extends BaseOperation {
   constructor() {
     super();
@@ -22,17 +23,17 @@ class CreateUser extends BaseOperation {
 
       let invite = null;
       const publicSignup = await this.service("system_setting").getSetting(Constants.SYSTEM_SETTING_PUBLIC_SIGNUP);
-      if (!publicSignup.value) {
+      if (!publicSignup) {
         if (!args.inviteToken) {
           return this.inputError("Public signups are disable, a valid inviteToken is required");
         }
-        invite = await this.service("invite_token").fetchInviteByToken(args.inviteToken, false);
 
+        invite = await this.service("invite_token").fetchInviteByToken(args.inviteToken, false);
+        if (!invite) {
+          throw new Error(`InviteToken not found with token "${inviteToken}"`);
+        }
         if (invite.email !== args.email) {
           return this.inputError("The email specified is not associated with the specified invite token");
-        }
-        if (!args.inviteToken) {
-          return this.notFoundError("Invite token not found");
         }
       }
 

@@ -1,3 +1,5 @@
+const Errors = require("../errors");
+
 class BaseRoute {
   constructor(application = null) {
     this.application = application;
@@ -47,6 +49,18 @@ class BaseRoute {
   conn(connName) {
     this.ensureApplication();
     return this.application.conn(connName);
+  }
+
+  inputError(message) {
+    const error = new Errors.InputError(message);
+    error.setOperation(this.route());
+    throw error;
+  }
+
+  notFoundError(message) {
+    const error = new Errors.GeneralError(message);
+    error.setOperation(this.route());
+    throw error;
   }
 
   ensureApplication() {

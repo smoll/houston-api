@@ -26,6 +26,9 @@ class CreateToken extends BaseOperation {
         if (ApolloError.isInstance(err)) {
           return err;
         }
+        if (err.isHoustonError) {
+          return err;
+        }
         return this.invalidInput([err.message]);
       }
 

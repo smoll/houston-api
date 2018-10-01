@@ -43,7 +43,7 @@ class LocalUserService extends BaseService {
     }
 
     if (!await credentials.verifyPassword(password)) {
-      return Errors.UnauthorizedMessage();
+      throw new Errors.AuthError("Invalid password specified");
     }
     return user
   }
@@ -55,7 +55,7 @@ class LocalUserService extends BaseService {
     const user = await this.service("user").createUser(userData, options);
 
     await this.model("local_credential")
-      .query()
+      .query(options.transaction)
       .insert({
         user_uuid: user.uuid,
         password: password
@@ -64,11 +64,13 @@ class LocalUserService extends BaseService {
     return user;
   }
 
-  async updatePassword(credentials, password) {
-    return await credentials.$query().patch({
-      password: password,
-      resetToken: null,
-    });
+  async updatePassword(credentials, password, options = {}) {
+    return await credentials
+      .$query(options.transaction)
+      .patch({
+        password: password,
+        resetToken: null,
+      });
   }
 }
 

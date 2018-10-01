@@ -199,7 +199,7 @@ class UserService extends BaseService {
   }
 
   // return false if nothing to update, user on success, throw error on failure
-  async updateUser(user, payload) {
+  async updateUser(user, payload, options = {}) {
     if (!user.properties) {
       user.properties = await this.fetchUserPropertiesByUser(user);
     }
@@ -239,7 +239,10 @@ class UserService extends BaseService {
     }
 
     if(Object.keys(userChanges).length !== 0) {
-      await user.$query().patch(userChanges).returning("*");
+      await user
+        .$query()
+        .patch(userChanges)
+        .returning("*");
     }
 
     if(propChanges.length > 0) {

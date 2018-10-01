@@ -2,7 +2,7 @@ const BaseService = require("./base.js");
 
 class OauthUserService extends BaseService {
 
-  async authenticateUser(data) {
+  async authenticateUser(data, invite, options = {}) {
 
     // TODO: Objection failing to populate data when selecting by email and credentials or just creds alone.
     // Doing the working but unoptimized alternative.. figure out what is wrong with doing it the right way.
@@ -10,7 +10,7 @@ class OauthUserService extends BaseService {
     let credential = await this.fetchCredentials(data.providerType, data.providerUserId);
 
     if (!user && credential) {
-      user = await this.service("user").fetchUserByUuid(credential.user_uuid, false)
+      user = await this.service("user").fetchUserByUuid(credential.userUuid, false)
     }
 
     if (credential) {
@@ -30,11 +30,20 @@ class OauthUserService extends BaseService {
       if (!user.oauthCredentials || user.oauthCredentials.length === 0) {
         user.oauthCredentials = [await this.createOAuthCredential(user, data)];
       }
-      return await this.service("user").updateUser(user, userData);
+      return await this.service("user").updateUser(user, userData, options);
     }
 
     // oauth user doesn't exist, but has already been authenticated. Create it!
-    return await this.createUser(data, userData);
+    user = await this.createUser(data, userData, options);
+
+    if (invite) {
+      if (invite.workspaceUuid) {
+        await this.service("workspace").addUserByWorkspaceUuid(invite.workspaceUuid, user, options);
+      }
+      await this.service("invite_token").deleteInviteToken(invite, options);
+    }
+
+    return user;
   }
 
   async fetchCredentials(providerType, providerUserId) {
@@ -50,19 +59,19 @@ class OauthUserService extends BaseService {
     return null;
   }
 
-  async createUser(OAuthData, userData) {
-    const user = await this.service("user").createUser(userData);
+  async createUser(OAuthData, userData, options = {}) {
+    const user = await this.service("user").createUser(userData, options);
 
     if (!user.oauthCredentials) {
       user.oauthCredentials = [];
     }
-    user.oauthCredentials = [await this.createOAuthCredential(user, OAuthData)];
+    user.oauthCredentials = [await this.createOAuthCredential(user, OAuthData, options)];
     return user;
   }
 
-  async createOAuthCredential(user, OAuthData) {
+  async createOAuthCredential(user, OAuthData, options = {}) {
     return await this.model("oauth_credential")
-      .query()
+      .query(options.transaction)
       .insert({
         oauth_provider: OAuthData.providerType,
         oauth_user_id: OAuthData.providerUserId,

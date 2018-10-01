@@ -66,7 +66,6 @@ module.exports = [
   require("./email.js"),
   require("./group.js"),
   require("./invite.js"),
-  require("./permissions.js"),
   require("./service_account.js"),
   require("./system_setting.js"),
   require("./token.js"),

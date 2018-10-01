@@ -171,7 +171,7 @@ class GroupService extends BaseService {
     return await group.$query(options.transaction).delete();
   }
 
-  async deleteGroupByUuid(groupUuid, options) {
+  async deleteGroupByUuid(groupUuid, options = {}) {
     return await this.model("group").query(options.transaction).deleteById(groupUuid);
   }
 }

@@ -75,8 +75,7 @@ class AuthService extends BaseService {
   }
 
   async authenticateOAuth(strategy, jwt, expiration) {
-    const data = await this.strategyUtil.getUserData(strategy, jwt, expiration);
-    return await this.service("oauth_user").authenticateUser(data);
+    return await this.strategyUtil.getUserData(strategy, jwt, expiration);
   }
 
   async authenticateUser(emailOrUsername, password) {

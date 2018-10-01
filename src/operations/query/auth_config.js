@@ -8,7 +8,7 @@ class AuthConfig extends BaseOperation {
     this.typeDef = `
       # Fetch configuration information about available authentication methods
       # 'state' is deprecated
-      authConfig(redirect: String, duration: Int, extras: JSON, state: String) : AuthConfig
+      authConfig(redirect: String, duration: Int, extras: JSON, state: String, inviteToken: String) : AuthConfig
     `;
     this.entrypoint = "query";
   }
@@ -29,6 +29,9 @@ class AuthConfig extends BaseOperation {
           duration: args.duration ? args.duration : 1,
           extras: args.extras ? args.extras : {}
         };
+      }
+      if (args.inviteToken) {
+        state.inviteToken = args.inviteToken;
       }
       return this.service("auth").getStrategyInfo(state);
     } catch (err) {
