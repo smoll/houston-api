@@ -1,6 +1,6 @@
 const BaseError = require("./base.js");
 
-class InputError extends BaseError {
+class NotFoundError extends BaseError {
   constructor(message) {
     super(...arguments);
     Error.captureStackTrace(this, this.constructor);
@@ -9,4 +9,4 @@ class InputError extends BaseError {
   }
 }
 
-module.exports = InputError;
+module.exports = NotFoundError;

@@ -17,9 +17,7 @@ class ConfirmEmail extends BaseOperation {
       const email = await this.service("email").fetchEmailByToken(args.token);
 
       if (!email) {
-        return this.errors().GenericError("Email confirmation token invalid", {
-          token: args.token
-        });
+        return this.errors().General("Email confirmation token invalid");
       }
 
       if (!email.verified) {

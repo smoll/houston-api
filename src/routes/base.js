@@ -52,15 +52,11 @@ class BaseRoute {
   }
 
   inputError(message) {
-    const error = new Errors.InputError(message);
-    error.setOperation(this.route());
-    throw error;
+    throw new Errors.InputError(message);
   }
 
   notFoundError(message) {
-    const error = new Errors.GeneralError(message);
-    error.setOperation(this.route());
-    throw error;
+    throw new Errors.NotFoundError(message);
   }
 
   ensureApplication() {

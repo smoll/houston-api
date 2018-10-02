@@ -1,10 +1,9 @@
 const { makeExecutableSchema } = require("graphql-tools");
 const { GraphQLServer, PubSub } = require("graphql-yoga");
-const ConstraintDirective = require('graphql-constraint-directive')
 const BodyParser = require("body-parser");
 const ApolloError = require("apollo-errors").formatError;
 const Config = require("./utils/config.js");
-
+require("./misc.js");
 // Set config defaults
 Config.setDefaults({});
 
@@ -136,7 +135,7 @@ const schema = makeExecutableSchema({
           locations: gqlError.locations,
           path: gqlError.path,
           type: null,
-          operation: null,
+          data: {},
           timestamp: new Date().getTime(),
         };
 
@@ -148,7 +147,7 @@ const schema = makeExecutableSchema({
         }
 
         payload.type = err.name;
-        payload.operation = err.operation;
+        payload.data = err.data;
 
         return payload;
       },

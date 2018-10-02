@@ -17,7 +17,7 @@ class ResendConfirmationEmail extends BaseOperation {
       const email = await this.service("email").fetchEmailByAddress(args.email);
 
       if (email.verified) {
-        return this.errors().GenericError("Email already confirmed", {
+        return this.errors().General("Email already confirmed", {
           token: args.token
         });
       }
