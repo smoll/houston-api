@@ -14,10 +14,10 @@ class WorkspaceAddUser extends BaseOperation {
     this.guards = ["authenticated", "permission:user_workspace_user_add"];
   }
 
-  async resolver(root, args, context) {
+  async resolver(root, args, { session }) {
     try {
       let user = await this.service("user").fetchUserByEmail(args.email, false);
-      let workspace = context.session.resources.workspace;
+      let workspace = session.resources.workspace;
 
       let groupUuids = "";
       if (args.groupUuids) {
@@ -25,7 +25,7 @@ class WorkspaceAddUser extends BaseOperation {
       }
 
       let invites = await this.service("invite_token").fetchInvitesByWorkspaceUuid(workspace.uuid);
-      if (this.userInvited(invites, user.uuid, args.email)) {
+      if (user && this.userInvited(invites, user.uuid, args.email)) {
         throw new Error("User already invited to group");
       }
 
