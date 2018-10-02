@@ -34,7 +34,6 @@ SchemaBuilder.registerGuards(guards);
 const schema = makeExecutableSchema({
   typeDefs: SchemaBuilder.generateTypeDefs({}, []),
   resolvers: SchemaBuilder.generateResolvers({}, []),
-  schemaDirectives: { constraint: ConstraintDirective }
 });
 
 (async function() {
