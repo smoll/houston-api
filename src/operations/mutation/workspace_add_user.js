@@ -26,7 +26,7 @@ class WorkspaceAddUser extends BaseOperation {
 
       let invites = await this.service("invite_token").fetchInvitesByWorkspaceUuid(workspace.uuid);
       if (user && this.userInvited(invites, user.uuid, args.email)) {
-        throw new Error("User already invited to group");
+        this.generalError("User already invited to group");
       }
 
       if (!user) {
@@ -40,7 +40,7 @@ class WorkspaceAddUser extends BaseOperation {
         return workspace;
       } else {
         await this.service("workspace").addUser(workspace, user);
-        return await this.service("workspace").fetchWorkspaceByUuid(workspace.uuid, { relation: "users, groups, groups.users]" });
+        return await this.service("workspace").fetchWorkspaceByUuid(workspace.uuid, { relation: "[users, groups, groups.users]" });
       }
     } catch (err) {
       this.error(err);

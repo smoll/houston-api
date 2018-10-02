@@ -24,6 +24,14 @@ class HoustonOperation extends BaseOperation {
     throw new Errors.NotFoundError(message);
   }
 
+  invalidInput(message) {
+    throw new Errors.InputError(message);
+  }
+
+  generalError(message) {
+    throw new Errors.GeneralError(message);
+  }
+
   guardError(error, context) {
     switch(error.guardId) {
       case "authenticated":

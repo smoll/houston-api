@@ -1,6 +1,5 @@
 const BaseOperation = require("../base.js");
 const _ = require("lodash");
-const ApolloError = require("apollo-errors");
 
 class CreateInviteToken extends BaseOperation {
   constructor() {
@@ -18,7 +17,7 @@ class CreateInviteToken extends BaseOperation {
     const user = await this.service("user").fetchUserByEmail(args.email, false);
 
     if (user) {
-      throw new Error("Cannot create an invite token for a user that already exists");
+      this.generalError("Cannot create an invite token for a user that already exists");
     }
 
     // create a new token

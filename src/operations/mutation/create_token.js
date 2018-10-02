@@ -1,6 +1,5 @@
 const BaseOperation = require("../base.js");
 const _ = require("lodash");
-const ApolloError = require("apollo-errors");
 
 class CreateToken extends BaseOperation {
   constructor() {
@@ -19,21 +18,15 @@ class CreateToken extends BaseOperation {
       let user;
       try {
         user = await this.service("auth").authenticateUser(args.identity, args.password);
-        if (!user) {
-          throw new Error("Unable to find user");
-        }
       } catch (err) {
-        if (ApolloError.isInstance(err)) {
-          return err;
-        }
         if (err.isHoustonError) {
           return err;
         }
-        return this.invalidInput([err.message]);
+        return this.invalidInput(err.message);
       }
 
       if (!user.isActive()) {
-        throw new Error(user.statusMessage());
+        return this.generalError(user.statusMessage());
       }
 
       let tokenPayload = await this.service("auth").generateTokenPayload(user);

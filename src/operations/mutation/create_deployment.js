@@ -18,7 +18,7 @@ class CreateDeployment extends BaseOperation {
         try {
           args.version = await this.service("commander").latestHelmChartVersion(args.type);
         } catch (err) {
-          throw new Error(`Unable to determine latest version for type "${args.type}"`);
+          return this.generalError(`Unable to determine latest version for type "${args.type}"`);
         }
       }
 
@@ -27,7 +27,7 @@ class CreateDeployment extends BaseOperation {
       }
 
       if (!args.workspaceUuid) {
-        throw new Error("Workspace uuid is required to create a deployment");
+        this.generalError("Workspace uuid is required to create a deployment");
       }
 
       if (!args.config.componentVersion) {

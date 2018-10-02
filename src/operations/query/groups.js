@@ -47,7 +47,7 @@ class Groups extends BaseOperation {
 
         return this.service("group").fetchGroupsByEntity(args.entityType, args.entityUuid);
       } else {
-        throw new Error("A groupUuid or entityUuid is required");
+        this.generalError("A groupUuid or entityUuid is required");
       }
     } catch (err) {
       this.error(err.message);

@@ -40,9 +40,9 @@ class ServiceAccounts extends BaseOperation {
       }
 
       if (args.entityType || args.entityUuid) {
-        throw new Error("When referencing one, you must include both entityType and entityUuid as arguments");
+        this.generalError("When referencing one, you must include both entityType and entityUuid as arguments");
       }
-      throw new Error("Either a serviceAccountUuid or entityType and entityUuid are required as arguments");
+      this.generalError("Either a serviceAccountUuid or entityType and entityUuid are required as arguments");
     } catch (err) {
       this.error(err.message);
       throw err;

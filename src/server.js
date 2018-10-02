@@ -1,7 +1,6 @@
 const { makeExecutableSchema } = require("graphql-tools");
 const { GraphQLServer, PubSub } = require("graphql-yoga");
 const BodyParser = require("body-parser");
-const ApolloError = require("apollo-errors").formatError;
 const Config = require("./utils/config.js");
 require("./misc.js");
 // Set config defaults
@@ -120,7 +119,6 @@ const schema = makeExecutableSchema({
       rootValue: {
         schema: schema, application: Application,
       },
-      // formatError: ApolloError,
       formatError: (gqlError) => {
         let err = gqlError.originalError;
 
@@ -140,10 +138,6 @@ const schema = makeExecutableSchema({
 
         Application.logger().error(err.message);
         Application.logger().error(err.stack);
-
-        if (!err.isHoustonError) {
-          return ApolloError(gqlError);
-        }
 
         payload.type = err.name;
         payload.data = err.data;

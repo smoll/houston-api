@@ -17,7 +17,7 @@ class DeleteDeployment extends BaseOperation {
       const deployment = await this.service("deployment").fetchDeploymentByUuid(args.deploymentUuid);
 
       if (!deployment) {
-        throw new Error("Deployment not found");
+        this.generalError("Deployment not found");
       }
 
       await this.service("deployment").queueDeploymentDeletion(deployment);
