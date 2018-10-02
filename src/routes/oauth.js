@@ -27,8 +27,9 @@ class AuthorizationRoute extends BaseRoute {
       const data = await this.service("auth").authenticateOAuth(strategy, idToken, expiration);
 
       let invite = null;
+      const firstSignup = await this.service("user").fetchUserCount() === 0;
       const publicSignup = await this.service("system_setting").getSetting(Constants.SYSTEM_SETTING_PUBLIC_SIGNUP);
-      if (!publicSignup) {
+      if (!firstSignup && !publicSignup) {
         const inviteToken = state.inviteToken;
         if (!inviteToken) {
           throw new Error("Public signups are disable, a valid inviteToken is required");

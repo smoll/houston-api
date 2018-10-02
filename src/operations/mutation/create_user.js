@@ -22,18 +22,19 @@ class CreateUser extends BaseOperation {
       }
 
       let invite = null;
+      const firstSignup = await this.service("user").fetchUserCount() === 0;
       const publicSignup = await this.service("system_setting").getSetting(Constants.SYSTEM_SETTING_PUBLIC_SIGNUP);
-      if (!publicSignup) {
+      if (!firstSignup && !publicSignup) {
         if (!args.inviteToken) {
-          return this.inputError("Public signups are disable, a valid inviteToken is required");
+          return this.invalidInput("Public signups are disable, a valid inviteToken is required");
         }
 
         invite = await this.service("invite_token").fetchInviteByToken(args.inviteToken, false);
         if (!invite) {
-          throw new Error(`InviteToken not found with token "${inviteToken}"`);
+          this.generalError(`InviteToken not found with token "${inviteToken}"`);
         }
         if (invite.email !== args.email) {
-          return this.inputError("The email specified is not associated with the specified invite token");
+          return this.invalidInput("The email specified is not associated with the specified invite token");
         }
       }
 
