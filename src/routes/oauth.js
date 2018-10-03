@@ -26,38 +26,44 @@ class AuthorizationRoute extends BaseRoute {
 
       const data = await this.service("auth").authenticateOAuth(strategy, idToken, expiration);
 
-      let invite = null;
-      const firstSignup = await this.service("user").fetchUserCount() === 0;
-      const publicSignup = await this.service("system_setting").getSetting(Constants.SYSTEM_SETTING_PUBLIC_SIGNUP);
-      if (!firstSignup && !publicSignup) {
-        const inviteToken = state.inviteToken;
-        if (!inviteToken) {
-          throw new Error("Public signups are disable, a valid inviteToken is required");
-        }
-
-        invite = await this.service("invite_token").fetchInviteByToken(inviteToken, false);
-        if (!invite) {
-          throw new Error(`InviteToken not found with token "${inviteToken}"`);
-        }
-        if (invite.email !== data.profile.email) {
-          throw new Error("The email specified is not associated with the specified invite token");
-        }
-      }
-
-      const user = await Transaction(this.conn("postgres"), async (trx) => {
-        const options = {
-          transaction: trx
-        };
-        const user = await this.service("oauth_user").authenticateUser(data, invite, options);
-
-        if (invite) {
-          if (invite.workspaceUuid) {
-            await this.service("workspace").addUserByWorkspaceUuid(invite.workspaceUuid, user, options);
-          }
-          await this.service("invite_token").deleteInviteToken(invite, options);
-        }
-        return user;
+      let user = await this.service("user").fetchUserByEmail(data.profile.email, {
+        throwError: false
       });
+
+      if (!user) {
+        let invite = null;
+        const firstSignup = await this.service("user").fetchUserCount() === 0;
+        const publicSignup = await this.service("system_setting").getSetting(Constants.SYSTEM_SETTING_PUBLIC_SIGNUP);
+        if (!firstSignup && !publicSignup) {
+          const inviteToken = state.inviteToken;
+          if (!inviteToken) {
+            throw new Error("Public signups are disable, a valid inviteToken is required");
+          }
+
+          invite = await this.service("invite_token").fetchInviteByToken(inviteToken, false);
+          if (!invite) {
+            throw new Error(`InviteToken not found with token "${inviteToken}"`);
+          }
+          if (invite.email !== data.profile.email) {
+            throw new Error("The email specified is not associated with the specified invite token");
+          }
+        }
+
+        user = await Transaction(this.conn("postgres"), async (trx) => {
+          const options = {
+            transaction: trx
+          };
+          const user = await this.service("oauth_user").authenticateUser(data, invite, options);
+
+          if (invite) {
+            if (invite.workspaceUuid) {
+              await this.service("workspace").addUserByWorkspaceUuid(invite.workspaceUuid, user, options);
+            }
+            await this.service("invite_token").deleteInviteToken(invite, options);
+          }
+          return user;
+        });
+      }
 
       let tokenPayload = await this.service("auth").generateTokenPayload(user);
       let token = await this.service("auth").createJWT(tokenPayload, state.duration);
