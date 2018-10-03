@@ -121,7 +121,7 @@ class WorkspaceService extends BaseService {
     const groups = await this.service("group").fetchGroupsByWorkspaceUuid(workspaceUuid);
     const promises = [];
     for (let group of groups) {
-      promises.push(this.service("group").addUser(group, user));
+      promises.push(this.service("group").addUser(group, user, options));
     }
     await Promise.all(promises);
   }

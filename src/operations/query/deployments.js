@@ -18,9 +18,13 @@ class Deployments extends BaseOperation {
       if (args.deploymentUuid) {
         return [context.session.resources.deployment];
       } else if (args.workspaceUuid) {
-        return this.service("deployment").fetchDeploymentByWorkspaceUuid(args.workspaceUuid);
+        return this.service("deployment").fetchDeploymentByWorkspaceUuid(args.workspaceUuid, {
+          throwError: false
+        });
       } else if (args.releaseName) {
-        return [this.service("deployment").fetchDeploymentByReleaseName(args.releaseName)];
+        return [this.service("deployment").fetchDeploymentByReleaseName(args.releaseName, {
+          throwError: false
+        })];
       } else {
         return this.service("deployment").fetchAllDeploymentsByUserUuid(context.session.authUser.uuid, {
           throwError: false
