@@ -53,15 +53,7 @@ class AuthorizationRoute extends BaseRoute {
           const options = {
             transaction: trx
           };
-          const user = await this.service("oauth_user").authenticateUser(data, invite, options);
-
-          if (invite) {
-            if (invite.workspaceUuid) {
-              await this.service("workspace").addUserByWorkspaceUuid(invite.workspaceUuid, user, options);
-            }
-            await this.service("invite_token").deleteInviteToken(invite, options);
-          }
-          return user;
+          return await this.service("oauth_user").authenticateUser(data, invite, options);
         });
       }
 
