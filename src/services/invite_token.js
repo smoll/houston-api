@@ -35,6 +35,11 @@ class InviteTokenService extends BaseService {
   }
 
   async fetchInvitesByWorkspaceUuid(workspaceUuid = null, email = null, userUuid = null) {
+    let payload = {};
+    if (workspaceUuid) {
+      payload.workspace_uuid = workspaceUuid;
+    }
+
     if (email !== null) {
       payload.email = email;
     }

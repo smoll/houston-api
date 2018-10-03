@@ -24,6 +24,7 @@ class Session {
       user_user_update: false,
       user_user_delete: false,
       user_user_service_account: false,
+      user_user_invite: false,
 
 
       // groups
@@ -90,6 +91,7 @@ class Session {
       global_user_view: false,
       global_user_update: false,
       global_user_delete: false,
+      global_user_invite: false,
 
       // groups
       global_group_create: false,
