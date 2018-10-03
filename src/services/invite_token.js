@@ -13,7 +13,7 @@ class InviteTokenService extends BaseService {
       return invites;
     }
     if (options.throwError) {
-      this.resourceNotFound("invite_token", token);
+      this.resourceNotFound("invite_token", inviteUuid);
     }
     return null;
   }

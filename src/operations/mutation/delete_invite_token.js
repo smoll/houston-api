@@ -12,7 +12,7 @@ class DeleteInvite extends BaseOperation {
   }
 
   async resolver(root, args, { session }) {
-    const inviteToken = session.resources.inviteToken;
+    const inviteToken = session.resources.invite;
     await this.service("invite_token").deleteInviteToken(inviteToken);
     return {
       uuid: inviteToken.uuid,
