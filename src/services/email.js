@@ -5,7 +5,7 @@ const Transaction = require('objection').transaction;
 
 class EmailService extends BaseService {
 
-  async fetchEmailByAddress(address, throwError = true) {
+  async fetchEmailByAddress(address, options = { throwError: true }) {
     let email = await this.model("email")
       .query()
       .findOne("address", address);
@@ -13,21 +13,21 @@ class EmailService extends BaseService {
     if (email) {
       return email;
     }
-    if (throwError) {
-      this.notFound("email", address);
+    if (options.throwError) {
+      this.resourceNotFound("email", address);
     }
     return null;
   }
 
-  async fetchEmailByToken(token, throwError = true) {
+  async fetchEmailByToken(token, options = { throwError: true }) {
     let email = await this.model("email")
       .query()
       .findOne("token", token);
     if (email) {
       return email;
     }
-    if (throwError) {
-      this.notFound("email", token);
+    if (options.throwError) {
+      this.resourceNotFound("email", token);
     }
     return null;
   }

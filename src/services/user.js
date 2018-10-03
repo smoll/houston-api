@@ -7,7 +7,7 @@ let USER_COUNT = null;
 
 class UserService extends BaseService {
 
-  async fetchUserByEmail(email, throwError = true) {
+  async fetchUserByEmail(email, options = { throwError: true }) {
     let user = await this.model("user")
         .query()
         .joinEager("emails")
@@ -17,13 +17,13 @@ class UserService extends BaseService {
       return user;
     }
 
-    if (throwError) {
-      this.notFound("user", email);
+    if (options.throwError) {
+      this.resourceNotFound("user", email);
     }
     return null;
   }
 
-  async fetchUserByUsername(username, throwError = true) {
+  async fetchUserByUsername(username, options = { throwError: true }) {
     let user = await this.model("user")
         .query()
         .joinEager("emails")
@@ -32,14 +32,14 @@ class UserService extends BaseService {
     if (user) {
       return user;
     }
-    if (throwError) {
-      this.notFound("user", username);
+    if (options.throwError) {
+      this.resourceNotFound("user", username);
     }
 
     return null;
   }
 
-  async fetchUserByUuid(uuid, throwError = true) {
+  async fetchUserByUuid(uuid, options = { throwError: true }) {
     let user = await this.model("user")
         .query()
         .joinEager("emails")
@@ -49,8 +49,8 @@ class UserService extends BaseService {
       return user;
     }
 
-    if (throwError) {
-      this.notFound("user", uuid);
+    if (options.throwError) {
+      this.resourceNotFound("user", uuid);
     }
 
     return null;

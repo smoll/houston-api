@@ -20,6 +20,10 @@ class HoustonOperation extends BaseOperation {
     throw new Errors.AuthError(error, data);
   }
 
+  notAuthorized(message) {
+    throw new Errors.AuthError(`Permission Denied: ${message}`);
+  }
+
   notFoundError(message) {
     throw new Errors.NotFoundError(message);
   }

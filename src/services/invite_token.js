@@ -4,7 +4,7 @@ const BaseService = require("./base.js");
 
 class InviteTokenService extends BaseService {
 
-  async fetchInviteByUuid(inviteUuid, throwError = true) {
+  async fetchInviteByUuid(inviteUuid, options = { throwError: true }) {
     let invites = await this.model("invite_token")
       .query()
       .findById(inviteUuid);
@@ -12,13 +12,13 @@ class InviteTokenService extends BaseService {
     if (invites) {
       return invites;
     }
-    if (throwError) {
-      this.notFound("invite_token", token);
+    if (options.throwError) {
+      this.resourceNotFound("invite_token", token);
     }
     return null;
   }
 
-  async fetchInviteByToken(token, throwError = true) {
+  async fetchInviteByToken(token, options = { throwError: true }) {
     let invite = await this.model("invite_token")
       .query()
       .where({ token: token })
@@ -28,16 +28,13 @@ class InviteTokenService extends BaseService {
       return invite;
     }
 
-    if (throwError) {
-      this.notFound("invite_token", token);
+    if (options.throwError) {
+      this.resourceNotFound("invite_token", token);
     }
     return null;
   }
 
-  async fetchInvitesByWorkspaceUuid(workspaceUuid, email = null, userUuid = null) {
-    let payload = {
-      workspace_uuid: workspaceUuid
-    };
+  async fetchInvitesByWorkspaceUuid(workspaceUuid = null, email = null, userUuid = null) {
     if (email !== null) {
       payload.email = email;
     }

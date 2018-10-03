@@ -33,7 +33,7 @@ class LocalUserService extends BaseService {
     }
 
     if (!user) {
-      this.notFound("user", emailOrUsername);
+      this.resourceNotFound("user", emailOrUsername);
     }
 
     let credentials = await this.fetchCredentialsForUser(user);

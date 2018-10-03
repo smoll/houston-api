@@ -3,7 +3,7 @@ const BaseService = require("./base.js");
 
 class GroupService extends BaseService {
 
-  async fetchGroupByUuid(uuid, options = {}, throwError = true) {
+  async fetchGroupByUuid(uuid, options = { throwError: true }) {
     const group = await this.model("group")
       .query()
       .eager(options.relations)
@@ -12,8 +12,8 @@ class GroupService extends BaseService {
     if (group) {
       return group;
     }
-    if (throwError) {
-      this.notFound("group", uuid);
+    if (options.throwError) {
+      this.resourceNotFound("group", uuid);
     }
     return null;
   }

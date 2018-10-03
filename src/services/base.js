@@ -4,8 +4,12 @@ const { BaseService } = require("sealab");
 const Errors = require("../errors/index.js");
 
 class HoustonService extends BaseService {
-  notFound(resource, criteria) {
+  resourceNotFound(resource, criteria) {
     throw Errors.ResourceNotFound(resource, criteria);
+  }
+
+  notFound(message) {
+    throw Errors.NotFoundError(message);
   }
 
   filterChanges(object, payload, properties) {

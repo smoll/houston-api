@@ -4,7 +4,7 @@ const BaseService = require("./base.js");
 const Constants = require("../constants.js");
 class ServiceAccountService extends BaseService {
 
-  async fetchServiceAccountByKey(apiKey, throwError = true) {
+  async fetchServiceAccountByKey(apiKey, options = { throwError: true }) {
     let service = await this.model("service_account")
       .query()
       .eager("roles")
@@ -13,13 +13,13 @@ class ServiceAccountService extends BaseService {
     if (service) {
       return service;
     }
-    if (throwError) {
-      this.notFound("service_account", apiKey);
+    if (options.throwError) {
+      this.resourceNotFound("service_account", apiKey);
     }
     return null;
   }
 
-  async fetchServiceAccountByUuid(uuid, throwError = true) {
+  async fetchServiceAccountByUuid(uuid, options = { throwError: true }) {
     let service = await this.model("service_account")
       .query()
       .eager("roles")
@@ -28,8 +28,8 @@ class ServiceAccountService extends BaseService {
     if (service) {
       return service;
     }
-    if (throwError) {
-      this.notFound("service_account", uuid);
+    if (options.throwError) {
+      this.resourceNotFound("service_account", uuid);
     }
     return null;
   }

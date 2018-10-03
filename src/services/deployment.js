@@ -8,9 +8,9 @@ const deleteQueue = {};
 
 class DeploymentService extends BaseService {
 
-  async fetchAllDeploymentsByUserUuid(userUuid, throwError = true) {
+  async fetchAllDeploymentsByUserUuid(userUuid, options = { throwError: true }) {
     const deployments = await this.model("deployment")
-      .query()
+      .query(options.transaction)
       .leftJoin("user_workspace_map", "user_workspace_map.workspace_uuid", "deployments.workspace_uuid")
       .where({
         "user_workspace_map.user_uuid": userUuid
@@ -20,29 +20,29 @@ class DeploymentService extends BaseService {
     if (deployments && deployments.length > 0) {
       return deployments;
     }
-    if (throwError) {
-      this.notFound("deployment", userUuid);
+    if (options.throwError) {
+      this.notFound(`No deployments found for userUuid '${userUuid}'`);
     }
     return [];
   }
 
 
-  async fetchDeploymentByUuid(deploymentUuid, throwError = true) {
+  async fetchDeploymentByUuid(deploymentUuid, options = { throwError: true }) {
     let deployment = await this.model("deployment")
-      .query()
+      .query(options.transaction)
       .joinEager("workspace")
       .findOne("deployments.uuid", deploymentUuid);
 
     if (deployment) {
       return deployment;
     }
-    if (throwError) {
-      this.notFound("deployment", deploymentUuid);
+    if (options.throwError) {
+      this.resourceNotFound("deployment", deploymentUuid);
     }
     return null;
   }
 
-  async fetchDeploymentByWorkspaceUuid(workspaceUuid, throwError = true) {
+  async fetchDeploymentByWorkspaceUuid(workspaceUuid, options = { throwError: true }) {
     const deployments = await this.model("deployment")
       .query()
       .where({
@@ -53,13 +53,13 @@ class DeploymentService extends BaseService {
     if (deployments && deployments.length > 0) {
       return deployments;
     }
-    if (throwError) {
-      this.notFound("deployment", workspaceUuid);
+    if (options.throwError) {
+      this.resourceNotFound("deployment", workspaceUuid);
     }
     return [];
   }
 
-  async fetchDeploymentByReleaseName(releaseName, throwError = true) {
+  async fetchDeploymentByReleaseName(releaseName, options = { throwError: true }) {
     const deployment = await this.model("deployment")
       .query()
       .joinEager("workspace")
@@ -70,8 +70,8 @@ class DeploymentService extends BaseService {
     if (deployment) {
       return deployment;
     }
-    if (throwError) {
-      this.notFound("deployment", releaseName);
+    if (options.throwError) {
+      this.resourceNotFound("deployment", releaseName);
     }
     return null;
   }

@@ -18,7 +18,7 @@ class WorkspaceService extends BaseService {
   }
 
 
-  async fetchWorkspaceByUuid(uuid, options = {}, throwError = true) {
+  async fetchWorkspaceByUuid(uuid, options = { throwError: true }) {
     const workspace = await this.model("workspace")
       .query()
       .eager(options.relations || [])
@@ -26,8 +26,8 @@ class WorkspaceService extends BaseService {
     if (workspace) {
       return workspace;
     }
-    if (throwError) {
-      this.notFound("workspace", uuid);
+    if (options.throwError) {
+      this.resourceNotFound("workspace", uuid);
     }
     return null;
   }
