@@ -37,15 +37,15 @@ class AuthorizationRoute extends BaseRoute {
         if (!firstSignup && !publicSignup) {
           const inviteToken = state.inviteToken;
           if (!inviteToken) {
-            throw new Error("Public signups are disable, a valid inviteToken is required");
+            throw new Error("You are not authorized to login, please contact the platform owner to request an invitation.");
           }
 
           invite = await this.service("invite_token").fetchInviteByToken(inviteToken, false);
           if (!invite) {
-            throw new Error(`InviteToken not found with token "${inviteToken}"`);
+            throw new Error(`No valid invitation found with the token "${inviteToken}"`);
           }
           if (invite.email !== data.profile.email) {
-            throw new Error("The email specified is not associated with the specified invite token");
+            throw new Error("This invitation does not match the authenticated email address");
           }
         }
 
@@ -82,7 +82,7 @@ class AuthorizationRoute extends BaseRoute {
     } catch (err) {
       this.application.output("Failed to finalize OAuth flow");
       this.application.output(err);
-      return res.status(500).end(`An error occurred while finalizing your login\n\n${err}`);
+      return res.redirect(`${Config.orbitDomain(true)}/error?error=${encodeURIComponent(err.message)}`);
     }
   }
 
