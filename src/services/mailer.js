@@ -90,14 +90,12 @@ class MailerService extends BaseService {
   async sendPlatformInvite(recipient, token) {
     const companyKey = this.model("system_setting").KEYS_COMPANY_NAME;
     const companyName = await this.service("system_setting").getSetting(companyKey);
-    console.log(companyName);
 
     const payload = {
       token: token,
       orbitUrl: Config.orbitDomain(true),
       company: companyName,
     };
-    console.log(payload);
     return this.sendEmailFromTemplate("user_invite", recipient, payload);
   }
 
