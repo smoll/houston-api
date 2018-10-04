@@ -8,6 +8,7 @@ class AuthConfig extends BaseType {
     this.typeDef = `
     type AuthConfig {
       publicSignup: Boolean
+      initialSignup: Boolean
       localEnabled: Boolean
       googleEnabled: Boolean
       githubEnabled: Boolean
@@ -20,8 +21,11 @@ class AuthConfig extends BaseType {
 
   resolver() {
     return {
-      publicSignup(value) {
+      publicSignup() {
         return this.service("system_setting").getSetting(Constants.SYSTEM_SETTING_PUBLIC_SIGNUP);
+      },
+      async initialSignup() {
+        return await this.service("user").fetchUserCount() === 0;
       },
       localEnabled(value) {
         return value.localEnabled || false;
